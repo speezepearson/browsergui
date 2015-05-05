@@ -21,4 +21,4 @@ try:
   serve_forever(gui)
 except KeyboardInterrupt:
   print("Keyboard interrupt received. Quitting.")
-  gui.close()
+  gui.destroy()

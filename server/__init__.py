@@ -1,8 +1,9 @@
+import http.client
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
 import os
 import cgi
-import closablequeue
+import destructiblequeue
 
 ROOT_PATH = "/"
 JQUERY_PATH = "/jquery.min.js"
@@ -37,29 +38,32 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
       self.post_event()
 
   def get_root(self):
-    self.send_response(200)
+    self.send_response(http.client.OK)
     self.end_headers()
     path = os.path.join(os.path.dirname(__file__), "index.html")
     self.write_bytes(open(path).read())
 
   def get_jquery(self):
-    self.send_response(200)
+    self.send_response(http.client.OK)
     self.end_headers()
     path = os.path.join(os.path.dirname(__file__), "jquery.min.js")
     self.write_bytes(open(path).read())
 
   def get_command(self):
     try:
-      command = self.gui.get_js_command()
-    except closablequeue.Closed:
-      self.send_response(400)
-      self.end_headers
+      command = self.gui.get_js_command(timeout=15)
+    except RuntimeError:
+      self.send_response(http.client.NO_CONTENT)
+      self.end_headers()
+    except destructiblequeue.Destroyed:
+      self.send_response(http.client.GONE)
+      self.end_headers()
     else:
       self.write_bytes(command)
 
   def post_event(self):
     data = parse_post_data(self.headers, self.rfile)
-    self.send_response(200)
+    self.send_response(http.client.OK)
     self.end_headers()
     self.gui.handle_event(data)
 
