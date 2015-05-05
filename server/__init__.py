@@ -39,26 +39,31 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
 
   def get_root(self):
     self.send_response(http.client.OK)
+    self.send_no_cache_headers()
     self.end_headers()
     path = os.path.join(os.path.dirname(__file__), "index.html")
     self.write_bytes(open(path).read())
 
   def get_jquery(self):
     self.send_response(http.client.OK)
+    self.send_no_cache_headers()
     self.end_headers()
     path = os.path.join(os.path.dirname(__file__), "jquery.min.js")
     self.write_bytes(open(path).read())
 
   def get_command(self):
     try:
-      command = self.gui.get_js_command(timeout=15)
-    except RuntimeError:
+      command = self.gui.get_js_command(timeout=5)
+    except destructiblequeue.Empty:
       self.send_response(http.client.NO_CONTENT)
       self.end_headers()
     except destructiblequeue.Destroyed:
-      self.send_response(http.client.GONE)
+      self.send_error(http.client.REQUEST_TIMEOUT)
       self.end_headers()
     else:
+      self.send_response(http.client.OK)
+      self.send_no_cache_headers()
+      self.end_headers()
       self.write_bytes(command)
 
   def post_event(self):
@@ -66,6 +71,11 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
     self.send_response(http.client.OK)
     self.end_headers()
     self.gui.handle_event(data)
+
+  def send_no_cache_headers(self):
+    self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+    self.send_header('Pragma', 'no-cache')
+    self.send_header('Expires', '0')
 
   def write_bytes(self, x):
     if isinstance(x, str):
