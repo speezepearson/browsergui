@@ -5,6 +5,7 @@ import cgi
 import closablequeue
 
 ROOT_PATH = "/"
+JQUERY_PATH = "/jquery.min.js"
 COMMAND_PATH = "/command"
 EVENT_PATH = "/event"
 
@@ -26,6 +27,8 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
   def do_GET(self):
     if self.path == ROOT_PATH:
       self.get_root()
+    elif self.path == JQUERY_PATH:
+      self.get_jquery()
     elif self.path == COMMAND_PATH:
       self.get_command()
 
@@ -37,6 +40,12 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
     self.send_response(200)
     self.end_headers()
     path = os.path.join(os.path.dirname(__file__), "index.html")
+    self.write_bytes(open(path).read())
+
+  def get_jquery(self):
+    self.send_response(200)
+    self.end_headers()
+    path = os.path.join(os.path.dirname(__file__), "jquery.min.js")
     self.write_bytes(open(path).read())
 
   def get_command(self):
