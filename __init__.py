@@ -8,4 +8,6 @@ The central concepts here are:
 - The "element," which ...
 """
 
-from . import gui, server
+from . import server, gui, elements
+from .gui import GUI
+from .elements import Element

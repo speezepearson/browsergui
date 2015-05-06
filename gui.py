@@ -1,4 +1,5 @@
 import destructiblequeue
+from .elements import Element
 
 class GUI:
   def __init__(self):
@@ -24,5 +25,3 @@ class GUI:
 
   def handle_event(self, event):
     self.elements[event["id"]].handle_event(event)
-
-from .element import Element

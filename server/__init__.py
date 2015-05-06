@@ -55,11 +55,16 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
     try:
       command = self.gui.get_js_command(timeout=5)
     except destructiblequeue.Empty:
-      self.send_response(http.client.NO_CONTENT)
+      self.send_response(http.client.REQUEST_TIMEOUT)
       self.end_headers()
     except destructiblequeue.Destroyed:
-      self.send_error(http.client.REQUEST_TIMEOUT)
-      self.end_headers()
+      try:
+        # Try to be nice and tell the client we're over.
+        self.send_error(http.client.NOT_FOUND)
+        self.end_headers()
+      except BrokenPipeError:
+        # But if we can't (e.g. because the socket is already closed), don't sweat it.
+        pass
     else:
       self.send_response(http.client.OK)
       self.send_no_cache_headers()

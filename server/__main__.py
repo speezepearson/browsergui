@@ -1,4 +1,4 @@
-from browsergui.gui import GUI, Element
+from browsergui import GUI, Element
 from browsergui.server import serve_forever
 
 def iter_fibonacci_numbers():
