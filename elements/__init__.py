@@ -8,28 +8,43 @@ def unique_id():
   return "_element_{}".format(_unique_id_counter)
 
 class Element:
-  def __init__(self, gui, id=None):
-    self.gui = gui
+  def __init__(self, parent=None, id=None):
+    self.parent = parent
     self.id = id if id else unique_id()
     self.callbacks = collections.defaultdict(list)
-
-    self.gui.add_element(self)
 
   def __str__(self):
     return "(#{})".format(self.id)
 
   def __repr__(self):
-    return "Element({!r}, {!r})".format(self.gui, self.id)
+    return "Element({!r}, {!r})".format(self.parent, self.id)
 
-  def add_child(self, tag, id=None, contents=""):
-    result = Element(self.gui, id)
-    html = """<{tag} id="{id}">{contents}</{tag}>""".format(tag=tag, id=result.id, contents=contents)
-    self.call_method("append", json.dumps(html))
-    return result
+  def append(self, child):
+    if not child.orphaned:
+      raise RuntimeError("can only insert orphaned elements")
+    self.call_method("append", json.dumps(child.html))
+    child.parent = self
+    self.gui.add_element(child)
 
   @property
   def selector(self):
     return "#"+self.id
+
+  @property
+  def html(self):
+    return """<{tag} id={id}>{contents}</{tag}>""".format(tag=self.tag, id=self.id, contents=self.contents)
+
+  @property
+  def orphaned(self):
+    return (self.parent is None)
+
+  @property
+  def gui(self):
+    return None if self.parent is None else self.parent.gui if isinstance(self.parent, Element) else self.parent
+
+  @property
+  def container(self):
+    return self.parent if isinstance(self.parent, Element) else None
 
   def call_method(self, method_name, *args):
     arg_string = ", ".join(args)
@@ -49,3 +64,21 @@ class Element:
   def handle_event(self, event):
     for callback in self.callbacks[event["type"]]:
       callback(event)
+
+class Button(Element):
+  
+  tag = "button"
+
+  def __init__(self, text, **kwargs):
+    super().__init__(**kwargs)
+    self.text = text
+
+  @property
+  def contents(self):
+    return self.text
+
+class Div(Element):
+  tag = "div"
+  def __init__(self, contents="", **kwargs):
+    super().__init__(**kwargs)
+    self.contents = contents
