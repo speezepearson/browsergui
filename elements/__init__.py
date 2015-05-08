@@ -8,10 +8,8 @@ def unique_id():
   return "_element_{}".format(_unique_id_counter)
 
 class Element:
-  def __init__(self, parent=None, id=None):
-    self.parent = parent
-    self.id = id if id else unique_id()
-    self.callbacks = collections.defaultdict(list)
+  def __init__(self, html=None, tag_name=None, children=()):
+    raise NotImplementedError()
 
   def __str__(self):
     return "(#{})".format(self.id)
@@ -19,66 +17,62 @@ class Element:
   def __repr__(self):
     return "Element({!r}, {!r})".format(self.parent, self.id)
 
-  def append(self, child):
-    if not child.orphaned:
-      raise RuntimeError("can only insert orphaned elements")
-    self.call_method("append", json.dumps(child.html))
-    child.parent = self
-    self.gui.add_element(child)
+  def __eq__(self, other):
+    raise NotImplementedError()
 
-  @property
-  def selector(self):
-    return "#"+self.id
+  def append(self, child):
+    raise NotImplementedError()
 
   @property
   def html(self):
-    return """<{tag} id={id}>{contents}</{tag}>""".format(tag=self.tag, id=self.id, contents=self.contents)
+    raise NotImplementedError()
 
   @property
   def orphaned(self):
-    return (self.parent is None)
+    raise NotImplementedError()
+
+  @property
+  def parent(self):
+    raise NotImplementedError()
 
   @property
   def gui(self):
-    return None if self.parent is None else self.parent.gui if isinstance(self.parent, Element) else self.parent
-
-  @property
-  def container(self):
-    return self.parent if isinstance(self.parent, Element) else None
-
-  def call_method(self, method_name, *args):
-    arg_string = ", ".join(args)
-    self.gui.send_js_command('$({}).{}({})'.format(json.dumps(self.selector), method_name, arg_string))
+    raise NotImplementedError()
 
   def add_callback(self, event_type, callback):
-    if not self.callbacks[event_type]:
-      self.gui.send_js_command("""
-        $({selector}).on({type}, function() {{
-          notify_server({{
-            type: {type},
-            id: {id}
-          }})
-        }})""".format(selector=json.dumps(self.selector), type=json.dumps(event_type), id=json.dumps(self.id)))
-    self.callbacks[event_type].append(callback)
+    raise NotImplementedError()
 
   def handle_event(self, event):
-    for callback in self.callbacks[event["type"]]:
-      callback(event)
+    raise NotImplementedError()
+
+
+class Text(Element):
+  def __init__(self, string):
+    super().__init__(tag_name="span")
+    raise NotImplementedError()
+    self.string = string
 
 class Button(Element):
-  
-  tag = "button"
-
-  def __init__(self, text, **kwargs):
-    super().__init__(**kwargs)
+  def __init__(self, text, callback=None):
+    super().__init__(tag_name="button")
+    raise NotImplementedError()
     self.text = text
+    if callback is not None:
+      self.add_callback(CLICK, callback)
 
-  @property
-  def contents(self):
-    return self.text
+  def set_callback(self, callback):
+    self.callbacks[CLICK] = [callback]
 
-class Div(Element):
-  tag = "div"
-  def __init__(self, contents="", **kwargs):
-    super().__init__(**kwargs)
-    self.contents = contents
+class Container(Element):
+  def __init__(self, *children, inline=False):
+    super().__init__(tag_name=("span" if inline else "div"), children=children)
+    raise NotImplementedError()
+    self._inline = inline
+
+class Image(Element):
+  def __init__(self, location):
+    super().__init__(tag_name="img")
+    raise NotImplementedError()
+    self._location = _location
+    if callback is not None:
+      self.add_callback(CLICK, callback)

@@ -1,3 +1,5 @@
+import re
+
 class GUITest(unittest.TestCase):
   def setUp(self):
     self.last_event = None
@@ -10,6 +12,9 @@ class GUITest(unittest.TestCase):
     self.last_event = None
     yield
     self.assertEqual(event, self.last_event)
+
+  def assertHTMLIn(self, included, html):
+    self.assertIn(re.sub("\s", "", included), re.sub("\s", "", html))
 
   def test_construction(self):
     gui = GUI()
@@ -31,22 +36,45 @@ class GUITest(unittest.TestCase):
     with self.assertSetsEvent(event):
       gui.handle_event(event)
 
-  def test_command_queue(self):
+  def test_html(self):
+    button = Button()
+    text = Text("hi lol")
+    gui = GUI(button, text)
+    html = gui.html()
+
+    self.assertHTMLIn(button.html, html)
+    self.assertHTMLIn(text.html, html)
+
+  def test_command_stream(self):
     gui = GUI()
-    self.assertTrue(gui.command_queue.empty())
-    gui.send_js_command("foo");
-    self.assertEqual("foo", gui.get_js_command())
-    with self.assertRaises(destructiblequeue.Empty):
-      gui.get_js_command(block=False)
+    stream = gui.command_stream()
+
+    while not stream.empty():
+      stream.get()
+
+    gui.send_command("foo")
+    self.assertEqual("foo", stream.get())
+    self.assertTrue(stream.empty())
+
+    stream2 = gui.command_stream()
+    while not stream2.empty():
+      stream2.get()
+
+    gui.send_command("bar")
+    self.assertEqual("bar", stream.get())
+    self.assertTrue(stream.empty())
+    self.assertEqual("bar", stream2.get())
+    self.assertTrue(stream2.empty())
 
   def test_callbacks_produce_commands(self):
     button_with_predefined_callback = Button(callback=(lambda event: None))
     button_with_later_callback = Button()
     gui = GUI(button_with_predefined_callback, button_with_later_callback)
+    stream = gui.command_stream()
 
-    self.assertIn(button_with_predefined_callback.id, gui.get_js_command(block=False))
-    self.assertTrue(gui.command_queue.empty())
+    self.assertIn(button_with_predefined_callback.id, stream.get())
+    self.assertTrue(stream.empty())
 
     button.set_callback(lambda event: None)
-    self.assertIn(button_with_later_callback.id, gui.get_js_command(block=False))
-    self.assertTrue(gui.command_queue.empty())
+    self.assertIn(button_with_later_callback.id, stream.get())
+    self.assertTrue(stream.empty())
