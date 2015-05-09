@@ -1,9 +1,8 @@
 import collections
 import json
 import weakref
-import xml.etree.ElementTree
-
-import bs4
+import xml.dom.minidom
+import xml.parsers.expat
 
 CLICK = "click"
 KEYDOWN = "keydown"
@@ -22,12 +21,11 @@ class NotOrphanedError(Exception):
 class NoSuchCallbackError(Exception):
   pass
 
-def validate_tag(html):
+def parse_tag(html):
   try:
-    xml.etree.ElementTree.fromstring(html)
-  except xml.etree.ElementTree.ParseError as e:
-    raise ParseError(*e.args)
-
+    return xml.dom.minidom.parseString(html).documentElement
+  except xml.parsers.expat.ExpatError:
+    raise ParseError("invalid html", html)
 
 class Element:
   def __init__(self, html=None, tag_name=None, children=()):
@@ -37,9 +35,8 @@ class Element:
     if html is None:
       html = "<{t}></{t}>".format(t=tag_name)
 
-    validate_tag(html)
-    (self.tag,) = bs4.BeautifulSoup(html).children
-    self.tag.attrs['id'] = unique_id()
+    self.tag = parse_tag(html)
+    self.tag.attributes['id'] = unique_id()
 
     self.parent_weakref = None
     self.children = []
@@ -59,11 +56,11 @@ class Element:
 
   def __eq__(self, other):
     if isinstance(other, Element):
-      return self.tag == other.tag and self.callbacks == other.callbacks
+      return self.tag.toxml() == other.tag.toxml() and self.callbacks == other.callbacks
 
   @property
   def id(self):
-    return self.tag['id']
+    return self.tag.attributes['id'].value
 
   def walk(self):
     yield self
@@ -75,7 +72,7 @@ class Element:
       raise TypeError(child)
     if not child.orphaned:
       raise NotOrphanedError('only orphaned elements can be inserted')
-    self.tag.append(child.tag)
+    self.tag.appendChild(child.tag)
     self.children.append(child)
     self.register_child(child)
 
@@ -84,7 +81,7 @@ class Element:
       raise TypeError(sibling)
     if not sibling.orphaned:
       raise NotOrphanedError('only orphaned elements can be inserted')
-    self.tag.insert_before(sibling.tag)
+    self.parent.tag.insertBefore(sibling.tag, self.tag)
     self.parent.children.insert(self.parent.children.index(self), sibling)
     self.parent.register_child(sibling)
 
@@ -93,7 +90,8 @@ class Element:
       raise TypeError(sibling)
     if not sibling.orphaned:
       raise NotOrphanedError('only orphaned elements can be inserted')
-    self.tag.insert_after(sibling.tag)
+
+    self.parent.tag.insertBefore(sibling.tag, self.tag.nextSibling)
     self.parent.children.insert(self.parent.children.index(self)+1, sibling)
     self.parent.register_child(sibling)
 
@@ -111,7 +109,7 @@ class Element:
 
   @property
   def html(self):
-    return str(self.tag)
+    return self.tag.toprettyxml()
 
   @property
   def orphaned(self):

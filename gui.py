@@ -2,7 +2,7 @@ import json
 import weakref
 import bs4
 import destructiblequeue
-from .elements import Element
+from .elements import Element, parse_tag
 
 def element_creation_command(element):
   return "$({parent_selector}).append({html})".format(
@@ -36,11 +36,11 @@ def event_stop_listening_command(element, event_type):
 class GUI:
   def __init__(self, *elements):
     self.command_queue = destructiblequeue.DestructibleQueue()
-    self.soup = bs4.BeautifulSoup()
+    self.tag = parse_tag('<body></body>')
     self.children = []
     self.command_streams = weakref.WeakSet()
 
-    self.tags_to_elements = weakref.WeakKeyDictionary()
+    self.elements_by_id = {}
 
     for element in elements:
       self.append(element)
@@ -57,14 +57,13 @@ class GUI:
       stream.put(command)
 
   def handle_event(self, event):
-    tag = self.soup.find(id=event['id'])
-    element = self.tags_to_elements[tag]
+    element = self.elements_by_id[event['id']]
     print("having {} handle event {}".format(element, event))
     element.handle_event(event)
 
   @property
   def html(self):
-    return str(self.soup)
+    return self.tag.toprettyxml()
 
   @property
   def gui(self):
@@ -77,7 +76,7 @@ class GUI:
   def append(self, child):
     if not isinstance(child, Element):
       raise TypeError(child)
-    self.soup.append(child.tag)
+    self.tag.appendChild(child.tag)
     self.children.append(child)
     self.register_child(child)
 
@@ -93,10 +92,10 @@ class GUI:
 
   def register_element(self, element):
     for subelement in element.walk():
-      self.tags_to_elements[subelement.tag] = subelement
+      self.elements_by_id[subelement.id] = subelement
   def unregister_element(self, element):
     for subelement in element.walk():
-      del self.tags_to_elements[subelement.tag]
+      del self.elements_by_id[subelement.id]
 
   def command_stream(self):
     result = destructiblequeue.DestructibleQueue()
