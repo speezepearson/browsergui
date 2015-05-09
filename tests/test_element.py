@@ -11,6 +11,14 @@ class ElementTest(BrowserGUITestCase):
     Element(tag_name="a")
     Element(tag_name="a", children=[Element(tag_name="b")])
 
+    with self.assertRaises(TypeError):
+      Element()
+      
+    with self.assertRaises(TypeError):
+      Element(tag_name="a", children=0)
+    with self.assertRaises(TypeError):
+      Element(tag_name="a", children=[0])
+
     with self.assertRaises(ParseError):
       Element(html="raw string")
     with self.assertRaises(ParseError):
@@ -22,21 +30,17 @@ class ElementTest(BrowserGUITestCase):
     with self.assertRaises(ParseError):
       Element(html="<two /><tags />")
 
-  def test_equality(self):
-    self.assertVeryEqual(Element(html="<a>b</a>"), Element(html="<a>b</a>"))
-    self.assertNotEqual(Element(html="<a>b</a>"), Element(html="<a>c</a>"))
-    self.assertNotEqual(Element(html="<a>b</a>"), Element(html="<b>a</b>"))
+  def test_hash_static(self):
+    a = Element(tag_name="a")
+    h = hash(a)
 
-    a1 = Element(html="<a></a>")
-    a2 = Element(html="<a></a>")
-    self.assertVeryEqual(a1, a2)
+    self.assertEqual(h, hash(a))
 
-    container = Element(tag_name="div")
-    container.append(a1)
-    self.assertVeryEqual(a1, a2)
+    a.append(Element(tag_name="b"))
+    self.assertEqual(h, hash(a))
 
-    a2.add_callback("blahblahtrigger", (lambda event: print(event)))
-    self.assertNotEqual(a1, a2)
+    a.add_callback("blahblahtrigger", self.set_last_event)
+    self.assertEqual(h, hash(a))
 
   def test_orphaned(self):
     container = Element(tag_name="c")

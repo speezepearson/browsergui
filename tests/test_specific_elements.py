@@ -1,12 +1,12 @@
 from browsergui import Container, Text, Button
-from browsergui.elements import CLICK
+from browsergui.elements import Element, CLICK
 
 from . import BrowserGUITestCase
 
 class ContainerTest(BrowserGUITestCase):
   def test_construction(self):
-    self.assertEqual(Container(), Element(tag_name="div"))
-    self.assertEqual(Container(inline=True), Element(tag_name="span"))
+    Container()
+    Container(inline=True)
 
     left = Container()
     right = Container()
@@ -26,10 +26,13 @@ class TextTest(BrowserGUITestCase):
 
 class ButtonTest(BrowserGUITestCase):
   def test_construction(self):
-    self.assertEqual(Button("Press me"), Element(html="<button>Press me</button>"))
+    Button("Press me")
+
+    with self.assertRaises(TypeError):
+      Button(0)
 
   def test_default_text(self):
-    self.assertEqual(Button().text, "Button!")
+    self.assertEqual(Button().text, "Click!")
 
   def test_set_callback(self):
     clicked = False
