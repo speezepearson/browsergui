@@ -1,20 +1,11 @@
 import re
 
-class GUITest(unittest.TestCase):
-  def setUp(self):
-    self.last_event = None
+from browsergui import GUI, Text, Button
 
-  def set_last_event(self, event):
-    self.last_event = event
+from . import BrowserGUITestCase
 
-  @contextlib.contextmanager
-  def assertSetsEvent(self, event):
-    self.last_event = None
-    yield
-    self.assertEqual(event, self.last_event)
 
-  def assertHTMLIn(self, included, html):
-    self.assertIn(re.sub("\s", "", included), re.sub("\s", "", html))
+class GUITest(BrowserGUITestCase):
 
   def test_construction(self):
     gui = GUI()

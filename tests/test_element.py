@@ -1,42 +1,39 @@
-class ElementTest(unittest.TestCase):
-  def assertEqual(self, x, y, hashes_too=False):
-    self.assertEqual(x, y)
-    if hashes_too:
-      self.assertEqual(hash(x), hash(y))
+from browsergui import Element
+from browsergui.elements import ParseError, CLICK, KEYDOWN, KEYUP, NoSuchCallbackError
+
+from . import BrowserGUITestCase
+
+class ElementTest(BrowserGUITestCase):
 
   def test_construction(self):
 
-    e = Element(tag_name="span")
-    self.assertEqual("span", e.tag_name)
+    Element(html="<a>b</a>")
+    Element(tag_name="a")
+    Element(tag_name="a", children=[Element(tag_name="b")])
 
-    e = Element(html="<div>foo</div>")
-    self.assertEqual("div", e.tag_name)
-
-    container = Element(tag_name="a", children=[e])
-
-    with self.assertRaises(something):
+    with self.assertRaises(ParseError):
       Element(html="raw string")
-    with self.assertRaises(something):
+    with self.assertRaises(ParseError):
       Element(html="<malformed")
-    with self.assertRaises(something):
+    with self.assertRaises(ParseError):
       Element(html="<malformed>")
-    with self.assertRaises(something):
+    with self.assertRaises(ParseError):
       Element(html="<mal></formed>")
-    with self.assertRaises(something):
+    with self.assertRaises(ParseError):
       Element(html="<two /><tags />")
 
   def test_equality(self):
-    self.assertEqual(Element(html="<a>b</a>"), Element(html="<a>b</a>"), hashes_too=True)
+    self.assertVeryEqual(Element(html="<a>b</a>"), Element(html="<a>b</a>"))
     self.assertNotEqual(Element(html="<a>b</a>"), Element(html="<a>c</a>"))
     self.assertNotEqual(Element(html="<a>b</a>"), Element(html="<b>a</b>"))
 
     a1 = Element(html="<a></a>")
     a2 = Element(html="<a></a>")
-    self.assertEqual(a1, a2, hashes_too=True)
+    self.assertVeryEqual(a1, a2)
 
     container = Element(tag_name="div")
     container.append(a1)
-    self.assertEqual(a1, a2, hashes_too=True)
+    self.assertVeryEqual(a1, a2)
 
     a2.add_callback("blahblahtrigger", (lambda event: print(event)))
     self.assertNotEqual(a1, a2)
@@ -59,7 +56,7 @@ class ElementTest(unittest.TestCase):
     container.disown(first)
     self.assertTrue(first.orphaned)
 
-    second.remove_self()
+    second.extract()
     self.assertTrue(second.orphaned)
 
   def test_parent(self):
@@ -67,7 +64,7 @@ class ElementTest(unittest.TestCase):
     first = Element(tag_name="f")
     second = Element(tag_name="s")
 
-    self.assertNone(first.parent)
+    self.assertIsNone(first.parent)
 
     container.append(first)
     self.assertEqual(container, first.parent)
@@ -76,10 +73,10 @@ class ElementTest(unittest.TestCase):
     self.assertEqual(container, second.parent)
 
     container.disown(first)
-    self.assertNone(first.parent)
+    self.assertIsNone(first.parent)
 
-    second.remove_self()
-    self.assertNone(second.parent)
+    second.extract()
+    self.assertIsNone(second.parent)
 
   def test_children(self):
     container = Element(tag_name="c")
@@ -97,7 +94,7 @@ class ElementTest(unittest.TestCase):
     container.disown(first)
     self.assertEqual(list(container.children), [second])
 
-    second.remove_self()
+    second.extract()
     self.assertEqual(list(container.children), [])
 
   def test_callbacks(self):
@@ -116,13 +113,9 @@ class ElementTest(unittest.TestCase):
     e.handle_event({'type': KEYDOWN, 'id': e.id, 'key': 'a'})
     self.assertEqual(last_event, {'type': KEYDOWN, 'id': e.id, 'key': 'a'})
 
-    with self.assertRaises(NoCallbackException):
-      e.handle_event({'type': KEYUP, 'id': e.id, 'key': 'a'})
-
     e.remove_callback(CLICK, set_event)
-    with self.assertRaises(NoCallbackException):
-      e.handle_event({'type': CLICK, 'id': e.id})
-    self.assertEqual(last_event, {'type': KEYDOWN, 'id': e.id, 'key': 'a'})
+    with self.assertRaises(NoSuchCallbackError):
+      e.remove_callback(CLICK, set_event)
 
     self.assertEqual(list(e.callbacks[CLICK]), [])
     self.assertEqual(list(e.callbacks[KEYDOWN]), [set_event])

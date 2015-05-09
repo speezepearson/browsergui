@@ -1,4 +1,4 @@
-from browsergui import GUI, Button, Div
+from browsergui import GUI, Button, Text
 from browsergui.server import serve_forever
 
 def iter_fibonacci_numbers():
@@ -12,12 +12,9 @@ fibs = iter_fibonacci_numbers()
 gui = GUI()
 
 button = Button(text="More!")
-fibonacci_div = Div()
+gui.append(button)
 
-gui.body.append(button)
-gui.body.append(fibonacci_div)
-
-button.add_callback("click", (lambda event: fibonacci_div.append(Div(contents=str(next(fibs))))))
+button.set_callback(lambda event: gui.append(Text(str(next(fibs)))))
 
 print('Starting server. Use <Ctrl-C> to stop.')
 try:

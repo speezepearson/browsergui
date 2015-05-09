@@ -1,10 +1,9 @@
-class TestCaseWithImportantHashes(unittest.TestCase):
-  def assertEqual(self, x, y, hashes_too=True):
-    self.assertEqual(x, y)
-    if hashes_too:
-      self.assertEqual(hash(x), hash(y))
+from browsergui import Container, Text, Button
+from browsergui.elements import CLICK
 
-class ContainerTest(TestCaseWithImportantHashes):
+from . import BrowserGUITestCase
+
+class ContainerTest(BrowserGUITestCase):
   def test_construction(self):
     self.assertEqual(Container(), Element(tag_name="div"))
     self.assertEqual(Container(inline=True), Element(tag_name="span"))
@@ -17,7 +16,7 @@ class ContainerTest(TestCaseWithImportantHashes):
     with self.assertRaises(TypeError):
       Container(0)
 
-class TextTest(TestCaseWithImportantHashes):
+class TextTest(BrowserGUITestCase):
   def test_construction(self):
     text = Text("blah")
     self.assertEqual(text.text, "blah")
@@ -25,7 +24,7 @@ class TextTest(TestCaseWithImportantHashes):
     with self.assertRaises(TypeError):
       Text(0)
 
-class ButtonTest(TestCaseWithImportantHashes):
+class ButtonTest(BrowserGUITestCase):
   def test_construction(self):
     self.assertEqual(Button("Press me"), Element(html="<button>Press me</button>"))
 
