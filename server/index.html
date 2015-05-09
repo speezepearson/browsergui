@@ -2,31 +2,13 @@
   <head>
     <script src="/jquery.min.js"></script>
 
-    <script type="text/javascript">
-
-    function obey(command) {
-      console.log("evaluating:", command)
-      eval(command);
-    }
-
-    function obey_forever() {
-      $.get('/command', function(data) {
-        obey(data);
-        obey_forever();
-      });
-    }
-
-    obey_forever();
-
-    function notify_server(event) {
-      console.log('notifying server:', event);
-      $.post('/event', event);
-    }
-
-    </script>
+    <script src="/puppet.js"></script>
   </head>
 
   <body id="body">
+
+  <!-- GUI_HTML -->
+
   </body>
 
 </html>

@@ -4,6 +4,11 @@ import bs4
 import destructiblequeue
 from .elements import Element
 
+def element_creation_command(element):
+  return "$({parent_selector}).append({html})".format(
+    parent_selector=json.dumps(("#"+element.parent.id if isinstance(element.parent, Element) else 'body')),
+    html=json.dumps(element.html))
+
 def event_listening_function_name(element, event_type):
   return "{}_{}".format(element.id, event_type)
 
@@ -15,7 +20,7 @@ def event_start_listening_command(element, event_type):
         id: {id}
       }})
     }}
-    $({selector}).on({type}, {fname}""".format(
+    $({selector}).on({type}, {fname})""".format(
       fname=event_listening_function_name(element, event_type),
       selector=json.dumps("#"+element.id),
       type=json.dumps(event_type),
@@ -54,6 +59,7 @@ class GUI:
   def handle_event(self, event):
     tag = self.soup.find(id=event['id'])
     element = self.tags_to_elements[tag]
+    print("having {} handle event {}".format(element, event))
     element.handle_event(event)
 
   @property
@@ -83,6 +89,7 @@ class GUI:
   def register_child(self, child):
     self.register_element(child)
     child.parent = self
+    self.send_command(element_creation_command(child))
 
   def register_element(self, element):
     for subelement in element.walk():

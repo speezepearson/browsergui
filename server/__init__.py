@@ -7,6 +7,7 @@ import destructiblequeue
 
 ROOT_PATH = "/"
 JQUERY_PATH = "/jquery.min.js"
+PUPPET_PATH = "/puppet.js"
 COMMAND_PATH = "/command"
 EVENT_PATH = "/event"
 
@@ -29,7 +30,9 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
     if self.path == ROOT_PATH:
       self.get_root()
     elif self.path == JQUERY_PATH:
-      self.get_jquery()
+      self.get_static_file("jquery.min.js")
+    elif self.path == PUPPET_PATH:
+      self.get_static_file("puppet.js")
     elif self.path == COMMAND_PATH:
       self.get_command()
 
@@ -37,25 +40,29 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
     if self.path == EVENT_PATH:
       self.post_event()
 
-  def get_root(self):
-    self.send_response(http.client.OK)
-    self.send_no_cache_headers()
-    self.end_headers()
-    path = os.path.join(os.path.dirname(__file__), "index.html")
-    self.write_bytes(open(path).read())
+  def get_static_file(self, relpath):
+    path = os.path.join(os.path.dirname(__file__), relpath)
+    if os.path.exists(path):
+      self.send_response(http.client.OK)
+      self.send_no_cache_headers()
+      self.end_headers()
+      self.write_bytes(open(path).read())
+    else:
+      self.send_response(http.client.NOT_FOUND)
 
-  def get_jquery(self):
+  def get_root(self):
+    path = os.path.join(os.path.dirname(__file__), "index.html")
     self.send_response(http.client.OK)
     self.send_no_cache_headers()
     self.end_headers()
-    path = os.path.join(os.path.dirname(__file__), "jquery.min.js")
-    self.write_bytes(open(path).read())
+    html, type(self).command_stream = self.gui.html_and_command_stream()
+    self.write_bytes(open(path).read().replace("<!-- GUI_HTML -->", html))
 
   def get_command(self):
     try:
-      command = self.gui.get_js_command(timeout=5)
+      command = self.command_stream.get(timeout=5)
     except destructiblequeue.Empty:
-      self.send_response(http.client.REQUEST_TIMEOUT)
+      self.send_response(http.client.NO_CONTENT)
       self.end_headers()
     except destructiblequeue.Destroyed:
       try:
