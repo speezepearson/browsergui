@@ -1,13 +1,20 @@
 import json
 import weakref
-import bs4
 import destructiblequeue
 from .elements import Element, parse_tag
 
 def element_creation_command(element):
-  return "$({parent_selector}).append({html})".format(
-    parent_selector=json.dumps(("#"+element.parent.id if isinstance(element.parent, Element) else 'body')),
-    html=json.dumps(element.html))
+  if element.next_sibling is not None:
+    selector = "#"+element.next_sibling.id
+    format = "$({selector}).before({html})"
+  elif element.tag.previousSibling is not None:
+    selector = "#"+element.previous_sibling.id
+    format = "$({selector}).after({html})"
+  else:
+    selector = "#"+element.parent.id
+    format = "$({selector}).append({html})"
+
+  return format.format(selector=json.dumps(selector), html=json.dumps(element.html))
 
 def event_listening_function_name(element, event_type):
   return "{}_{}".format(element.id, event_type)
@@ -37,6 +44,7 @@ class GUI:
   def __init__(self, *elements):
     self.command_queue = destructiblequeue.DestructibleQueue()
     self.tag = parse_tag('<body></body>')
+    self.tag.attributes['id'] = 'body'
     self.children = []
     self.command_streams = weakref.WeakSet()
 
@@ -60,6 +68,10 @@ class GUI:
     element = self.elements_by_id[event['id']]
     print("having {} handle event {}".format(element, event))
     element.handle_event(event)
+
+  @property
+  def id(self):
+    return self.tag.attributes['id'].value
 
   @property
   def html(self):

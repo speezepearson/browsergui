@@ -69,7 +69,7 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
         # Try to be nice and tell the client we're over.
         self.send_error(http.client.NOT_FOUND)
         self.end_headers()
-      except BrokenPipeError:
+      except:
         # But if we can't (e.g. because the socket is already closed), don't sweat it.
         pass
     else:

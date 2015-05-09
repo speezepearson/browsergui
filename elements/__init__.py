@@ -3,6 +3,7 @@ import json
 import weakref
 import xml.dom.minidom
 import xml.parsers.expat
+import cgi
 
 CLICK = "click"
 KEYDOWN = "keydown"
@@ -91,7 +92,7 @@ class Element:
     if not sibling.orphaned:
       raise NotOrphanedError('only orphaned elements can be inserted')
 
-    self.parent.tag.insertBefore(sibling.tag, self.tag.nextSibling)
+    self.parent.tag.insertBefore(sibling.tag, self.next_sibling.tag)
     self.parent.children.insert(self.parent.children.index(self)+1, sibling)
     self.parent.register_child(sibling)
 
@@ -106,6 +107,22 @@ class Element:
       self.parent_weakref = weakref.ref(parent)
     else:
       raise NotOrphanedError('only orphaned elements can be given new parents')
+
+  @property
+  def next_sibling(self):
+    siblings = self.parent.children
+    i = siblings.index(self) + 1
+    if i < len(siblings):
+      return siblings[i]
+    return None
+
+  @property
+  def previous_sibling(self):
+    siblings = self.parent.children
+    i = siblings.index(self) - 1
+    if i >= 0:
+      return siblings[i]
+    return None
 
   @property
   def html(self):
@@ -149,19 +166,30 @@ class Element:
     for callback in self.callbacks[event['type']]:
       callback(event)
 
+  def toggle_visibility(self):
+    self.gui.send_command("$({selector}).toggle()".format(selector=json.dumps("#"+self.id)))
+
 
 class Text(Element):
-  def __init__(self, text):
+  def __init__(self, text, code=False, inline=True):
     if not isinstance(text, str):
       raise TypeError(text)
-    super().__init__(html="<span>{}</span>".format(text))
+    tag = (
+      "span" if inline and not code else
+      "code" if inline and code else
+      "div" if not inline and not code else
+      "pre"
+      )
+    super().__init__(html="<{tag}>{text}</{tag}>".format(tag=tag, text=cgi.escape(text)))
+    if tag == "code":
+      self.tag.attributes['style'] = 'white-space: pre;'
     self.text = text
 
 class Button(Element):
   def __init__(self, text="Click!", callback=None):
     if not isinstance(text, str):
       raise TypeError(text)
-    super().__init__(html="<button>{}</button>".format(text))
+    super().__init__(html="<button>{}</button>".format(cgi.escape(text)))
     self.text = text
     if callback is not None:
       self.add_callback(CLICK, callback)
