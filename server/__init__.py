@@ -3,6 +3,8 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
 import os
 import cgi
+import webbrowser
+
 import destructiblequeue
 
 ROOT_PATH = "/"
@@ -102,3 +104,16 @@ def serve_forever(gui, server_class=ThreadedHTTPServer, request_handler_class=GU
   request_handler_class.gui = gui # Super hack
   server = server_class(('localhost', port), request_handler_class)
   server.serve_forever()
+
+def run(gui, open_browser=True, port=62345):
+  if open_browser:
+    url = "http://localhost:{}".format(port)
+    print('Directing browser to', url)
+    webbrowser.open(url)
+
+  print('Starting server. Use <Ctrl-C> to stop.')
+  try:
+    serve_forever(gui, port=port)
+  except KeyboardInterrupt:
+    print("Keyboard interrupt received. Quitting.")
+    gui.destroy()

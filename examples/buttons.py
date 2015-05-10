@@ -1,5 +1,5 @@
 from browsergui import GUI, Button, Text, Container
-from browsergui.server import serve_forever
+import browsergui.server
 
 gui = GUI()
 
@@ -19,9 +19,4 @@ for line in open(__file__).readlines():
   button = Button("Toggle line", callback=toggler(text))
   gui.append(Container(button, text, inline=False))
 
-print('Starting server. Use <Ctrl-C> to stop.')
-try:
-  serve_forever(gui)
-except KeyboardInterrupt:
-  print("Keyboard interrupt received. Quitting.")
-  gui.destroy()
+browsergui.server.run(gui)
