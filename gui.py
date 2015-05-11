@@ -49,9 +49,23 @@ def event_stop_listening_command(element, event_type):
       type=json.dumps(event_type),
       id=json.dumps(element.id))
 
+class CommandQueue(destructiblequeue.DestructibleQueue):
+    def _init(self, maxsize):
+        self.queue = []
+
+    def _qsize(self):
+        return len(self.queue)
+
+    def _put(self, item):
+        self.queue.append(item)
+
+    def _get(self):
+        result = "; ".join(self.queue)
+        self.queue = []
+        return result
+
 class GUI:
   def __init__(self, *elements):
-    self.command_queue = destructiblequeue.DestructibleQueue()
     self.tag = parse_tag('<body></body>')
     self.tag.attributes['id'] = 'body'
     self.children = []
@@ -121,7 +135,7 @@ class GUI:
       del self.elements_by_id[subelement.id]
 
   def command_stream(self):
-    result = destructiblequeue.DestructibleQueue()
+    result = CommandQueue()
     result.put(self._quickstart_command())
     self.command_streams.add(result)
     return result
