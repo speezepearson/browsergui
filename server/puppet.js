@@ -1,9 +1,11 @@
 function obey(command) {
-  console.log("evaluating:", command);
-  try {
-    eval(command);
-  } catch (e) {
-    alert(e.toString());
+  if (command) {
+    console.log("evaluating:", command);
+    try {
+      eval(command);
+    } catch (e) {
+      alert(e.toString());
+    }
   }
 }
 
