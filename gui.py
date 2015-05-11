@@ -3,7 +3,7 @@ import weakref
 import destructiblequeue
 from .elements import Element, parse_tag
 
-def element_creation_command(element):
+def element_insertion_command(element):
   if element.next_sibling is not None:
     selector = "#"+element.next_sibling.id
     format = "$({selector}).before({html})"
@@ -15,6 +15,15 @@ def element_creation_command(element):
     format = "$({selector}).append({html})"
 
   return format.format(selector=json.dumps(selector), html=json.dumps(element.html))
+
+def element_set_callbacks_command(element, walk=True):
+  if walk:
+    return "; ".join(element_set_callbacks_command(descendant, walk=False) for descendant in element.walk())
+  else:
+    return "; ".join(
+      event_start_listening_command(element, event_type)
+      for event_type, callbacks in element.callbacks.items()
+      if callbacks)
 
 def event_listening_function_name(element, event_type):
   return "{}_{}".format(element.id, event_type)
@@ -98,32 +107,30 @@ class GUI:
     child.parent = None
 
   def register_child(self, child):
-    self.register_element(child)
     child.parent = self
-    self.send_command(element_creation_command(child))
+    self.register_element(child)
 
   def register_element(self, element):
     for subelement in element.walk():
       self.elements_by_id[subelement.id] = subelement
+    self.send_command(element_insertion_command(element))
+    self.send_command(element_set_callbacks_command(element))
+
   def unregister_element(self, element):
     for subelement in element.walk():
       del self.elements_by_id[subelement.id]
 
   def command_stream(self):
     result = destructiblequeue.DestructibleQueue()
-    self._send_startup_commands_to_stream(result)
+    result.put(self._quickstart_command())
     self.command_streams.add(result)
     return result
 
   def html_and_command_stream(self):
     return (self.html, self.command_stream())
 
-  def _send_startup_commands_to_stream(self, stream):
-    for element in self.walk_elements():
-      for event_type, callbacks in element.callbacks.items():
-        if not callbacks:
-          continue
-        self.send_command(event_start_listening_command(element, event_type), stream=stream)
+  def _quickstart_command(self):
+    return "; ".join(element_set_callbacks_command(e) for e in self.children)
 
   def note_callback_added(self, element, event_type, callback):
     if len(element.callbacks[event_type]) == 1:
