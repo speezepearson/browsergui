@@ -1,4 +1,4 @@
-from browsergui import GUI, Button, Text, Container, run
+from browsergui import GUI, Button, Text, CodeSnippet, Container, run
 
 gui = GUI()
 
@@ -10,8 +10,8 @@ def toggler(element):
   return callback
 
 for line in open(__file__).readlines():
-  text = Text("  "+line.strip("\n"), code=True)
+  text = CodeSnippet("  "+line.strip("\n"))
   button = Button("Toggle line", callback=toggler(text))
-  gui.append(Container(button, text, inline=False))
+  gui.append(Container(button, text))
 
 run(gui)

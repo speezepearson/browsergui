@@ -10,5 +10,5 @@ The central concepts here are:
 
 from . import server, gui, elements
 from .gui import GUI
-from .elements import Element, Container, Button, Text
+from .elements import Element, Container, Button, Text, Paragraph, CodeSnippet, CodeBlock
 from .server import run

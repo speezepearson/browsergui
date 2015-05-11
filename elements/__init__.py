@@ -171,19 +171,11 @@ class Element:
 
 
 class Text(Element):
-  def __init__(self, text, code=False, inline=True):
+  def __init__(self, text, tag_name="span"):
     if not isinstance(text, str):
       raise TypeError(text)
-    tag = (
-      "span" if inline and not code else
-      "code" if inline and code else
-      "div" if not inline and not code else
-      "pre"
-      )
-    super().__init__(html="<{tag}>{text}</{tag}>".format(tag=tag, text=cgi.escape(text)))
-    if tag == "code":
-      self.tag.attributes['style'] = 'white-space: pre;'
-    self._text = text
+    super().__init__(html="<{tag}>{text}</{tag}>".format(tag=tag_name, text=cgi.escape(text)))
+    self.text = text
 
   @property
   def text(self):
@@ -193,6 +185,17 @@ class Text(Element):
     self._text = value
     if self.gui is not None:
       self.gui.send_command("$({selector}).text({text})".format(selector=json.dumps("#"+self.id), text=json.dumps(self.text)))
+
+class CodeSnippet(Text):
+  def __init__(self, text):
+    super().__init__(text, tag_name="code")
+    self.tag.attributes['style'] = 'white-space: pre;'
+class Paragraph(Text):
+  def __init__(self, text):
+    super().__init__(text, tag_name="p")
+class CodeBlock(Text):
+  def __init__(self, text):
+    super().__init__(text, tag_name="pre")
 
 class Button(Element):
   def __init__(self, text="Click!", callback=None):

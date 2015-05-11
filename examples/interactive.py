@@ -1,21 +1,21 @@
 import code
 import threading
 import browsergui
-from browsergui import GUI, Text, run
+from browsergui import GUI, Paragraph, CodeBlock, Paragraph, run
 
 gui = GUI()
-gui.append(Text("""
+gui.append(Paragraph("""
   Run commands in the REPL.
   As you change `gui`, this page will update.
   Some commands you might run are:
 """))
 
 for sample in ("gui.append(Text('Hiiii!'))",
-               "gui.append(Button(callback=(lambda event: gui.append(Text('Clicked!', inline=False)))))"):
-  gui.append(Text(sample, code=True, inline=False))
+               "gui.append(Button(callback=(lambda event: gui.append(Paragraph('Clicked!')))))"):
+  gui.append(CodeBlock(sample))
 
-gui.append(Text("The code for this page is:"))
-gui.append(Text(open(__file__).read(), code=True, inline=False))
+gui.append(Paragraph("The code for this page is:"))
+gui.append(CodeBlock(open(__file__).read()))
 
 t = threading.Thread(target=run, args=(gui,), kwargs=dict(quiet=True))
 t.daemon = True
