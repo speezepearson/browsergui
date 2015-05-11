@@ -100,12 +100,16 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     """Handle requests in a separate thread."""
     pass
 
-def serve_forever(gui, server_class=ThreadedHTTPServer, request_handler_class=GUIRequestHandler, port=62345):
+def serve_forever(gui, server_class=ThreadedHTTPServer, request_handler_class=GUIRequestHandler, port=62345, quiet=False):
   request_handler_class.gui = gui # Super hack
+  if quiet:
+    def noop(*args): pass
+    request_handler_class.log_message = noop
+
   server = server_class(('localhost', port), request_handler_class)
   server.serve_forever()
 
-def run(gui, open_browser=True, port=62345):
+def run(gui, open_browser=True, port=62345, **kwargs):
   if open_browser:
     url = "http://localhost:{}".format(port)
     print('Directing browser to', url)
@@ -113,7 +117,7 @@ def run(gui, open_browser=True, port=62345):
 
   print('Starting server. Use <Ctrl-C> to stop.')
   try:
-    serve_forever(gui, port=port)
+    serve_forever(gui, port=port, **kwargs)
   except KeyboardInterrupt:
     print("Keyboard interrupt received. Quitting.")
     gui.destroy()
