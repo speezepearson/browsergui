@@ -183,7 +183,16 @@ class Text(Element):
     super().__init__(html="<{tag}>{text}</{tag}>".format(tag=tag, text=cgi.escape(text)))
     if tag == "code":
       self.tag.attributes['style'] = 'white-space: pre;'
-    self.text = text
+    self._text = text
+
+  @property
+  def text(self):
+    return self._text
+  @text.setter
+  def text(self, value):
+    self._text = value
+    if self.gui is not None:
+      self.gui.send_command("$({selector}).text({text})".format(selector=json.dumps("#"+self.id), text=json.dumps(self.text)))
 
 class Button(Element):
   def __init__(self, text="Click!", callback=None):
