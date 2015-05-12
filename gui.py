@@ -1,7 +1,7 @@
 import json
 import weakref
-import destructiblequeue
 from .elements import Element, parse_tag
+from .command_stream import CommandStream
 
 def element_insertion_command(element):
   if element.next_sibling is not None:
@@ -48,21 +48,6 @@ def event_stop_listening_command(element, event_type):
       selector=json.dumps("#"+element.id),
       type=json.dumps(event_type),
       id=json.dumps(element.id))
-
-class CommandQueue(destructiblequeue.DestructibleQueue):
-    def _init(self, maxsize):
-        self.queue = []
-
-    def _qsize(self):
-        return len(self.queue)
-
-    def _put(self, item):
-        self.queue.append(item)
-
-    def _get(self):
-        result = "; ".join(self.queue)
-        self.queue = []
-        return result
 
 class GUI:
   def __init__(self, *elements):
@@ -135,7 +120,7 @@ class GUI:
       del self.elements_by_id[subelement.id]
 
   def command_stream(self):
-    result = CommandQueue()
+    result = CommandStream()
     result.put(self._quickstart_command())
     self.command_streams.add(result)
     return result
