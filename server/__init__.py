@@ -5,7 +5,7 @@ import os
 import cgi
 import webbrowser
 
-import destructiblequeue
+from ..command_stream import Empty, Destroyed
 
 ROOT_PATH = "/"
 JQUERY_PATH = "/jquery.min.js"
@@ -63,10 +63,10 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
   def get_command(self):
     try:
       command = self.command_stream.get(timeout=5)
-    except destructiblequeue.Empty:
+    except Empty:
       self.send_response(http.client.NO_CONTENT)
       self.end_headers()
-    except destructiblequeue.Destroyed:
+    except Destroyed:
       try:
         # Try to be nice and tell the client we're over.
         self.send_error(http.client.NOT_FOUND)
