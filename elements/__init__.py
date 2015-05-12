@@ -3,7 +3,6 @@ import json
 import weakref
 import xml.dom.minidom
 import xml.parsers.expat
-import cgi
 
 CLICK = "click"
 KEYDOWN = "keydown"
@@ -174,15 +173,17 @@ class Text(Element):
   def __init__(self, text, tag_name="span"):
     if not isinstance(text, str):
       raise TypeError(text)
-    super().__init__(html="<{tag}>{text}</{tag}>".format(tag=tag_name, text=cgi.escape(text)))
-    self.text = text
+    super().__init__(html="<{tag}></{tag}>".format(tag=tag_name))
+    self._text = xml.dom.minidom.Text()
+    self._text.data = text
+    self.tag.appendChild(self._text)
 
   @property
   def text(self):
-    return self._text
+    return self._text.data
   @text.setter
   def text(self, value):
-    self._text = value
+    self._text.data = value
     if self.gui is not None:
       self.gui.send_command("$({selector}).text({text})".format(selector=json.dumps("#"+self.id), text=json.dumps(self.text)))
 
@@ -197,12 +198,11 @@ class CodeBlock(Text):
   def __init__(self, text):
     super().__init__(text, tag_name="pre")
 
-class Button(Element):
+class Button(Text):
   def __init__(self, text="Click!", callback=None):
     if not isinstance(text, str):
       raise TypeError(text)
-    super().__init__(html="<button>{}</button>".format(cgi.escape(text)))
-    self.text = text
+    super().__init__(text, tag_name="button")
     if callback is not None:
       self.add_callback(CLICK, callback)
 
