@@ -3,6 +3,7 @@ import json
 import weakref
 import xml.dom.minidom
 import xml.parsers.expat
+import cgi
 
 CLICK = "click"
 KEYDOWN = "keydown"
@@ -173,17 +174,15 @@ class Text(Element):
   def __init__(self, text, tag_name="span"):
     if not isinstance(text, str):
       raise TypeError(text)
-    super().__init__(html="<{tag}></{tag}>".format(tag=tag_name))
-    self._text = xml.dom.minidom.Text()
-    self._text.data = text
-    self.tag.appendChild(self._text)
+    super().__init__(html="<{tag}>{text}</{tag}>".format(tag=tag_name, text=cgi.escape(text)))
+    self.text = text
 
   @property
   def text(self):
-    return self._text.data
+    return self._text
   @text.setter
   def text(self, value):
-    self._text.data = value
+    self._text = value
     if self.gui is not None:
       self.gui.send_command("$({selector}).text({text})".format(selector=json.dumps("#"+self.id), text=json.dumps(self.text)))
 
