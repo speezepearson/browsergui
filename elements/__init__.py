@@ -92,7 +92,7 @@ class Element:
     if not sibling.orphaned:
       raise NotOrphanedError('only orphaned elements can be inserted')
 
-    self.parent.tag.insertBefore(sibling.tag, self.next_sibling.tag)
+    self.parent.tag.insertBefore(sibling.tag, None if self.next_sibling is None else self.next_sibling.tag)
     self.parent.children.insert(self.parent.children.index(self)+1, sibling)
     self.parent.register_child(sibling)
 
