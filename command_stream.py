@@ -1,4 +1,9 @@
-import time
+import sys
+if sys.version_info >= (3, 0):
+  from time import monotonic as time
+else:
+  from time import time
+
 import threading
 
 class Empty(Exception):
@@ -9,7 +14,7 @@ class Destroyed(Exception):
   """Raised when trying to get/put on a destroyed CommandStream"""
   pass
 
-class CommandStream:
+class CommandStream(object):
   def __init__(self):
     self.commands = []
     self.destroyed = False
@@ -41,9 +46,9 @@ class CommandStream:
       elif timeout < 0:
         raise ValueError("'timeout' must be a non-negative number")
       else:
-        endtime = time.monotonic() + timeout
+        endtime = time() + timeout
         while self.empty() and not self.destroyed:
-          remaining = endtime - time.monotonic()
+          remaining = endtime - time()
           if remaining <= 0.0:
             raise Empty
           self.not_empty.wait(remaining)

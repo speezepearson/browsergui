@@ -24,7 +24,7 @@ The good:
 
 - **Portability.** This package is pure Python that relies on only the standard library. This will not change while I have breath in my body.
 
-  Consequently, it should be usable out of the box for every single person with Python 3, without installing Tk or Qt or wxWidgets or PyObjC or any of that stuff.
+  Consequently, it should be usable out of the box for every single person with Python 2.7 or later, without installing Tk or Qt or wxWidgets or PyObjC or any of that stuff.
 
 - **Easy to learn.** Making simple GUIs for simple tasks is simple. Check out the `examples` directory (particularly `examples/longrunning.py` for a vaguely realistic use case).
 

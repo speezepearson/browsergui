@@ -27,7 +27,7 @@ def parse_tag(html):
   except xml.parsers.expat.ExpatError:
     raise ParseError("invalid html", html)
 
-class Element:
+class Element(object):
   def __init__(self, html=None, tag_name=None, children=()):
     if not ((html is None) ^ (tag_name is None)):
       raise TypeError("Element.__init__ must be given html or tag_name (but not both)")
@@ -65,7 +65,8 @@ class Element:
   def walk(self):
     yield self
     for child in self.children:
-      yield from child.walk()
+      for descendant in child.walk():
+        yield descendant
 
   def append(self, child):
     if not isinstance(child, Element):
@@ -173,7 +174,7 @@ class Text(Element):
   def __init__(self, text, tag_name="span"):
     if not isinstance(text, str):
       raise TypeError(text)
-    super().__init__(html="<{tag}></{tag}>".format(tag=tag_name))
+    super(Text, self).__init__(html="<{tag}></{tag}>".format(tag=tag_name))
     self._text = xml.dom.minidom.Text()
     self._text.data = text
     self.tag.appendChild(self._text)
@@ -189,34 +190,36 @@ class Text(Element):
 
 class CodeSnippet(Text):
   def __init__(self, text):
-    super().__init__(text, tag_name="code")
+    super(CodeSnippet, self).__init__(text, tag_name="code")
     self.tag.attributes['style'] = 'white-space: pre;'
 class Paragraph(Text):
   def __init__(self, text):
-    super().__init__(text, tag_name="p")
+    super(Paragraph, self).__init__(text, tag_name="p")
 class CodeBlock(Text):
   def __init__(self, text):
-    super().__init__(text, tag_name="pre")
+    super(CodeBlock, self).__init__(text, tag_name="pre")
 
 class Button(Text):
   def __init__(self, text="Click!", callback=None):
     if not isinstance(text, str):
       raise TypeError(text)
-    super().__init__(text, tag_name="button")
+    super(Button, self).__init__(text, tag_name="button")
     if callback is not None:
       self.add_callback(CLICK, callback)
 
   def set_callback(self, callback):
+    if self.callbacks[CLICK]:
+      self.remove_callback(CLICK, self.callbacks[CLICK][0])
     self.add_callback(CLICK, callback)
 
 class Container(Element):
-  def __init__(self, *children, inline=False):
-    super().__init__(tag_name=("span" if inline else "div"), children=children)
-    self._inline = inline
+  def __init__(self, *children, **kwargs):
+    self._inline = kwargs.pop("inline", False)
+    super(Container, self).__init__(tag_name=("span" if self._inline else "div"), children=children, **kwargs)
 
 class Image(Element):
   def __init__(self, location):
-    super().__init__(tag_name="img")
+    super(Image, self).__init__(tag_name="img")
     raise NotImplementedError()
     self._location = _location
     if callback is not None:

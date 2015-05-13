@@ -1,6 +1,5 @@
 import os
 import threading
-import pprint
 import collections
 from browsergui import GUI, Paragraph, Text, CodeSnippet, CodeBlock, Container, run
 
