@@ -20,7 +20,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.0.1',
+    version='0.0.6',
 
     description='A GUI toolkit targeting browsers',
     long_description=long_description,
@@ -30,10 +30,10 @@ setup(
 
     # Author details
     author='speezepearson',
-    # author_email='haha@no',
+    author_email='speeze.pearson+1097@gmail.com',
 
     # Choose your license
-    license='MIT',
+    # license='MIT',
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
@@ -45,7 +45,7 @@ setup(
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: GUI',
+        'Topic :: Software Development :: User Interfaces',
 
         # Pick your license as you wish (should match "license" above)
         # 'License :: OSI Approved :: MIT License',
@@ -60,7 +60,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='sample setuptools development',
+    keywords='browser gui',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
