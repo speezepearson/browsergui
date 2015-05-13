@@ -1,9 +1,9 @@
 Browser GUI
 ===========
 
-Tools to design GUIs that run in a server, but are viewable in a browser.
+Tools to design GUIs viewable in a browser.
 
-This works by starting a server and pointing your browser at the server. Pretty much all the code execution happens on the server, and the browser is basically a [dumb terminal](http://en.wikipedia.org/wiki/Dumb_terminal), blindly evaluating whatever JavaScript the browser server gives it (which keeps the browser's view up to date with the state of the server's GUI object).
+Everybody has a browser, and a lot of very smart people have designed browsers so that it's easy to make pretty, interactive pages. Wouldn't it be great if we could take advantage of this in Python? Well, now we can. Just plop this folder into your Python path and check out the `examples` directory. (I'll get this onto PyPI in the next week or two, promise.)
 
 
 Should I use this?
@@ -12,7 +12,7 @@ Should I use this?
 ### Executive Summary
 I think this is a great way to make simple little GUIs that don't have any fancy stuff. If you want to build a very basic UI that (a) installs without trouble and (b) has a very shallow learning curve, I recommend this. If you want your UI to be pretty or extra-responsive, I do not recommend this.
 
-Things that are prioritized in this package: portability, simplicity, and feeling-like-you're-writing-Python.
+Things that are prioritized in this package: easy installation, simplicity, and feeling-like-you're-writing-Python.
 
 Things that are not prioritized in this package: performance and fine styling/layout control.
 
@@ -22,7 +22,7 @@ There are good things and bad things about this package.
 
 The good:
 
-- **Portability.** This package is pure Python that relies on only the standard library. This will not change while I have breath in my body.
+- **Easy installation.** This package is pure Python that relies on only the standard library. This will not change while I have breath in my body.
 
   Consequently, it should be usable out of the box for every single person with Python 2.7 or later, without installing Tk or Qt or wxWidgets or PyObjC or any of that stuff.
 
@@ -52,3 +52,8 @@ I am aware of some GUI toolkits for Python that fill a similar niche. You should
   Advantages: pyJS applications are much faster and much easier to deploy (since it doesn't require the user to run Python).
 
   Disadvantages: I had trouble installing it. And like `tkinter`, it's a wrapper, with the same dis/advantages.
+
+How it Works
+------------
+
+Basically, we just start a server and point the browser at the server. All the fancy computation happens on the server: the browser is basically a [dumb terminal](http://en.wikipedia.org/wiki/Dumb_terminal), which (a) notifies the server when the user does something and (b) blindly executes whatever JavaScript the server gives it, thereby keeping the view up-to-date.
