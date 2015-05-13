@@ -49,7 +49,7 @@ def event_stop_listening_command(element, event_type):
       type=json.dumps(event_type),
       id=json.dumps(element.id))
 
-class GUI:
+class GUI(object):
   def __init__(self, *elements):
     self.tag = parse_tag('<body></body>')
     self.tag.attributes['id'] = 'body'
@@ -74,7 +74,6 @@ class GUI:
 
   def handle_event(self, event):
     element = self.elements_by_id[event['id']]
-    print("having {} handle event {}".format(element, event))
     element.handle_event(event)
 
   @property
@@ -91,7 +90,8 @@ class GUI:
 
   def walk_elements(self):
     for element in self.children:
-      yield from element.walk()
+      for descendant in element.walk():
+        yield descendant
 
   def append(self, child):
     if not isinstance(child, Element):

@@ -1,6 +1,13 @@
-import http.client
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from socketserver import ThreadingMixIn
+import sys
+if sys.version_info >= (3, 0):
+  import http.client as status_codes
+  from http.server import HTTPServer, BaseHTTPRequestHandler
+  from socketserver import ThreadingMixIn
+else:
+  import httplib as status_codes
+  from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
+  from SocketServer import ThreadingMixIn
+
 import os
 import cgi
 import webbrowser
@@ -25,6 +32,9 @@ def parse_post_data(headers, rfile):
 
   return {k.decode(): v[0].decode() for k, v in result.items()}
 
+CURRENT_GUI = None
+CURRENT_HTML = None
+CURRENT_COMMAND_STREAM = None
 
 class GUIRequestHandler(BaseHTTPRequestHandler):
 
@@ -45,46 +55,47 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
   def get_static_file(self, relpath):
     path = os.path.join(os.path.dirname(__file__), relpath)
     if os.path.exists(path):
-      self.send_response(http.client.OK)
+      self.send_response(status_codes.OK)
       self.send_no_cache_headers()
       self.end_headers()
       self.write_bytes(open(path).read())
     else:
-      self.send_response(http.client.NOT_FOUND)
+      self.send_response(status_codes.NOT_FOUND)
 
   def get_root(self):
     path = os.path.join(os.path.dirname(__file__), "index.html")
-    self.send_response(http.client.OK)
+    self.send_response(status_codes.OK)
     self.send_no_cache_headers()
     self.end_headers()
-    html, type(self).command_stream = self.gui.html_and_command_stream()
-    self.write_bytes(open(path).read().replace("<!-- GUI_HTML -->", html))
+    global CURRENT_HTML, CURRENT_COMMAND_STREAM
+    CURRENT_HTML, CURRENT_COMMAND_STREAM = CURRENT_GUI.html_and_command_stream()
+    self.write_bytes(open(path).read().replace("<!-- GUI_HTML -->", CURRENT_HTML))
 
   def get_command(self):
     try:
-      command = self.command_stream.get(timeout=5)
+      command = CURRENT_COMMAND_STREAM.get(timeout=5)
     except Empty:
-      self.send_response(http.client.NO_CONTENT)
+      self.send_response(status_codes.NO_CONTENT)
       self.end_headers()
     except Destroyed:
       try:
         # Try to be nice and tell the client we're over.
-        self.send_error(http.client.NOT_FOUND)
+        self.send_error(status_codes.NOT_FOUND)
         self.end_headers()
       except:
         # But if we can't (e.g. because the socket is already closed), don't sweat it.
         pass
     else:
-      self.send_response(http.client.OK)
+      self.send_response(status_codes.OK)
       self.send_no_cache_headers()
       self.end_headers()
       self.write_bytes(command)
 
   def post_event(self):
     data = parse_post_data(self.headers, self.rfile)
-    self.send_response(http.client.OK)
+    self.send_response(status_codes.OK)
     self.end_headers()
-    self.gui.handle_event(data)
+    CURRENT_GUI.handle_event(data)
 
   def send_no_cache_headers(self):
     self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
@@ -101,7 +112,8 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     pass
 
 def serve_forever(gui, server_class=ThreadedHTTPServer, request_handler_class=GUIRequestHandler, port=62345, quiet=False):
-  request_handler_class.gui = gui # Super hack
+  global CURRENT_GUI
+  CURRENT_GUI = gui
   if quiet:
     def noop(*args): pass
     request_handler_class.log_message = noop
@@ -112,7 +124,7 @@ def serve_forever(gui, server_class=ThreadedHTTPServer, request_handler_class=GU
 def run(gui, open_browser=True, port=62345, **kwargs):
   if open_browser:
     url = "http://localhost:{}".format(port)
-    print('Directing browser to', url)
+    print('Directing browser to {}'.format(url))
     webbrowser.open(url)
 
   print('Starting server. Use <Ctrl-C> to stop.')
