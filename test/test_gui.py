@@ -18,13 +18,15 @@ class GUITest(BrowserGUITestCase):
     decoy1 = Button()
     button = Button()
     decoy2 = Button()
-    button.set_callback(self.set_last_event)
+
+    xs = []
+    button.set_callback(lambda: xs.append(1))
 
     gui = GUI(decoy1, button, decoy2)
 
     event = {'type': CLICK, 'id': button.id}
-    with self.assertSetsEvent(event):
-      gui.handle_event(event)
+    gui.handle_event({'type': CLICK, 'id': button.id})
+    self.assertEqual([1], xs)
 
   def test_html(self):
     button = Button()
@@ -57,7 +59,7 @@ class GUITest(BrowserGUITestCase):
     self.assertTrue(stream2.empty())
 
   def test_callbacks_produce_commands(self):
-    button_with_predefined_callback = Button(callback=(lambda event: None))
+    button_with_predefined_callback = Button(callback=(lambda: None))
     button_with_later_callback = Button()
     gui = GUI(button_with_predefined_callback, button_with_later_callback)
     stream = gui.command_stream()
@@ -65,6 +67,6 @@ class GUITest(BrowserGUITestCase):
     self.assertIn(button_with_predefined_callback.id, stream.get(block=False))
     self.assertTrue(stream.empty())
 
-    button_with_later_callback.set_callback(lambda event: None)
+    button_with_later_callback.set_callback(lambda: None)
     self.assertIn(button_with_later_callback.id, stream.get(block=False))
     self.assertTrue(stream.empty())

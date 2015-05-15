@@ -11,7 +11,7 @@ gui.append(Paragraph("""
 """))
 
 for sample in ("gui.append(Text('Hiiii!'))",
-               "gui.append(Button(callback=(lambda event: gui.append(Paragraph('Clicked!')))))"):
+               "gui.append(Button(callback=(lambda: gui.append(Paragraph('Clicked!')))))"):
   gui.append(CodeBlock(sample))
 
 gui.append(Paragraph("The code for this page is:"))
