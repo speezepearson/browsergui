@@ -3,7 +3,9 @@ Browser GUI
 
 Tools to design GUIs viewable in a browser.
 
-Everybody has a browser, and a lot of very smart people have designed browsers so that it's easy to make pretty, interactive pages. Wouldn't it be great if we could take advantage of this in Python? Well, now we can. Just plop this folder into your Python path and check out the `examples` directory. (I'll get this onto PyPI in the next week or two, promise.)
+Everybody has a browser, and a lot of very smart people have designed browsers so that it's easy to make pretty, interactive pages. Wouldn't it be great if we could take advantage of this in Python? Well, now we can!
+
+Install with `pip install browsergui`, or just download and either `python setup.py install` or plop the `browsergui` subfolder anywhere on your Python path.
 
 
 Should I use this?
