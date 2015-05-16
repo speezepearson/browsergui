@@ -35,15 +35,12 @@ class ButtonTest(BrowserGUITestCase):
     self.assertEqual(Button().text, "Click!")
 
   def test_set_callback(self):
-    b = Button(callback=self.set_last_event)
+    xs = []
+    b = Button(callback=(lambda: xs.append(1)))
     b.handle_event({'type': CLICK, 'id': b.id})
-    self.assertEqual(self.last_event, {'type': CLICK, 'id': b.id})
+    self.assertEqual([1], xs)
 
-    self.last_event = None
-    b.set_callback(lambda event: None)
+    xs = []
+    b.set_callback(lambda: xs.append(2))
     b.handle_event({'type': CLICK, 'id': b.id})
-    self.assertIsNone(self.last_event)
-
-    b.set_callback(self.set_last_event)
-    b.handle_event({'type': CLICK, 'id': b.id})
-    self.assertEqual(self.last_event, {'type': CLICK, 'id': b.id})
+    self.assertEqual([2], xs)

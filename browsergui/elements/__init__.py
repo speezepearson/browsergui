@@ -205,12 +205,12 @@ class Button(Text):
       raise TypeError(text)
     super(Button, self).__init__(text, tag_name="button")
     if callback is not None:
-      self.add_callback(CLICK, callback)
+      self.set_callback(callback)
 
   def set_callback(self, callback):
     if self.callbacks[CLICK]:
       self.remove_callback(CLICK, self.callbacks[CLICK][0])
-    self.add_callback(CLICK, callback)
+    self.add_callback(CLICK, (lambda event: callback()))
 
 class Container(Element):
   def __init__(self, *children, **kwargs):
