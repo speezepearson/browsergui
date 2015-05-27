@@ -1,3 +1,5 @@
+"""docstring"""
+
 import sys
 if sys.version_info >= (3, 0):
   import http.client as status_codes
@@ -21,6 +23,7 @@ COMMAND_PATH = "/command"
 EVENT_PATH = "/event"
 
 def parse_post_data(headers, rfile):
+  """docstring"""
   ctype, pdict = cgi.parse_header(headers['content-type'])
   if ctype == 'multipart/form-data':
     result = cgi.parse_multipart(rfile, pdict)
@@ -37,8 +40,10 @@ CURRENT_HTML = None
 CURRENT_COMMAND_STREAM = None
 
 class GUIRequestHandler(BaseHTTPRequestHandler):
+  """docstring"""
 
   def do_GET(self):
+    """docstring"""
     if self.path == ROOT_PATH:
       self.get_root()
     elif self.path == JQUERY_PATH:
@@ -49,10 +54,12 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
       self.get_command()
 
   def do_POST(self):
+    """docstring"""
     if self.path == EVENT_PATH:
       self.post_event()
 
   def get_static_file(self, relpath):
+    """docstring"""
     path = os.path.join(os.path.dirname(__file__), relpath)
     if os.path.exists(path):
       self.send_response(status_codes.OK)
@@ -63,15 +70,18 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
       self.send_response(status_codes.NOT_FOUND)
 
   def get_root(self):
+    """docstring"""
     path = os.path.join(os.path.dirname(__file__), "index.html")
     self.send_response(status_codes.OK)
     self.send_no_cache_headers()
     self.end_headers()
     global CURRENT_HTML, CURRENT_COMMAND_STREAM
-    CURRENT_HTML, CURRENT_COMMAND_STREAM = CURRENT_GUI.html_and_command_stream()
+    CURRENT_HTML = CURRENT_GUI.html
+    CURRENT_COMMAND_STREAM = CURRENT_GUI.command_stream()
     self.write_bytes(open(path).read().replace("<!-- GUI_HTML -->", CURRENT_HTML))
 
   def get_command(self):
+    """docstring"""
     try:
       command = CURRENT_COMMAND_STREAM.get(timeout=5)
     except Empty:
@@ -92,26 +102,30 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
       self.write_bytes(command)
 
   def post_event(self):
+    """docstring"""
     data = parse_post_data(self.headers, self.rfile)
     self.send_response(status_codes.OK)
     self.end_headers()
     CURRENT_GUI.handle_event(data)
 
   def send_no_cache_headers(self):
+    """docstring"""
     self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
     self.send_header('Pragma', 'no-cache')
     self.send_header('Expires', '0')
 
   def write_bytes(self, x):
+    """docstring"""
     if isinstance(x, str):
       x = x.encode()
     self.wfile.write(x)
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
-    """Handle requests in a separate thread."""
-    pass
+  """Handle requests in a separate thread."""
+  pass
 
 def serve_forever(gui, server_class=ThreadedHTTPServer, request_handler_class=GUIRequestHandler, port=62345, quiet=False):
+  """docstring"""
   global CURRENT_GUI
   CURRENT_GUI = gui
   if quiet:
@@ -122,6 +136,7 @@ def serve_forever(gui, server_class=ThreadedHTTPServer, request_handler_class=GU
   server.serve_forever()
 
 def run(gui, open_browser=True, port=62345, **kwargs):
+  """docstring"""
   if open_browser:
     url = "http://localhost:{}".format(port)
     print('Directing browser to {}'.format(url))
@@ -132,4 +147,4 @@ def run(gui, open_browser=True, port=62345, **kwargs):
     serve_forever(gui, port=port, **kwargs)
   except KeyboardInterrupt:
     print("Keyboard interrupt received. Quitting.")
-    gui.destroy()
+    gui.destroy_streams()
