@@ -90,8 +90,7 @@ class GUI(object):
     """docstring"""
     for subelement in element.walk():
       self.elements_by_id[subelement.id] = subelement
-    self.send_command(commands.insert_element(element))
-    self.send_command(commands.callbacks.start_listening(element, recursive=True))
+    self.send_command(commands.insert_element(element, add_callbacks=True))
 
   def unregister_element(self, element):
     """docstring"""
@@ -108,7 +107,7 @@ class GUI(object):
   def _quickstart_command(self):
     """JavaScript to add all necessary interactivity to the GUI's plain HTML.
 
-    :returns: str
+    :rtype: str
     """
     return commands.compound(commands.callbacks.start_listening(e) for e in self.children)
 

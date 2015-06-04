@@ -35,7 +35,7 @@ def parse_tag(html):
 
   :param html: the string to parse
   :type html: str
-  :returns: xml.dom.minidom.Element
+  :rtype: xml.dom.minidom.Element
   """
   try:
     return xml.dom.minidom.parseString(html).documentElement
@@ -130,7 +130,7 @@ class Element(object):
   @property
   def parent(self):
     """
-    :returns: the parent Element, or ``None`` if the Element is orphaned
+    :returns: the parent Element, or None if the Element is orphaned
     """
     return (None if self.parent_weakref is None else self.parent_weakref())
   @parent.setter
@@ -146,7 +146,7 @@ class Element(object):
   def next_sibling(self):
     """The following sibling, or None if there isn't one.
 
-    :returns: ``Element`` or ``None``
+    :rtype: Element or None
     """
     if self.orphaned:
       return None
@@ -176,7 +176,7 @@ class Element(object):
   def orphaned(self):
     """Whether the Element has no parent.
 
-    :returns: bool
+    :rtype: bool
     """
     return (self.parent is None)
 

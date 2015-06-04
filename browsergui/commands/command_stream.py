@@ -7,26 +7,27 @@ else:
 import threading
 
 class Empty(Exception):
-  """Raised by CommandStream.get(block=False)"""
+  """Raised by ``CommandStream.get(block=False)``"""
   pass
 
 class Destroyed(Exception):
-  """Raised when trying to get/put on a destroyed CommandStream"""
+  """Raised when trying to get/put on a destroyed :class:`CommandStream`"""
   pass
 
 class CommandStream(object):
-  """A thread-safe stream of JavaScript commands.
-
-  Commands (strings) may be put into the stream with ``put``;
-  ``get`` will gather up all the commands since the last ``get``,
-  compound them into a single string, and return it. Streams
-  may be ``destroy``ed, causing all pending/future calls to 
-
-  The implementation is a slimmed-down version of the standard library's
-  ``queue`` module, except with the :func:`destroy` method added,
-  allowing waiting threads to be interrupted.
-  """
   def __init__(self):
+    """A thread-safe stream of JavaScript commands.
+
+    Commands (strings) may be put into the stream with ``put``;
+    ``get`` will gather up all the commands since the last ``get``,
+    compound them into a single string, and return it. Streams
+    may be ``destroy``ed, causing all pending/future calls to ``get``
+    or ``put`` to raise ``Destroyed``.
+
+    The implementation is a slimmed-down version of the standard library's
+    ``queue`` module, except with the :func:`destroy` method added,
+    allowing waiting threads to be interrupted.
+    """
     self.commands = []
     self.destroyed = False
     self.mutex = threading.Lock()

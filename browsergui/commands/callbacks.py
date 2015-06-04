@@ -1,9 +1,27 @@
+"""Tools to deal with callbacks in the JS world.
+"""
+
 from . import j, compound, jquery_method_call
 
 def _listening_function_name(element, event_type):
-  return "{}_{}".format(element.id, event_type)
+  """The name for the event-listener JS function for a particular element and event type.
+
+  If a DOM element has a callback associated with it for a certain event type, that callback's name will be given by this function.
+
+  :type element: str
+  :type event_type: str
+  :rtype: str
+  """
+  return "{}_{}_listener".format(element.id, event_type)
 
 def start_listening(element, event_type=None, recursive=False):
+  """Command to set listeners for the given event type on a given element.
+
+  :type element: Element
+  :type event_type: Element or None
+  :param bool recursive: if true, listeners will be set for all the element's descendants too
+  :rtype: str
+  """
   if recursive:
     return compound(start_listening(descendant, event_type=event_type) for descendant in element.walk())
 
@@ -25,14 +43,11 @@ def start_listening(element, event_type=None, recursive=False):
   return compound((definition, attach))
 
 def stop_listening(element, event_type):
+  """Command to remove an event-listener function from an element.
+
+  :type element: Element
+  :type event_type: str
+  :rtype: str
+  """
   fname = _listening_function_name(element, event_type)
   return jquery_method_call(element, "off", j(event_type), fname)
-
-def element_set_callbacks_command(element, recursive=True):
-  if recursive:
-    return compound(element_set_callbacks_command(descendant, recursive=False) for descendant in element.walk())
-  else:
-    return compound(
-      event_start_listening_command(element, event_type)
-      for event_type, callbacks in element.callbacks.items()
-      if callbacks)
