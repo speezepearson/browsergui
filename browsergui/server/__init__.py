@@ -12,7 +12,7 @@ import os
 import cgi
 import webbrowser
 
-from ..command_stream import Empty, Destroyed
+from ..commands import Empty, Destroyed
 
 ROOT_PATH = "/"
 JQUERY_PATH = "/jquery.min.js"
