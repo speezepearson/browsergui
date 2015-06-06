@@ -213,9 +213,9 @@ class Element(object):
 
     :type child: Element
     """
+    child.parent = self
     if self.gui is not None:
       self.gui.register_element(child)
-    child.parent = self
 
   def add_callback(self, event_type, callback):
     """Arranges for ``callback`` to be called whenever the Element handles an event of ``event_type``.
