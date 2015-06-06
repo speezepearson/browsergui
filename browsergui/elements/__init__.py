@@ -270,6 +270,9 @@ class Text(Element):
   @text.setter
   def text(self, value):
     """docstring"""
+    if self.text == value:
+      return
+
     self._text.data = value
     if self.gui is not None:
       self.gui.send_command("$({selector}).text({text})".format(selector=json.dumps("#"+self.id), text=json.dumps(self.text)))
