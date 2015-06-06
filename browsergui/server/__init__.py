@@ -21,6 +21,7 @@ COMMAND_PATH = "/command"
 EVENT_PATH = "/event"
 
 def parse_post_data(headers, rfile):
+  """Parse some simple request data into a dict."""
   ctype, pdict = cgi.parse_header(headers['content-type'])
   if ctype == 'multipart/form-data':
     result = cgi.parse_multipart(rfile, pdict)
@@ -37,6 +38,15 @@ CURRENT_HTML = None
 CURRENT_COMMAND_STREAM = None
 
 class GUIRequestHandler(BaseHTTPRequestHandler):
+  """Handler for GUI-related requests.
+
+  There are four main types of request:
+
+  - client asking for the root page
+  - client asking for a static resource required by the root page
+  - client asking for a lump of JavaScript to execute
+  - client notifying server of some user interaction in the browser
+  """
 
   def do_GET(self):
     if self.path == ROOT_PATH:
@@ -53,6 +63,10 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
       self.post_event()
 
   def get_static_file(self, relpath):
+    """Serve a static file to the client.
+
+    :param str relpath: the path of the resource to serve, relative to this file
+    """
     path = os.path.join(os.path.dirname(__file__), relpath)
     if os.path.exists(path):
       self.send_response(status_codes.OK)
@@ -63,15 +77,23 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
       self.send_response(status_codes.NOT_FOUND)
 
   def get_root(self):
+    """Respond to a request for a new view of the underlying GUI."""
     path = os.path.join(os.path.dirname(__file__), "index.html")
     self.send_response(status_codes.OK)
     self.send_no_cache_headers()
     self.end_headers()
     global CURRENT_HTML, CURRENT_COMMAND_STREAM
-    CURRENT_HTML, CURRENT_COMMAND_STREAM = CURRENT_GUI.html_and_command_stream()
+    CURRENT_HTML = CURRENT_GUI.html
+    CURRENT_COMMAND_STREAM = CURRENT_GUI.command_stream()
     self.write_bytes(open(path).read().replace("<!-- GUI_HTML -->", CURRENT_HTML))
 
   def get_command(self):
+    """Respond to a request for a JavaScript command to execute.
+
+    If no commands become available after a few seconds, returns nothing,
+    just so that if a request is cancelled (e.g. by page-close),
+    the response thread won't linger too long.
+    """
     try:
       command = CURRENT_COMMAND_STREAM.get(timeout=5)
     except Empty:
@@ -92,26 +114,39 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
       self.write_bytes(command)
 
   def post_event(self):
+    """Parse the event from the client and notify the GUI."""
     data = parse_post_data(self.headers, self.rfile)
     self.send_response(status_codes.OK)
     self.end_headers()
     CURRENT_GUI.handle_event(data)
 
   def send_no_cache_headers(self):
+    """Add headers to the response telling the client to not cache anything."""
+    # Source: http://stackoverflow.com/questions/49547/making-sure-a-web-page-is-not-cached-across-all-browsers
     self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
     self.send_header('Pragma', 'no-cache')
     self.send_header('Expires', '0')
 
   def write_bytes(self, x):
+    """Write bytes or a string to the client.
+
+    :type x: str or bytes
+
+    TO DO: rename to stop sounding like the argument should be ``bytes``.
+    """
     if isinstance(x, str):
       x = x.encode()
     self.wfile.write(x)
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
-    """Handle requests in a separate thread."""
-    pass
+  """Server that responds to each request in a separate thread."""
+  pass
 
 def serve_forever(gui, server_class=ThreadedHTTPServer, request_handler_class=GUIRequestHandler, port=62345, quiet=False):
+  """Start a server that will display the given GUI when a browser asks for it.
+
+  :param bool quiet: whether to suppress the server's normal response-handling info messages
+  """
   global CURRENT_GUI
   CURRENT_GUI = gui
   if quiet:
@@ -122,6 +157,11 @@ def serve_forever(gui, server_class=ThreadedHTTPServer, request_handler_class=GU
   server.serve_forever()
 
 def run(gui, open_browser=True, port=62345, **kwargs):
+  """Helper function to simply display a GUI in the browser.
+
+  :param bool open_browser: whether to immediately display the GUI in a new browser window
+  :param kwargs: passed through to :func:`serve_forever`
+  """
   if open_browser:
     url = "http://localhost:{}".format(port)
     print('Directing browser to {}'.format(url))
@@ -132,4 +172,4 @@ def run(gui, open_browser=True, port=62345, **kwargs):
     serve_forever(gui, port=port, **kwargs)
   except KeyboardInterrupt:
     print("Keyboard interrupt received. Quitting.")
-    gui.destroy()
+    gui.destroy_streams()
