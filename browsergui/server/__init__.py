@@ -95,23 +95,19 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
     the response thread won't linger too long.
     """
     try:
-      command = CURRENT_COMMAND_STREAM.get(timeout=5)
-    except Empty:
-      self.send_response(status_codes.NO_CONTENT)
-      self.end_headers()
-    except Destroyed:
       try:
-        # Try to be nice and tell the client we're over.
+        command = CURRENT_COMMAND_STREAM.get()
+      except Destroyed:
         self.send_error(status_codes.NOT_FOUND)
         self.end_headers()
-      except:
-        # But if we can't (e.g. because the socket is already closed), don't sweat it.
-        pass
-    else:
-      self.send_response(status_codes.OK)
-      self.send_no_cache_headers()
-      self.end_headers()
-      self.write_bytes(command)
+      else:
+        self.send_response(status_codes.OK)
+        self.send_no_cache_headers()
+        self.end_headers()
+        self.write_bytes(command)
+    except BrokenPipeError:
+      # The client stopped listening while we were waiting. Oh well!
+      pass
 
   def post_event(self):
     """Parse the event from the client and notify the GUI."""
@@ -140,7 +136,17 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
   """Server that responds to each request in a separate thread."""
-  pass
+  # When the server shuts down, we don't care about being nice to the client.
+  # Therefore, it's okay if the request-handling threads get killed rudely.
+  #   (this will happen often with the long-polling ``command`` request)
+  # So we make them daemons.
+  #
+  # ################# WARNING #################
+  # THIS MUST CHANGE if any thread is to modify state external to the program.
+  # The daemon threads could be halted without warning at any point,
+  #  possibly leaving the external resources in an inconsistent state.
+
+  daemon_threads = True
 
 def serve_forever(gui, server_class=ThreadedHTTPServer, request_handler_class=GUIRequestHandler, port=62345, quiet=False):
   """Start a server that will display the given GUI when a browser asks for it.
