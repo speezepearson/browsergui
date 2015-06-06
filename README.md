@@ -5,7 +5,7 @@ Tools to design GUIs viewable in a browser.
 
 Everybody has a browser, and a lot of very smart people have designed browsers so that it's easy to make pretty, interactive pages. Wouldn't it be great if we could take advantage of this in Python? Well, now we can!
 
-Install with `pip install browsergui`, or just download and either `python setup.py install` or plop the `browsergui` subfolder anywhere on your Python path.
+Install with `pip install browsergui`, or download it and either run `python setup.py install` or plop the `browsergui` subfolder anywhere on your Python path. Once you've done that, you can run various demos with `python -m browsergui.examples`.
 
 
 Should I use this?
@@ -37,7 +37,7 @@ The bad:
 
 - **Performance.** It does not even try to be high-performance. There's an HTTP request every time the user interacts with the GUI, and an HTTP request every time the view needs updating. Performance is off the table. (Each request only takes several milliseconds' round trip for me, running on `localhost`, so it's not *awful*, but it's not awesome.)
 
-- **(Transitive) Hackiness.** At the moment, it is not well-documented or well-tested, and it supports... basically just text and buttons. I will fix that (i.e. documenting, testing, and adding links/images/tables/(more input)) over the next month (i.e. by mid-June, 2015).
+- **(Transitive) Hackiness.** At the moment, it is not well-tested, and it supports... basically just text and buttons. I will fix that (i.e. testing, and adding links/images/tables/(more input)) over the next month (i.e. by mid-June, 2015).
 
 ### Alternatives
 

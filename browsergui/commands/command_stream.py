@@ -7,15 +7,27 @@ else:
 import threading
 
 class Empty(Exception):
-  """Raised by CommandStream.get(block=False)"""
+  """Raised by ``CommandStream.get(block=False)``"""
   pass
 
 class Destroyed(Exception):
-  """Raised when trying to get/put on a destroyed CommandStream"""
+  """Raised when trying to get/put on a destroyed :class:`CommandStream`"""
   pass
 
 class CommandStream(object):
   def __init__(self):
+    """A thread-safe stream of JavaScript commands.
+
+    Commands (strings) may be put into the stream with ``put``;
+    ``get`` will gather up all the commands since the last ``get``,
+    compound them into a single string, and return it. Streams
+    may be ``destroy``ed, causing all pending/future calls to ``get``
+    or ``put`` to raise ``Destroyed``.
+
+    The implementation is a slimmed-down version of the standard library's
+    ``queue`` module, except with the :func:`destroy` method added,
+    allowing waiting threads to be interrupted.
+    """
     self.commands = []
     self.destroyed = False
     self.mutex = threading.Lock()
@@ -25,10 +37,15 @@ class CommandStream(object):
     return not self.commands
 
   def destroy(self):
+    """Causes all pending/future calls to ``get`` or ``put`` to raise ``Destroyed``."""
     with self.mutex:
       self.destroyed = True
 
   def put(self, value):
+    """Enqueue a snippet of JavaScript for the next ``get``.
+
+    Raises ``Destroyed`` if the queue has been destroyed.
+    """
     with self.mutex:
       if self.destroyed:
         raise Destroyed
@@ -36,6 +53,14 @@ class CommandStream(object):
       self.not_empty.notify()
 
   def get(self, block=True, timeout=None):
+    """Return all the commands ``put`` into the stream as a single string.
+
+    ``block`` and ``timeout`` function just like for the standard library's
+    :func:`queue.Queue.get`.
+
+    Raises ``Destroyed`` if the stream has been destroyed, or if it's destroyed
+    while the call is blocking.
+    """
     with self.not_empty:
       if not block:
         if self.empty():

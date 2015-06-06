@@ -25,7 +25,7 @@ class GUITest(BrowserGUITestCase):
     gui = GUI(decoy1, button, decoy2)
 
     event = {'type': CLICK, 'id': button.id}
-    gui.handle_event({'type': CLICK, 'id': button.id})
+    gui.dispatch_event({'type': CLICK, 'id': button.id})
     self.assertEqual([1], xs)
 
   def test_html(self):
