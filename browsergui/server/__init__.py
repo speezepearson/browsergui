@@ -118,7 +118,7 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
     data = parse_post_data(self.headers, self.rfile)
     self.send_response(status_codes.OK)
     self.end_headers()
-    CURRENT_GUI.handle_event(data)
+    CURRENT_GUI.dispatch_event(data)
 
   def send_no_cache_headers(self):
     """Add headers to the response telling the client to not cache anything."""

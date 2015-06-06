@@ -109,7 +109,7 @@ class GUI(object):
 
     :rtype: str
     """
-    return commands.compound(commands.callbacks.start_listening(e) for e in self.children)
+    return commands.compound(commands.callbacks.start_listening(e, recursive=True) for e in self.children)
 
   def note_callback_added(self, element, event_type, callback):
     """docstring"""
