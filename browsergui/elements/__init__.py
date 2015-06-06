@@ -1,5 +1,3 @@
-"""docstring"""
-
 import collections
 import json
 import weakref
@@ -12,7 +10,7 @@ KEYUP = "keyup"
 
 _unique_id_counter = 0
 def unique_id():
-  """Returns a new string every time it's called."""
+  """Returns a new string suitable for an :class:`Element` id every time it's called."""
   global _unique_id_counter
   _unique_id_counter += 1
   return "_element_{}".format(_unique_id_counter)
@@ -43,7 +41,11 @@ def parse_tag(html):
     raise ParseError("invalid html", html)
 
 class Element(object):
-  """docstring"""
+  """A conceptual GUI element, like a button or a table.
+
+  Elements are arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
+  Every element has a unique identifier, accessible by the :func:`id` method.
+  """
   def __init__(self, html=None, tag_name=None, children=()):
     if not ((html is None) ^ (tag_name is None)):
       raise TypeError("Element.__init__ must be given html or tag_name (but not both)")
@@ -86,7 +88,7 @@ class Element(object):
         yield descendant
 
   def append(self, child):
-    """Appends a new child to the list of children.
+    """Add a new child after all existing children.
 
     :raises NotOrphanedError: if `child` already has a parent Element
     :raises TypeError: if `child` is not an Element
@@ -130,7 +132,7 @@ class Element(object):
   @property
   def parent(self):
     """
-    :returns: the parent Element, or None if the Element is orphaned
+    :returns: the element's parent, or None if the Element is orphaned
     """
     return (None if self.parent_weakref is None else self.parent_weakref())
   @parent.setter
@@ -144,9 +146,8 @@ class Element(object):
 
   @property
   def next_sibling(self):
-    """The following sibling, or None if there isn't one.
-
-    :rtype: Element or None
+    """    
+    :returns: the next child of the element's parent, or None if there isn't one.
     """
     if self.orphaned:
       return None
@@ -158,7 +159,7 @@ class Element(object):
 
   @property
   def previous_sibling(self):
-    """Like :func:`next_sibling`, but returns the previous sibling."""
+    """Like :func:`next_sibling`, but returns parent's previous child."""
     if self.orphaned:
       return None
     siblings = self.parent.children
