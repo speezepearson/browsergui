@@ -1,5 +1,5 @@
 import sys
-if sys.version_info >= (3, 0):
+if sys.version_info >= (3, 3):
   from time import monotonic as time
 else:
   from time import time
