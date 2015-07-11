@@ -291,6 +291,20 @@ class CodeBlock(Text):
   def __init__(self, text):
     super(CodeBlock, self).__init__(text, tag_name="pre")
 
+class Link(Text):
+  """A hyperlink to some URL."""
+  def __init__(self, text, url):
+    super(Link, self).__init__(text, tag_name="a")
+    self.tag.attributes['target'] = '_blank'
+    self.url = url
+
+  @property
+  def url(self):
+    return self.tag.attributes['href'].value
+  @url.setter
+  def url(self, value):
+    self.tag.attributes['href'] = value
+
 class Button(Text):
   """A simple button that does something when clicked."""
   def __init__(self, text="Click!", callback=None):
@@ -326,12 +340,3 @@ class Container(Element):
     """
     self._inline = kwargs.pop("inline", False)
     super(Container, self).__init__(tag_name=("span" if self._inline else "div"), children=children, **kwargs)
-
-class Image(Element):
-  """An image. Don't use this, it's half-finished and I don't know why I committed it."""
-  def __init__(self, location):
-    super(Image, self).__init__(tag_name="img")
-    raise NotImplementedError()
-    self._location = _location
-    if callback is not None:
-      self.add_callback(CLICK, callback)

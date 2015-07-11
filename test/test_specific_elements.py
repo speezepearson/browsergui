@@ -1,4 +1,4 @@
-from browsergui import Container, Text, Button
+from browsergui import Container, Text, Button, Link
 from browsergui.elements import Element, CLICK
 
 from . import BrowserGUITestCase
@@ -44,3 +44,9 @@ class ButtonTest(BrowserGUITestCase):
     b.set_callback(lambda: xs.append(2))
     b.handle_event({'type': CLICK, 'id': b.id})
     self.assertEqual([2], xs)
+
+class LinkTest(BrowserGUITestCase):
+  def test_construction(self):
+    link = Link('I am a link!', 'http://google.com')
+    self.assertEqual('I am a link!', link.text)
+    self.assertEqual('http://google.com', link.url)

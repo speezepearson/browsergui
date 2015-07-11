@@ -8,6 +8,6 @@ The central concepts here are:
 
 from . import server, gui, elements, utilities
 from .gui import GUI
-from .elements import Element, Container, Button, Text, Paragraph, CodeSnippet, CodeBlock
+from .elements import Element, Container, Button, Text, Paragraph, CodeSnippet, CodeBlock, Link
 from .server import run
 from .utilities import RepeatingTimer, call_in_background
