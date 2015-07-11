@@ -16,6 +16,9 @@ class ContainerTest(BrowserGUITestCase):
     with self.assertRaises(TypeError):
       Container(0)
 
+  def test_tag(self):
+    self.assertHTMLLike('<div />', Container())
+
 class TextTest(BrowserGUITestCase):
   def test_construction(self):
     text = Text("blah")
@@ -23,6 +26,9 @@ class TextTest(BrowserGUITestCase):
     
     with self.assertRaises(TypeError):
       Text(0)
+
+  def test_tag(self):
+    self.assertHTMLLike('<span>Hi</span>', Text('Hi'))
 
 class ButtonTest(BrowserGUITestCase):
   def test_construction(self):
@@ -45,8 +51,14 @@ class ButtonTest(BrowserGUITestCase):
     b.handle_event({'type': CLICK, 'id': b.id})
     self.assertEqual([2], xs)
 
+  def test_tag(self):
+    self.assertHTMLLike('<button>Hi</button>', Button('Hi'))
+
 class LinkTest(BrowserGUITestCase):
   def test_construction(self):
     link = Link('I am a link!', 'http://google.com')
     self.assertEqual('I am a link!', link.text)
     self.assertEqual('http://google.com', link.url)
+
+  def test_tag(self):
+    self.assertHTMLLike('<a target="_blank" href="http://google.com">Google</a>', Link('Google', 'http://google.com'))
