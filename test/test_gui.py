@@ -1,5 +1,4 @@
-from browsergui import GUI, Text, Button
-from browsergui.elements import CLICK
+from browsergui import GUI, Text, Button, CLICK
 
 from . import BrowserGUITestCase
 

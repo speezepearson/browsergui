@@ -1,5 +1,5 @@
-from browsergui import Element
-from browsergui.elements import ParseError, CLICK, KEYDOWN, KEYUP, NoSuchCallbackError
+from browsergui import Element, CLICK, KEYDOWN, KEYUP
+from browsergui.elements import ParseError, NoSuchCallbackError
 
 from . import BrowserGUITestCase
 
