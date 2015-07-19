@@ -4,10 +4,6 @@ import weakref
 import xml.dom.minidom
 import xml.parsers.expat
 
-CLICK = "click"
-KEYDOWN = "keydown"
-KEYUP = "keyup"
-
 _unique_id_counter = 0
 def unique_id():
   """Returns a new string suitable for an :class:`Element` id every time it's called."""
@@ -15,9 +11,6 @@ def unique_id():
   _unique_id_counter += 1
   return "_element_{}".format(_unique_id_counter)
 
-class ParseError(Exception):
-  """Raised when given HTML for an Element can't be parsed."""
-  pass
 class OrphanedError(Exception):
   """Raised when trying to do something nonsensical to an Element with no parent."""
   pass
@@ -28,17 +21,9 @@ class NoSuchCallbackError(Exception):
   """Raised when trying to remove a nonexistent callback from an Element."""
   pass
 
-def parse_tag(html):
-  """Parses HTML into an XML element tree.
-
-  :param html: the string to parse
-  :type html: str
-  :rtype: xml.dom.minidom.Element
-  """
-  try:
-    return xml.dom.minidom.parseString(html).documentElement
-  except xml.parsers.expat.ExpatError:
-    raise ParseError("invalid html", html)
+def new_tag(tag_name):
+  html = '<{t}></{t}>'.format(t=tag_name)
+  return xml.dom.minidom.parseString(html).documentElement
 
 class Element(object):
   """A conceptual GUI element, like a button or a table.
@@ -46,14 +31,8 @@ class Element(object):
   Elements are arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
   Every element has a unique identifier, accessible by the :func:`id` method.
   """
-  def __init__(self, html=None, tag_name=None, children=()):
-    if not ((html is None) ^ (tag_name is None)):
-      raise TypeError("Element.__init__ must be given html or tag_name (but not both)")
-
-    if html is None:
-      html = "<{t}></{t}>".format(t=tag_name)
-
-    self.tag = parse_tag(html)
+  def __init__(self, tag_name, children=()):
+    self.tag = new_tag(tag_name)
     self.tag.attributes['id'] = unique_id()
 
     self.parent_weakref = None
@@ -253,69 +232,6 @@ class Element(object):
     # Probably requires a styling system.
 
 
-class Text(Element):
-  """Some simple text."""
-  def __init__(self, text, tag_name="span"):
-    if not isinstance(text, str):
-      raise TypeError(text)
-    super(Text, self).__init__(html="<{tag}></{tag}>".format(tag=tag_name))
-    self._text = xml.dom.minidom.Text()
-    self._text.data = text
-    self.tag.appendChild(self._text)
-
-  @property
-  def text(self):
-    """docstring"""
-    return self._text.data
-  @text.setter
-  def text(self, value):
-    """docstring"""
-    if self.text == value:
-      return
-
-    self._text.data = value
-    if self.gui is not None:
-      self.gui.send_command("$({selector}).text({text})".format(selector=json.dumps("#"+self.id), text=json.dumps(self.text)))
-
-class CodeSnippet(Text):
-  """Inline text representing computer code."""
-  def __init__(self, text):
-    super(CodeSnippet, self).__init__(text, tag_name="code")
-    self.tag.attributes['style'] = 'white-space: pre;'
-class Paragraph(Text):
-  """A block of plain text."""
-  def __init__(self, text):
-    super(Paragraph, self).__init__(text, tag_name="p")
-class CodeBlock(Text):
-  """A block of computer code."""
-  def __init__(self, text):
-    super(CodeBlock, self).__init__(text, tag_name="pre")
-
-class Button(Text):
-  """A simple button that does something when clicked."""
-  def __init__(self, text="Click!", callback=None):
-    """
-    :param text: the label of the button
-    :type text: str
-    :param callback: the function to be called
-    :type callback: function of zero arguments
-    """
-    if not isinstance(text, str):
-      raise TypeError(text)
-    super(Button, self).__init__(text, tag_name="button")
-    if callback is not None:
-      self.set_callback(callback)
-
-  def set_callback(self, callback):
-    """Sets the function to be called whenever the button is clicked.
-
-    :param callback: the function to be called
-    :type callback: function of zero arguments
-    """
-    if self.callbacks[CLICK]:
-      self.remove_callback(CLICK, self.callbacks[CLICK][0])
-    self.add_callback(CLICK, (lambda event: callback()))
-
 class Container(Element):
   """Contains and groups other elements."""
   def __init__(self, *children, **kwargs):
@@ -327,11 +243,6 @@ class Container(Element):
     self._inline = kwargs.pop("inline", False)
     super(Container, self).__init__(tag_name=("span" if self._inline else "div"), children=children, **kwargs)
 
-class Image(Element):
-  """An image. Don't use this, it's half-finished and I don't know why I committed it."""
-  def __init__(self, location):
-    super(Image, self).__init__(tag_name="img")
-    raise NotImplementedError()
-    self._location = _location
-    if callback is not None:
-      self.add_callback(CLICK, callback)
+from .text import Text, Paragraph, CodeSnippet, CodeBlock
+from .button import Button
+from .link import Link

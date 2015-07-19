@@ -14,7 +14,8 @@ for sample in ("gui.append(Text('Hiiii!'))",
   gui.append(CodeBlock(sample))
 
 gui.append(Paragraph("The code for this page is:"))
-gui.append(CodeBlock(open(__file__).read()))
+gui.append(CodeBlock(open(__file__[:-1] if __file__.endswith('.pyc') else __file__).read()))
+# Python 2's __file__ points to .pyc, not .py
 
 def run_repl():
   interpreter = code.InteractiveConsole(locals={'_gui': gui})
@@ -32,7 +33,7 @@ def run_repl():
     """)
 
 def main():
-  call_in_background(run, gui, daemon=True, quiet=True)
+  call_in_background(run, args=(gui), daemon=True, quiet=True)
   run_repl()
   gui.destroy_streams()
 
