@@ -6,7 +6,7 @@ class Text(Element):
   def __init__(self, text, tag_name="span"):
     if not isinstance(text, str):
       raise TypeError(text)
-    super(Text, self).__init__(html="<{tag}></{tag}>".format(tag=tag_name))
+    super(Text, self).__init__(tag_name=tag_name)
     self._text = xml.dom.minidom.Text()
     self._text.data = text
     self.tag.appendChild(self._text)

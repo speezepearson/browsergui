@@ -1,5 +1,5 @@
 from browsergui import Element, CLICK, KEYDOWN, KEYUP
-from browsergui.elements import ParseError, NoSuchCallbackError
+from browsergui.elements import NoSuchCallbackError
 
 from . import BrowserGUITestCase
 
@@ -7,28 +7,13 @@ class ElementTest(BrowserGUITestCase):
 
   def test_construction(self):
 
-    Element(html="<a>b</a>")
     Element(tag_name="a")
     Element(tag_name="a", children=[Element(tag_name="b")])
-
-    with self.assertRaises(TypeError):
-      Element()
       
     with self.assertRaises(TypeError):
       Element(tag_name="a", children=0)
     with self.assertRaises(TypeError):
       Element(tag_name="a", children=[0])
-
-    with self.assertRaises(ParseError):
-      Element(html="raw string")
-    with self.assertRaises(ParseError):
-      Element(html="<malformed")
-    with self.assertRaises(ParseError):
-      Element(html="<malformed>")
-    with self.assertRaises(ParseError):
-      Element(html="<mal></formed>")
-    with self.assertRaises(ParseError):
-      Element(html="<two /><tags />")
 
   def test_hash_static(self):
     a = Element(tag_name="a")

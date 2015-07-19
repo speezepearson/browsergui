@@ -11,9 +11,6 @@ def unique_id():
   _unique_id_counter += 1
   return "_element_{}".format(_unique_id_counter)
 
-class ParseError(Exception):
-  """Raised when given HTML for an Element can't be parsed."""
-  pass
 class OrphanedError(Exception):
   """Raised when trying to do something nonsensical to an Element with no parent."""
   pass
@@ -24,17 +21,9 @@ class NoSuchCallbackError(Exception):
   """Raised when trying to remove a nonexistent callback from an Element."""
   pass
 
-def parse_tag(html):
-  """Parses HTML into an XML element tree.
-
-  :param html: the string to parse
-  :type html: str
-  :rtype: xml.dom.minidom.Element
-  """
-  try:
-    return xml.dom.minidom.parseString(html).documentElement
-  except xml.parsers.expat.ExpatError:
-    raise ParseError("invalid html", html)
+def new_tag(tag_name):
+  html = '<{t}></{t}>'.format(t=tag_name)
+  return xml.dom.minidom.parseString(html).documentElement
 
 class Element(object):
   """A conceptual GUI element, like a button or a table.
@@ -42,14 +31,8 @@ class Element(object):
   Elements are arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
   Every element has a unique identifier, accessible by the :func:`id` method.
   """
-  def __init__(self, html=None, tag_name=None, children=()):
-    if not ((html is None) ^ (tag_name is None)):
-      raise TypeError("Element.__init__ must be given html or tag_name (but not both)")
-
-    if html is None:
-      html = "<{t}></{t}>".format(t=tag_name)
-
-    self.tag = parse_tag(html)
+  def __init__(self, tag_name, children=()):
+    self.tag = new_tag(tag_name)
     self.tag.attributes['id'] = unique_id()
 
     self.parent_weakref = None

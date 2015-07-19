@@ -1,5 +1,5 @@
 import json
-from .elements import Element, parse_tag
+from .elements import Element, new_tag
 from . import commands
 
 class GUI(object):
@@ -9,7 +9,7 @@ class GUI(object):
   """
 
   def __init__(self, *elements):
-    self.tag = parse_tag('<body></body>')
+    self.tag = new_tag('body')
     self.tag.attributes['id'] = 'body'
     self.children = []
     self.command_streams = set()
