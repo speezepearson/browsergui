@@ -32,7 +32,7 @@ def run_repl():
     """)
 
 def main():
-  call_in_background(run, gui, daemon=True, quiet=True)
+  call_in_background(run, args=(gui), daemon=True, quiet=True)
   run_repl()
   gui.destroy_streams()
 

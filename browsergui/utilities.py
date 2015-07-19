@@ -2,7 +2,7 @@ import time
 import threading
 
 class RepeatingTimer(object):
-  def __init__(self, interval, callback, *timer_args, daemon=False, **timer_kwargs):
+  def __init__(self, interval, callback, timer_args=(), timer_kwargs={}, daemon=False):
     self.interval = interval
     self.callback = callback
     self.daemon = daemon
@@ -37,7 +37,7 @@ class RepeatingTimer(object):
         self._timer = self._make_timer()
         self._timer.start()
 
-def call_in_background(callback, *args, daemon=False, **kwargs):
+def call_in_background(callback, args=(), kwargs={}, daemon=False):
   t = threading.Thread(target=callback, args=args, kwargs=kwargs)
   t.daemon = daemon
   t.start()
