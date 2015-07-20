@@ -25,6 +25,9 @@ def new_tag(tag_name):
   html = '<{t}></{t}>'.format(t=tag_name)
   return xml.dom.minidom.parseString(html).documentElement
 
+def styling_to_css(styling):
+  return ' '.join('{}: {};'.format(key, value) for key, value in styling.items())
+
 class Element(object):
   """A conceptual GUI element, like a button or a table.
 
@@ -34,6 +37,7 @@ class Element(object):
   def __init__(self, tag_name, children=()):
     self.tag = new_tag(tag_name)
     self.tag.attributes['id'] = unique_id()
+    self._styling = {}
 
     self.parent_weakref = None
     self.children = []
@@ -227,9 +231,29 @@ class Element(object):
 
   def toggle_visibility(self):
     """Toggles whether the element can be seen or not."""
-    self.gui.send_command("$({selector}).toggle()".format(selector=json.dumps("#"+self.id)))
-    # TO DO: that only does JavaScript stuff - figure out how to make this more complete.
-    # Probably requires a styling system.
+    if self._styling.get('display') == 'none':
+      self.delete_styles('display')
+    else:
+      self.set_styles(display='none')
+
+  def set_styles(self, **rules):
+    self._styling.update(**rules)
+    self._update_styles()
+
+  def get_style(self, property):
+    return self._styling.get(property)
+
+  def delete_styles(self, *properties):
+    for property in properties:
+      self._styling.pop(property, None)
+    self._update_styles()
+
+  def _update_styles(self):
+    self.tag.attributes['style'] = styling_to_css(self._styling)
+    if self.gui is not None:
+      self.gui.send_command("$({selector}).attr('style', {css})".format(
+        selector=json.dumps("#"+self.id),
+        css=json.dumps(self.tag.attributes['style'].value)))
 
 
 class Container(Element):
@@ -246,3 +270,4 @@ class Container(Element):
 from .text import Text, Paragraph, CodeSnippet, CodeBlock
 from .button import Button
 from .link import Link
+from .viewport import Viewport

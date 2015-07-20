@@ -3,6 +3,12 @@ import unittest
 import xml.dom.minidom
 import contextlib
 
+def delete_ids(tag):
+  if tag.attributes is not None and 'id' in tag.attributes.keys():
+    del tag.attributes['id']
+  for child in tag.childNodes:
+    delete_ids(child)
+
 class BrowserGUITestCase(unittest.TestCase):
   def setUp(self):
     self.last_event = None
@@ -22,12 +28,12 @@ class BrowserGUITestCase(unittest.TestCase):
   def assertHTMLLike(self, expected_string, element, ignore_id=True):
     """Asserts the HTML for an element is equivalent to the given HTML.
 
-    If `ignore_id` is given, ignores the given element's `id` attribute,
-    since it's presumably automatically generated and irrelevant.
+    If `ignore_id` is given, ignores all given elements' `id` attribute,
+    since they're presumably automatically generated and irrelevant.
     """
     expected_tag = xml.dom.minidom.parseString(expected_string).documentElement
     tag = xml.dom.minidom.parseString(element.html).documentElement
     if ignore_id:
-      del tag.attributes['id']
+      delete_ids(tag)
 
     self.assertEqual(tag.toxml(), expected_tag.toxml())
