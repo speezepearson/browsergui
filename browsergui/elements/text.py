@@ -29,7 +29,7 @@ class CodeSnippet(Text):
   """Inline text representing computer code."""
   def __init__(self, text):
     super(CodeSnippet, self).__init__(text, tag_name="code")
-    self.tag.attributes['style'] = 'white-space: pre;'
+    self.set_styles(**{'white-space': 'pre'})
 class Paragraph(Text):
   """A block of plain text."""
   def __init__(self, text):
