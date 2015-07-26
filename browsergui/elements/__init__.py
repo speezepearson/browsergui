@@ -271,3 +271,4 @@ from .text import Text, Paragraph, CodeSnippet, CodeBlock
 from .button import Button
 from .link import Link
 from .viewport import Viewport
+from .image import Image
