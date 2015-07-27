@@ -11,27 +11,20 @@ else:
 import os
 import cgi
 import webbrowser
+import json
 
 from ..commands import Empty, Destroyed
 
 ROOT_PATH = "/"
-JQUERY_PATH = "/jquery.min.js"
 PUPPET_PATH = "/puppet.js"
 COMMAND_PATH = "/command"
 EVENT_PATH = "/event"
 
-def parse_post_data(headers, rfile):
-  """Parse some simple request data into a dict."""
-  ctype, pdict = cgi.parse_header(headers['content-type'])
-  if ctype == 'multipart/form-data':
-    result = cgi.parse_multipart(rfile, pdict)
-  elif ctype == 'application/x-www-form-urlencoded':
-    length = int(headers['content-length'])
-    result = cgi.parse_qs(rfile.read(length))
-  else:
-    result = {}
-
-  return {k.decode(): v[0].decode() for k, v in result.items()}
+def read_json(request_headers, request_file):
+  n_bytes = int(request_headers['content-length'])
+  content_bytes = request_file.read(n_bytes)
+  content_string = content_bytes.decode('ascii')
+  return json.loads(content_string)
 
 CURRENT_GUI = None
 CURRENT_HTML = None
@@ -51,8 +44,6 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
   def do_GET(self):
     if self.path == ROOT_PATH:
       self.get_root()
-    elif self.path == JQUERY_PATH:
-      self.get_static_file("jquery.min.js")
     elif self.path == PUPPET_PATH:
       self.get_static_file("puppet.js")
     elif self.path == COMMAND_PATH:
@@ -111,7 +102,7 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
 
   def post_event(self):
     """Parse the event from the client and notify the GUI."""
-    data = parse_post_data(self.headers, self.rfile)
+    data = read_json(self.headers, self.rfile)
     self.send_response(status_codes.OK)
     self.end_headers()
     CURRENT_GUI.dispatch_event(data)
