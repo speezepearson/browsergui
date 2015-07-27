@@ -24,7 +24,4 @@ def insert_element(element, add_callbacks=True):
 def remove_element(element):
   """Command to delete an element and all its descendants.
   """
-  html = j(element.html)
-  if element.previous_sibling is None:
-    return jquery_method_call(element.parent, "prepend", html)
-  return jquery_method_call(element.previous_sibling, "after", html)
+  return "{e}.parentNode.removeChild({e})".format(e=get(element))
