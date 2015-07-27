@@ -1,5 +1,4 @@
 import code
-import threading
 import browsergui
 from browsergui import GUI, Paragraph, CodeBlock, Paragraph, run, call_in_background
 
@@ -33,7 +32,7 @@ def run_repl():
     """)
 
 def main():
-  call_in_background(run, args=(gui), daemon=True, quiet=True)
+  call_in_background(run, args=(gui,), kwargs=dict(quiet=True), daemon=True)
   run_repl()
   gui.destroy_streams()
 
