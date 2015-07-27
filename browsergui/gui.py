@@ -52,11 +52,6 @@ class GUI(object):
     return self.tag.attributes['id'].value
 
   @property
-  def html(self):
-    """To be cleaned up, per issue #23."""
-    return self.tag.toprettyxml()
-
-  @property
   def gui(self):
     """To be cleaned up, per issue #23."""
     return self
@@ -109,7 +104,7 @@ class GUI(object):
 
     :rtype: str
     """
-    return commands.compound(commands.callbacks.start_listening(e, recursive=True) for e in self.children)
+    return commands.compound(commands.insert_element(e) for e in self.children)
 
   def note_callback_added(self, element, event_type, callback):
     """docstring"""

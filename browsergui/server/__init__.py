@@ -69,14 +69,9 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
 
   def get_root(self):
     """Respond to a request for a new view of the underlying GUI."""
-    path = os.path.join(os.path.dirname(__file__), "index.html")
-    self.send_response(status_codes.OK)
-    self.send_no_cache_headers()
-    self.end_headers()
-    global CURRENT_HTML, CURRENT_COMMAND_STREAM
-    CURRENT_HTML = CURRENT_GUI.html
+    global CURRENT_COMMAND_STREAM
     CURRENT_COMMAND_STREAM = CURRENT_GUI.command_stream()
-    self.write_bytes(open(path).read().replace("<!-- GUI_HTML -->", CURRENT_HTML))
+    self.get_static_file('index.html')
 
   def get_command(self):
     """Respond to a request for a JavaScript command to execute.
