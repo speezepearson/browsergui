@@ -1,7 +1,8 @@
 """Tools to modify the structure of the DOM.
 """
 
-from . import j, compound, jquery_method_call, callbacks
+from . import j, compound, get, callbacks
+from ..elements import Text
 
 def insert_element(element, add_callbacks=True):
   """Command to add a new element to the DOM.
@@ -10,16 +11,31 @@ def insert_element(element, add_callbacks=True):
   :param bool add_callbacks: (default true) whether to include commands to attach callbacks to the created element and all its descendants
   :rtype: str
   """
-  html = j(element.html)
-  if element.previous_sibling is None:
-    result = jquery_method_call(element.parent, "prepend", html)
-  else:
-    result = jquery_method_call(element.previous_sibling, "after", html)
+  lines = []
+  for descendant in element.walk():
+    name = descendant.id
+    lines.append('{name} = document.createElement({tag_name})'.format(name=name, tag_name=j(descendant.tag.tagName)))
+    for attribute in descendant.tag.attributes.keys():
+      lines.append('{name}.setAttribute({k}, {v})'.format(
+        name=name,
+        k=j(attribute),
+        v=j(descendant.tag.getAttribute(attribute))))
 
-  if add_callbacks:
-    result = compound((result, callbacks.start_listening(element, recursive=True)))
+    if descendant is element:
+      next = 'null' if element.next_sibling is None else get(element.next_sibling)
+      lines.append('{parent}.insertBefore({name}, {next})'.format(
+        parent=get(element.parent),
+        name=name, next=next))
+    else:
+      lines.append('{parent}.appendChild({name})'.format(parent=get(descendant.parent), name=name))
 
-  return result
+    if add_callbacks:
+      lines.append(callbacks.start_listening(descendant, recursive=False))
+
+    if isinstance(descendant, Text):
+      lines.append('{name}.innerText = {text}'.format(name=name, text=j(descendant.text)))
+
+  return compound(lines)
 
 def remove_element(element):
   """Command to delete an element and all its descendants.
