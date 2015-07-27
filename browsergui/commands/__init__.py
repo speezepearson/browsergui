@@ -14,33 +14,6 @@ def compound(commands):
   """
   return "; ".join(commands)
 
-def selector(element):
-  """Returns a jQuery selector for the DOM element associated with an :class:`Element`.
-
-  :rtype: str
-  """
-  return "#"+element.id
-
-def jquery_equivalent(element):
-  """Command to get the jQuery DOM element corresponding to an :class:`Element`.
-
-  :rtype: str
-  """
-  return "$({})".format(j(selector(element)))
-
-def jquery_method_call(element, method_name, *arg_strings):
-  """Command to call a method on an :class:`Element`'s jQuery equivalent.
-
-  :param Element element: the Element whose jQuery equivalent to call the method on
-  :param str method_name: name of the method to call
-  :param arg_strings: JS expressions (strings) to pass to the method
-  :rtype: str
-  """
-  return "{jq}.{method_name}({args_string})".format(
-    jq=jquery_equivalent(element),
-    method_name=method_name,
-    args_string=", ".join(arg_strings))
-
 def get(element):
   return "document.getElementById({})".format(j(element.id))
 
