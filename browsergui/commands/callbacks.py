@@ -1,7 +1,7 @@
 """Tools to deal with callbacks in the JS world.
 """
 
-from . import j, compound, jquery_method_call
+from . import j, compound, get
 
 def _listening_function_name(element, event_type):
   """The name for the event-listener JS function for a particular element and event type.
@@ -39,7 +39,7 @@ def start_listening(element, event_type=None, recursive=False):
       fname=fname,
       type=j(event_type),
       id=j(element.id))
-  attach = jquery_method_call(element, "on", j(event_type), fname)
+  attach = "{e}.addEventListener({type}, {fname})".format(e=get(element), type=j(event_type), fname=fname)
   return compound((definition, attach))
 
 def stop_listening(element, event_type):
@@ -50,4 +50,4 @@ def stop_listening(element, event_type):
   :rtype: str
   """
   fname = _listening_function_name(element, event_type)
-  return jquery_method_call(element, "off", j(event_type), fname)
+  return "{e}.removeEventListener({type}, {fname})".format(e=get(element), type=j(event_type), fname=fname)

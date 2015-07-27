@@ -41,6 +41,9 @@ def jquery_method_call(element, method_name, *arg_strings):
     method_name=method_name,
     args_string=", ".join(arg_strings))
 
+def get(element):
+  return "document.getElementById({})".format(j(element.id))
+
 from . import dom_modification
 from .dom_modification import *
 
