@@ -23,7 +23,9 @@ class Text(Element):
 
     self._text.data = value
     if self.gui is not None:
-      self.gui.send_command("$({selector}).text({text})".format(selector=json.dumps("#"+self.id), text=json.dumps(self.text)))
+      self.gui.send_command("document.getElementById({id}).data = {text}".format(
+        id=json.dumps(self.id),
+        text=json.dumps(value)))
 
 class CodeSnippet(Text):
   """Inline text representing computer code."""

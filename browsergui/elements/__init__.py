@@ -249,11 +249,12 @@ class Element(object):
     self._update_styles()
 
   def _update_styles(self):
-    self.tag.attributes['style'] = styling_to_css(self._styling)
+    attribute_value = styling_to_css(self._styling)
+    self.tag.setAttribute('style', attribute_value)
     if self.gui is not None:
-      self.gui.send_command("$({selector}).attr('style', {css})".format(
-        selector=json.dumps("#"+self.id),
-        css=json.dumps(self.tag.attributes['style'].value)))
+      self.gui.send_command("document.getElementById({id}).setAttribute('style', {css})".format(
+        id=json.dumps(self.id),
+        css=json.dumps(attribute_value)))
 
 
 class Container(Element):
