@@ -27,15 +27,6 @@ class GUITest(BrowserGUITestCase):
     gui.dispatch_event({'type': CLICK, 'id': button.id})
     self.assertEqual([1], xs)
 
-  def test_html(self):
-    button = Button()
-    text = Text("hi lol")
-    gui = GUI(button, text)
-    html = gui.html
-
-    self.assertHTMLIn(button.html, html)
-    self.assertHTMLIn(text.html, html)
-
   def test_command_stream(self):
     gui = GUI()
     stream = gui.command_stream()
