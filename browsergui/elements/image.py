@@ -22,7 +22,7 @@ class Image(Element):
 
   @property
   def data(self):
-    src = self.tag.attributes['src'].value
+    src = self.tag.getAttribute('src')
     base64_data = re.search('base64,(.*)', src).group(1)
     return base64.b64decode(base64_data)
 
@@ -30,4 +30,4 @@ class Image(Element):
     """Reads image contents from disk, in case they've changed."""
     with open(self.filename, 'rb') as f:
       data = f.read()
-    self.tag.attributes['src'] = 'data:image/{format};base64,{data}'.format(format=self.format, data=base64.b64encode(data).decode('ascii'))
+    self.tag.setAttribute('src', 'data:image/{format};base64,{data}'.format(format=self.format, data=base64.b64encode(data).decode('ascii')))

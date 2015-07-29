@@ -10,7 +10,7 @@ class GUI(object):
 
   def __init__(self, *elements):
     self.tag = new_tag('body')
-    self.tag.attributes['id'] = 'body'
+    self.tag.setAttribute('id', 'body')
     self.children = []
     self.command_streams = set()
 
@@ -49,7 +49,7 @@ class GUI(object):
   @property
   def id(self):
     """To be cleaned up, per issue #23."""
-    return self.tag.attributes['id'].value
+    return self.tag.getAttribute('id')
 
   @property
   def gui(self):

@@ -36,7 +36,7 @@ class Element(object):
   """
   def __init__(self, tag_name, children=()):
     self.tag = new_tag(tag_name)
-    self.tag.attributes['id'] = unique_id()
+    self.tag.setAttribute('id', unique_id())
     self._styling = {}
 
     self.parent_weakref = None
@@ -61,7 +61,7 @@ class Element(object):
 
   @property
   def id(self):
-    return self.tag.attributes['id'].value
+    return self.tag.getAttribute('id')
 
   def walk(self):
     """Iterates over the Element and all the Elements below it in the tree."""

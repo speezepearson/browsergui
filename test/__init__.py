@@ -5,7 +5,7 @@ import contextlib
 
 def delete_ids(tag):
   if tag.attributes is not None and 'id' in tag.attributes.keys():
-    del tag.attributes['id']
+    tag.removeAttribute('id')
   for child in tag.childNodes:
     delete_ids(child)
 
