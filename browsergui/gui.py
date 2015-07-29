@@ -93,15 +93,16 @@ class GUI(object):
       del self.elements_by_id[subelement.id]
     self.send_command(commands.remove_element(element))
 
-  def command_stream(self):
+  def command_stream(self, initialize=True):
     """Builds a :class:`CommandStream` that will be kept up to date as the GUI changes."""
     result = commands.CommandStream()
-    result.put(self._quickstart_command())
+    if initialize:
+      result.put(self._initialization_command())
     self.command_streams.add(result)
     return result
 
-  def _quickstart_command(self):
-    """JavaScript to add all necessary interactivity to the GUI's plain HTML.
+  def _initialization_command(self):
+    """JS command to immediately bring a stream up to date.
 
     :rtype: str
     """

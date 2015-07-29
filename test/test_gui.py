@@ -29,18 +29,13 @@ class GUITest(BrowserGUITestCase):
 
   def test_command_stream(self):
     gui = GUI()
-    stream = gui.command_stream()
-
-    while not stream.empty():
-      stream.get(block=False)
+    stream = gui.command_stream(initialize=False)
 
     gui.send_command("foo")
     self.assertEqual("foo", stream.get(block=False))
     self.assertTrue(stream.empty())
 
-    stream2 = gui.command_stream()
-    while not stream2.empty():
-      stream2.get(block=False)
+    stream2 = gui.command_stream(initialize=False)
 
     gui.send_command("bar")
     self.assertEqual("bar", stream.get(block=False))
