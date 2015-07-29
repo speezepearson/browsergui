@@ -249,12 +249,23 @@ class Element(object):
     self._update_styles()
 
   def _update_styles(self):
-    attribute_value = styling_to_css(self._styling)
-    self.tag.setAttribute('style', attribute_value)
+    self._call_dom_method(name='setAttribute', args=['style', styling_to_css(self._styling)])
+
+  def _call_dom_method(self, name, args):
+    getattr(self.tag, name)(*args)
     if self.gui is not None:
-      self.gui.send_command("document.getElementById({id}).setAttribute('style', {css})".format(
+      self.gui.send_command("document.getElementById({id}).{name}({args})".format(
         id=json.dumps(self.id),
-        css=json.dumps(attribute_value)))
+        name=name,
+        args=', '.join(arg_to_js(x) for x in args)))
+
+def arg_to_js(x):
+  if isinstance(x, Element):
+    return "document.getElementById({})".format(json.dumps(x.id))
+  elif isinstance(x, xml.dom.minidom.Element):
+    return "document.getElementById({})".format(json.dumps(x.getAttribute('id')))
+  else:
+    return json.dumps(x)
 
 
 class Container(Element):
