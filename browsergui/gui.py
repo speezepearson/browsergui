@@ -91,6 +91,7 @@ class GUI(object):
     """docstring"""
     for subelement in element.walk():
       del self.elements_by_id[subelement.id]
+    self.send_command(commands.remove_element(element))
 
   def command_stream(self):
     """Builds a :class:`CommandStream` that will be kept up to date as the GUI changes."""
