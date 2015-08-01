@@ -70,7 +70,8 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
   def get_root(self):
     """Respond to a request for a new view of the underlying GUI."""
     global CURRENT_COMMAND_STREAM
-    CURRENT_COMMAND_STREAM = CURRENT_GUI.command_stream()
+    CURRENT_COMMAND_STREAM = CURRENT_GUI.command_broadcaster.create_stream()
+    CURRENT_COMMAND_STREAM.put(CURRENT_GUI.initialization_command())
     self.get_static_file('index.html')
 
   def get_command(self):
@@ -164,4 +165,4 @@ def run(gui, open_browser=True, port=62345, **kwargs):
     serve_forever(gui, port=port, **kwargs)
   except KeyboardInterrupt:
     print("Keyboard interrupt received. Quitting.")
-    gui.destroy_streams()
+    gui.destroy()

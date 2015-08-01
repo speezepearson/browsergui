@@ -12,31 +12,19 @@ class GUI(object):
     self.tag = new_tag('body')
     self.tag.setAttribute('id', 'body')
     self.children = []
-    self.command_streams = set()
+    self.command_broadcaster = commands.Broadcaster()
 
     self.elements_by_id = {}
 
     for element in elements:
       self.append(element)
 
-  def destroy_streams(self, streams=None):
-    """Destroys and discards the given command streams.
-
-    :param iterable streams: the streams to destroy (default: all)
-    """
-    if streams is None:
-      streams = self.command_streams
-    for stream in streams:
-      stream.destroy()
-    self.command_streams -= set(streams)
-
   def send_command(self, command):
     """Sends a snippet of JavaScript to all the GUI's command streams.
 
     :param str command: the JavaScript snippet
     """
-    for stream in self.command_streams:
-      stream.put(command)
+    self.command_broadcaster.broadcast(command)
 
   def dispatch_event(self, event):
     """Dispatch the event to whatever element is responsible for handling it.
@@ -93,16 +81,8 @@ class GUI(object):
       del self.elements_by_id[subelement.id]
     self.send_command(commands.remove_element(element))
 
-  def command_stream(self, initialize=True):
-    """Builds a :class:`CommandStream` that will be kept up to date as the GUI changes."""
-    result = commands.CommandStream()
-    if initialize:
-      result.put(self._initialization_command())
-    self.command_streams.add(result)
-    return result
-
-  def _initialization_command(self):
-    """JS command to immediately bring a stream up to date.
+  def initialization_command(self):
+    """JS command to immediately bring a command stream up to date.
 
     :rtype: str
     """
@@ -117,3 +97,6 @@ class GUI(object):
     """docstring"""
     if len(element.callbacks[event_type]) == 0:
       self.send_command(commands.callbacks.stop_listening(element, event_type))
+
+  def destroy(self):
+    self.command_broadcaster.destroy()

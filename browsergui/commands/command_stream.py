@@ -14,6 +14,10 @@ class Destroyed(Exception):
   """Raised when trying to get/put on a destroyed :class:`CommandStream`"""
   pass
 
+class UnrelatedStreamError(Exception):
+  """Raised when trying to remove a stream from a Broadcaster not associated with it."""
+  pass
+
 class CommandStream(object):
   def __init__(self):
     """A thread-safe stream of JavaScript commands.
@@ -89,4 +93,26 @@ class CommandStream(object):
       self.commands = []
       return result
 
+class Broadcaster(object):
+  def __init__(self):
+    self.streams = set()
 
+  def broadcast(self, command):
+    for stream in self.streams:
+      stream.put(command)
+
+  def create_stream(self):
+    result = CommandStream()
+    self.streams.add(result)
+    return result
+
+  def destroy_stream(self, stream):
+    if stream not in self.streams:
+      raise UnrelatedStreamError(self, stream)
+    self.streams.remove(stream)
+    stream.destroy()
+
+  def destroy(self):
+    for stream in self.streams:
+      stream.destroy()
+    self.streams = set()
