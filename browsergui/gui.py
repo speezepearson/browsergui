@@ -2,6 +2,18 @@ import json
 from .elements import Element, new_tag
 from . import commands
 
+class _Body(Element):
+  def __init__(self, gui):
+    super(_Body, self).__init__(tag_name='body')
+    self.tag.setAttribute('id', '__body__')
+    self._gui = gui
+
+  @property
+  def gui(self):
+    return self._gui
+
+
+
 class GUI(object):
   """Manages high-level features of the UI and coordinates between elements.
 
@@ -9,9 +21,7 @@ class GUI(object):
   """
 
   def __init__(self, *elements):
-    self.tag = new_tag('body')
-    self.tag.setAttribute('id', 'body')
-    self.children = []
+    self.body = _Body(gui=self)
     self.command_broadcaster = commands.Broadcaster()
 
     self.elements_by_id = {}
@@ -34,40 +44,13 @@ class GUI(object):
     element = self.elements_by_id[event['id']]
     element.handle_event(event)
 
-  @property
-  def id(self):
-    """To be cleaned up, per issue #23."""
-    return self.tag.getAttribute('id')
-
-  @property
-  def gui(self):
-    """To be cleaned up, per issue #23."""
-    return self
-
-  def walk_elements(self):
-    """To be cleaned up, per issue #23."""
-    for element in self.children:
-      for descendant in element.walk():
-        yield descendant
-
   def append(self, child):
     """To be cleaned up, per issue #23."""
-    if not isinstance(child, Element):
-      raise TypeError(child)
-    self.tag.appendChild(child.tag)
-    self.children.append(child)
-    self.register_child(child)
+    self.body.append(child)
 
   def disown(self, child):
     """To be cleaned up, per issue #23."""
-    self.children.remove(child)
-    self.unregister_element(child)
-    child.parent = None
-
-  def register_child(self, child):
-    """To be cleaned up, per issue #23."""
-    child.parent = self
-    self.register_element(child)
+    self.body.disown(child)
 
   def register_element(self, element):
     """docstring"""
@@ -86,7 +69,7 @@ class GUI(object):
 
     :rtype: str
     """
-    return commands.compound(commands.insert_element(e) for e in self.children)
+    return commands.compound(commands.insert_element(e) for e in self.body.children)
 
   def note_callback_added(self, element, event_type, callback):
     """docstring"""
