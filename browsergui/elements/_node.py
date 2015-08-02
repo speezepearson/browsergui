@@ -1,8 +1,19 @@
 import weakref
 
+class OrphanedError(Exception):
+  """Raised when trying to do something nonsensical to an Element with no parent."""
+  pass
+class NotOrphanedError(Exception):
+  """Raised when trying to give an Element a new parent without removing the old one."""
+  pass
+
 class Node(object):
   def __init__(self):
     self.parent_weakref = None
+
+  @property
+  def children(self):
+    raise NotImplementedError('"children" not implemented for {}'.format(type(self).__name__))
 
   @property
   def parent(self):
@@ -37,3 +48,64 @@ class Node(object):
     for child in self.children:
       for descendant in child.walk():
         yield descendant
+
+
+class LeafNode(Node):
+  @property
+  def children(self):
+    return ()
+
+class SequenceNode(Node):
+  def __init__(self, *children):
+    super(SequenceNode, self).__init__()
+    self._children = []
+
+    for child in children:
+      self.append(child)
+
+  @property
+  def children(self):
+    return tuple(self._children)
+
+  def append(self, child):
+    """Add a new child after all existing children.
+
+    :raises TypeError: if `child` isn't a Node
+    :raises NotOrphanedError: if `child` already has a parent Node
+    """
+    if not isinstance(child, Node):
+      raise TypeError('can only append Nodes, not {}'.format(type(child).__name__))
+    child.parent = self
+    self._children.append(child)
+
+  def insert_before(self, new_child, reference_child):
+    """Add a new child before a given child.
+
+    :raises NotOrphanedError: if `new_child` already has a parent Node
+    :raises IndexError: if `reference_child` is not a child of this node
+    """
+    self.insert(self.children.index(reference_child), new_child)
+
+  def insert_after(self, new_child, reference_child):
+    """Add a new child after a given child.
+
+    :raises NotOrphanedError: if `new_child` already has a parent Node
+    :raises IndexError: if `reference_child` is not a child of this node
+    """
+    self.insert(self.children.index(reference_child) + 1, new_child)
+
+  def insert(self, index, child):
+    """Add a new child at a specified position.
+
+    :raises NotOrphanedError: if `child` already has a parent Node
+    """
+    child.parent = self
+    self._children.insert(index, child)
+
+  def disown(self, child):
+    """Remove a child from this node.
+
+    :raises ValueError: if `child` is not a child of this node
+    """
+    self._children.remove(child)
+    child.parent = None

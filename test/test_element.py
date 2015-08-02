@@ -40,7 +40,7 @@ class ElementTest(BrowserGUITestCase):
     container.append(first)
     self.assertFalse(first.orphaned)
 
-    first.insert_after(second)
+    container.insert_after(second, reference_child=first)
     self.assertFalse(second.orphaned)
 
     container.disown(first)
@@ -59,7 +59,7 @@ class ElementTest(BrowserGUITestCase):
     container.append(first)
     self.assertEqual(container, first.parent)
 
-    first.insert_after(second)
+    container.insert_after(second, reference_child=first)
     self.assertEqual(container, second.parent)
 
     container.disown(first)
@@ -78,7 +78,7 @@ class ElementTest(BrowserGUITestCase):
     container.append(first)
     self.assertEqual(list(container.children), [first])
 
-    first.insert_after(second)
+    container.insert_after(second, reference_child=first)
     self.assertEqual(list(container.children), [first, second])
 
     container.disown(first)

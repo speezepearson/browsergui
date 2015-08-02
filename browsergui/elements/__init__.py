@@ -3,7 +3,7 @@ import json
 import xml.dom.minidom
 import xml.parsers.expat
 
-from ._node import Node
+from ._node import SequenceNode
 
 _unique_id_counter = 0
 def unique_id():
@@ -29,23 +29,20 @@ def new_tag(tag_name):
 def styling_to_css(styling):
   return ' '.join('{}: {};'.format(key, value) for key, value in styling.items())
 
-class Element(Node):
+class Element(SequenceNode):
   """A conceptual GUI element, like a button or a table.
 
   Elements are arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
   Every element has a unique identifier, accessible by the :func:`id` method.
   """
   def __init__(self, tag_name, children=()):
-    super(Element, self).__init__()
     self.tag = new_tag(tag_name)
     self.tag.setAttribute('id', unique_id())
     self._styling = {}
 
-    self.children = []
     self.callbacks = collections.defaultdict(list)
 
-    for child in children:
-      self.append(child)
+    super(Element, self).__init__(*children)
 
   def __str__(self):
     return "(#{})".format(self.id)
@@ -65,46 +62,28 @@ class Element(Node):
     return self.tag.getAttribute('id')
 
   def append(self, child):
-    """Add a new child after all existing children.
-
-    :raises NotOrphanedError: if `child` already has a parent Element
-    :raises TypeError: if `child` is not an Element
-    """
-    if not isinstance(child, Element):
-      raise TypeError(child)
-    if not child.orphaned:
-      raise NotOrphanedError('only orphaned elements can be inserted')
+    super(Element, self).append(child)
     self.tag.appendChild(child.tag)
-    self.children.append(child)
-    self.register_child(child)
+    if self.gui is not None:
+      self.gui.register_element(child)
 
-  def insert_before(self, sibling):
-    """Inserts an Element immediately before this one in its parent.
+  def insert_before(self, new_child, reference_child):
+    super(Element, self).insert_before(new_child, reference_child)
+    self.tag.insertBefore(new_child.tag, reference_child.tag)
+    if self.gui is not None:
+      self.gui.register_element(new_child)
 
-    :raises OrphanedError: if this Element has no parent
-    :raises NotOrphanedError: if `sibling` already has a parent Element
-    :raises TypeError: if `sibling` is not an Element
-    """
-    if not isinstance(sibling, Element):
-      raise TypeError(sibling)
-    if not sibling.orphaned:
-      raise NotOrphanedError('only orphaned elements can be inserted')
-    if self.orphaned:
-      raise OrphanedError("can't insert sibling for root node")
-    self.parent.tag.insertBefore(sibling.tag, self.tag)
-    self.parent.children.insert(self.parent.children.index(self), sibling)
-    self.parent.register_child(sibling)
+  def insert_after(self, new_child, reference_child):
+    super(Element, self).insert_after(new_child, reference_child)
+    self.tag.insertBefore(new_child.tag, reference_child.tag.nextSibling)
+    if self.gui is not None:
+      self.gui.register_element(new_child)
 
-  def insert_after(self, sibling):
-    """Like :func:`insert_before`, but inserts the new sibling after this one."""
-    if not isinstance(sibling, Element):
-      raise TypeError(sibling)
-    if not sibling.orphaned:
-      raise NotOrphanedError('only orphaned elements can be inserted')
-
-    self.parent.tag.insertBefore(sibling.tag, None if self.next_sibling is None else self.next_sibling.tag)
-    self.parent.children.insert(self.parent.children.index(self)+1, sibling)
-    self.parent.register_child(sibling)
+  def disown(self, child):
+    super(Element, self).disown(child)
+    self.tag.removeChild(child.tag)
+    if self.gui is not None:
+      self.gui.unregister_element(new_child)
 
   @property
   def next_sibling(self):
@@ -148,28 +127,6 @@ class Element(Node):
     if self.orphaned:
       raise OrphanedError("element already has no parent")
     self.parent.disown(self)
-
-  def disown(self, child):
-    """Removes a child from this element's list of children.
-
-    Also, does bookkeeping for removing an element from the tree.
-
-    :type child: Element
-    :raises ValueError: if the given child is not a child of this element
-    """
-    self.children.remove(child)
-    if self.gui is not None:
-      self.gui.unregister_element(child)
-    child.parent = None
-
-  def register_child(self, child):
-    """Does all the bookkeeping for when a new child has entered the tree.
-
-    :type child: Element
-    """
-    child.parent = self
-    if self.gui is not None:
-      self.gui.register_element(child)
 
   def add_callback(self, event_type, callback):
     """Arranges for ``callback`` to be called whenever the Element handles an event of ``event_type``.
