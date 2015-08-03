@@ -46,7 +46,7 @@ class ElementTest(BrowserGUITestCase):
     container.disown(first)
     self.assertTrue(first.orphaned)
 
-    second.extract()
+    container.disown(second)
     self.assertTrue(second.orphaned)
 
   def test_parent(self):
@@ -65,7 +65,7 @@ class ElementTest(BrowserGUITestCase):
     container.disown(first)
     self.assertIsNone(first.parent)
 
-    second.extract()
+    container.disown(second)
     self.assertIsNone(second.parent)
 
   def test_children(self):
@@ -84,7 +84,7 @@ class ElementTest(BrowserGUITestCase):
     container.disown(first)
     self.assertEqual(list(container.children), [second])
 
-    second.extract()
+    container.disown(second)
     self.assertEqual(list(container.children), [])
 
   def test_callbacks(self):

@@ -112,15 +112,6 @@ class Element(SequenceNode, HasCallbacks, HasStyling):
     """The GUI the element belongs to, or None if there is none."""
     return (None if self.orphaned else self.parent.gui)
 
-  def extract(self):
-    """Removes the element from its parent.
-
-    :raises OrphanedError: if the element is already orphaned
-    """
-    if self.orphaned:
-      raise OrphanedError("element already has no parent")
-    self.parent.disown(self)
-
   def _call_dom_method(self, name, args):
     getattr(self.tag, name)(*args)
     if self.gui is not None:
