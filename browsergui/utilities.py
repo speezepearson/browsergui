@@ -3,6 +3,7 @@ import threading
 
 class RepeatingTimer(object):
   def __init__(self, interval, callback, timer_args=(), timer_kwargs={}, daemon=False):
+    super(RepeatingTimer, self).__init__()
     self.interval = interval
     self.callback = callback
     self.daemon = daemon

@@ -9,6 +9,7 @@ class NotOrphanedError(Exception):
 
 class Node(object):
   def __init__(self):
+    super(Node, self).__init__()
     self.parent_weakref = None
 
   @property

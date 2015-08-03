@@ -21,6 +21,8 @@ class GUI(object):
   """
 
   def __init__(self, *elements):
+    super(GUI, self).__init__()
+
     self.body = _Body(gui=self)
     self.command_broadcaster = commands.Broadcaster()
 

@@ -32,6 +32,7 @@ class CommandStream(object):
     ``queue`` module, except with the :func:`destroy` method added,
     allowing waiting threads to be interrupted.
     """
+    super(CommandStream, self).__init__()
     self.commands = []
     self.destroyed = False
     self.mutex = threading.Lock()
@@ -95,6 +96,7 @@ class CommandStream(object):
 
 class Broadcaster(object):
   def __init__(self):
+    super(Broadcaster, self).__init__()
     self.streams = set()
 
   def broadcast(self, command):
