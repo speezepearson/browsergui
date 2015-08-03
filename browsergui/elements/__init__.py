@@ -4,6 +4,8 @@ import xml.dom.minidom
 import xml.parsers.expat
 
 from ._node import SequenceNode
+from ._hascallbacks import HasCallbacks, NoSuchCallbackError
+from ._hasstyling import HasStyling
 
 _unique_id_counter = 0
 def unique_id():
@@ -18,18 +20,12 @@ class OrphanedError(Exception):
 class NotOrphanedError(Exception):
   """Raised when trying to give an Element a new parent without removing the old one."""
   pass
-class NoSuchCallbackError(Exception):
-  """Raised when trying to remove a nonexistent callback from an Element."""
-  pass
 
 def new_tag(tag_name):
   html = '<{t}></{t}>'.format(t=tag_name)
   return xml.dom.minidom.parseString(html).documentElement
 
-def styling_to_css(styling):
-  return ' '.join('{}: {};'.format(key, value) for key, value in styling.items())
-
-class Element(SequenceNode):
+class Element(SequenceNode, HasCallbacks, HasStyling):
   """A conceptual GUI element, like a button or a table.
 
   Elements are arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
@@ -38,9 +34,6 @@ class Element(SequenceNode):
   def __init__(self, tag_name, children=()):
     self.tag = new_tag(tag_name)
     self.tag.setAttribute('id', unique_id())
-    self._styling = {}
-
-    self.callbacks = collections.defaultdict(list)
 
     super(Element, self).__init__(*children)
 
@@ -127,57 +120,6 @@ class Element(SequenceNode):
     if self.orphaned:
       raise OrphanedError("element already has no parent")
     self.parent.disown(self)
-
-  def add_callback(self, event_type, callback):
-    """Arranges for ``callback`` to be called whenever the Element handles an event of ``event_type``.
-
-    :type event_type: str
-    :type callback: a function of one argument (the event being handled)
-    """
-    self.callbacks[event_type].append(callback)
-    if self.gui is not None:
-      self.gui.note_callback_added(self, event_type, callback)
-
-  def remove_callback(self, event_type, callback):
-    """Stops calling ``callback`` when events of ``event_type`` are handled.
-
-    For parameter information, see :func:`add_callback`.
-    """
-    if callback not in self.callbacks[event_type]:
-      raise NoSuchCallbackError(event_type, callback)
-    self.callbacks[event_type].remove(callback)
-    if self.gui is not None:
-      self.gui.note_callback_added(self, event_type, callback)
-
-  def handle_event(self, event):
-    """Calls all the callbacks registered for the given event's type.
-
-    :type event: dict
-    """
-    for callback in self.callbacks[event['type']]:
-      callback(event)
-
-  def toggle_visibility(self):
-    """Toggles whether the element can be seen or not."""
-    if self._styling.get('display') == 'none':
-      self.delete_styles('display')
-    else:
-      self.set_styles(display='none')
-
-  def set_styles(self, **rules):
-    self._styling.update(**rules)
-    self._update_styles()
-
-  def get_style(self, property):
-    return self._styling.get(property)
-
-  def delete_styles(self, *properties):
-    for property in properties:
-      self._styling.pop(property, None)
-    self._update_styles()
-
-  def _update_styles(self):
-    self._call_dom_method(name='setAttribute', args=['style', styling_to_css(self._styling)])
 
   def _call_dom_method(self, name, args):
     getattr(self.tag, name)(*args)
