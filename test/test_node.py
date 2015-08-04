@@ -85,7 +85,7 @@ class SequenceNodeTest(unittest.TestCase):
 
     self.assertEqual([], list(SequenceNode().children))
 
-    parent = SequenceNode(a, b)
+    parent = SequenceNode((a, b))
     self.assertEqual(parent, a.parent)
     self.assertEqual(parent, b.parent)
     self.assertEqual([a, b], list(parent.children))

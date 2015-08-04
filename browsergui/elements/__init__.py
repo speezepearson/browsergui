@@ -28,7 +28,7 @@ class Element(SequenceNode, HasCallbacks, HasStyling):
     self.tag = new_tag(tag_name)
     self.tag.setAttribute('id', unique_id())
 
-    super(Element, self).__init__(*children)
+    super(Element, self).__init__(children=children)
 
   def __str__(self):
     return "(#{})".format(self.id)

@@ -57,7 +57,7 @@ class LeafNode(Node):
     return ()
 
 class SequenceNode(Node):
-  def __init__(self, *children):
+  def __init__(self, children=()):
     super(SequenceNode, self).__init__()
     self._children = []
 
