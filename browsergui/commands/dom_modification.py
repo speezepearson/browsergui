@@ -4,6 +4,11 @@
 from . import j, compound, get, callbacks
 from ..elements import Text
 
+def _next_sibling(element):
+  siblings = element.parent.children
+  i = siblings.index(element)
+  return 'null' if i+1 >= len(siblings) else get(siblings[i+1])
+
 def insert_element(element, add_callbacks=True):
   """Command to add a new element to the DOM.
 
@@ -22,10 +27,9 @@ def insert_element(element, add_callbacks=True):
         v=j(descendant.tag.getAttribute(attribute))))
 
     if descendant is element:
-      next = 'null' if element.next_sibling is None else get(element.next_sibling)
       lines.append('{parent}.insertBefore({name}, {next})'.format(
         parent=get(element.parent),
-        name=name, next=next))
+        name=name, next=_next_sibling(element)))
     else:
       lines.append('{parent}.appendChild({name})'.format(parent=get(descendant.parent), name=name))
 

@@ -79,30 +79,6 @@ class Element(SequenceNode, HasCallbacks, HasStyling):
       self.gui.unregister_element(new_child)
 
   @property
-  def next_sibling(self):
-    """    
-    :returns: the next child of the element's parent, or None if there isn't one.
-    """
-    if self.orphaned:
-      return None
-    siblings = self.parent.children
-    i = siblings.index(self) + 1
-    if i < len(siblings):
-      return siblings[i]
-    return None
-
-  @property
-  def previous_sibling(self):
-    """Like :func:`next_sibling`, but returns parent's previous child."""
-    if self.orphaned:
-      return None
-    siblings = self.parent.children
-    i = siblings.index(self) - 1
-    if i >= 0:
-      return siblings[i]
-    return None
-
-  @property
   def html(self):
     """An HTML representation of the element and all its children."""
     return self.tag.toprettyxml()
