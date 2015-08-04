@@ -14,13 +14,6 @@ def unique_id():
   _unique_id_counter += 1
   return "_element_{}".format(_unique_id_counter)
 
-class OrphanedError(Exception):
-  """Raised when trying to do something nonsensical to an Element with no parent."""
-  pass
-class NotOrphanedError(Exception):
-  """Raised when trying to give an Element a new parent without removing the old one."""
-  pass
-
 def new_tag(tag_name):
   html = '<{t}></{t}>'.format(t=tag_name)
   return xml.dom.minidom.parseString(html).documentElement
