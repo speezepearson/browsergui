@@ -1,7 +1,7 @@
 """Tools to modify the structure of the DOM.
 """
 
-from . import j, compound, get, callbacks
+from . import j, compound, get
 from ..elements import Text
 
 def _next_sibling(element):
@@ -9,11 +9,10 @@ def _next_sibling(element):
   i = siblings.index(element)
   return 'null' if i+1 >= len(siblings) else get(siblings[i+1])
 
-def insert_element(element, add_callbacks=True):
+def insert_element(element):
   """Command to add a new element to the DOM.
 
   :param Element element: the :class:`Element`, already in the :class:`GUI`'s element tree, for which an HTML element should be created
-  :param bool add_callbacks: (default true) whether to include commands to attach callbacks to the created element and all its descendants
   :rtype: str
   """
   lines = []
@@ -32,9 +31,6 @@ def insert_element(element, add_callbacks=True):
         name=name, next=_next_sibling(element)))
     else:
       lines.append('{parent}.appendChild({name})'.format(parent=get(descendant.parent), name=name))
-
-    if add_callbacks:
-      lines.append(callbacks.start_listening(descendant, recursive=False))
 
     if isinstance(descendant, Text):
       lines.append('{name}.innerText = {text}'.format(name=name, text=j(descendant.text)))

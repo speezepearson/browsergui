@@ -12,16 +12,13 @@ def compound(commands):
   :param iterable commands: the commands to be joined
   :rtype: str
   """
-  return "; ".join(commands)
+  return ";\n".join(commands)
 
 def get(element):
   return "document.getElementById({})".format(j(element.id))
 
 from . import dom_modification
 from .dom_modification import *
-
-from . import callbacks
-from .callbacks import *
 
 from . import command_stream
 from .command_stream import *

@@ -58,7 +58,7 @@ class GUI(object):
     """docstring"""
     for subelement in element.walk():
       self.elements_by_id[subelement.id] = subelement
-    self.send_command(commands.insert_element(element, add_callbacks=True))
+    self.send_command(commands.insert_element(element))
 
   def unregister_element(self, element):
     """docstring"""
@@ -72,16 +72,6 @@ class GUI(object):
     :rtype: str
     """
     return commands.compound(commands.insert_element(e) for e in self.body.children)
-
-  def note_callback_added(self, element, event_type, callback):
-    """docstring"""
-    if len(element.callbacks[event_type]) == 1:
-      self.send_command(commands.callbacks.start_listening(element, event_type))
-
-  def note_callback_removed(self, element, event_type, callback):
-    """docstring"""
-    if len(element.callbacks[event_type]) == 0:
-      self.send_command(commands.callbacks.stop_listening(element, event_type))
 
   def destroy(self):
     self.command_broadcaster.destroy()

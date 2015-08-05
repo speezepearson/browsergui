@@ -4,6 +4,15 @@ class NoSuchCallbackError(Exception):
   """Raised when trying to remove a nonexistent callback from an Element."""
   pass
 
+def _javascript_to_notify_server(element, event_type):
+  return """
+    notify_server({{
+      type: '{type}',
+      id: '{id}'
+    }})""".format(
+      type=event_type,
+      id=element.id)
+
 class HasCallbacks(object):
   def __init__(self, **kwargs):
     super(HasCallbacks, self).__init__(**kwargs)
@@ -16,8 +25,7 @@ class HasCallbacks(object):
     :type callback: a function of one argument (the event being handled)
     """
     self.callbacks[event_type].append(callback)
-    if self.gui is not None:
-      self.gui.note_callback_added(self, event_type, callback)
+    self._call_dom_method('setAttribute', args=['on'+event_type, _javascript_to_notify_server(self, event_type)])
 
   def remove_callback(self, event_type, callback):
     """Stops calling ``callback`` when events of ``event_type`` are handled.
@@ -26,9 +34,11 @@ class HasCallbacks(object):
     """
     if callback not in self.callbacks[event_type]:
       raise NoSuchCallbackError(event_type, callback)
+
     self.callbacks[event_type].remove(callback)
-    if self.gui is not None:
-      self.gui.note_callback_added(self, event_type, callback)
+
+    if not self.callbacks[event_type]:
+      self._call_dom_method('removeAttribute', args=['on'+event_type])
 
   def handle_event(self, event):
     """Calls all the callbacks registered for the given event's type.
