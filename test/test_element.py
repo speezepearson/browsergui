@@ -49,7 +49,6 @@ class ContainerTest(BrowserGUITestCase):
   def test_constructor(self):
     Container()
     Container(Container())
-    Container(inline=False)
 
   def test_children_must_be_elements(self):
     with self.assertRaises(TypeError):

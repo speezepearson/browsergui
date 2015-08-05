@@ -4,8 +4,7 @@ from . import commands
 
 class _Body(Container, SequenceNode):
   def __init__(self, gui, **kwargs):
-    super(_Body, self).__init__(**kwargs)
-    self.tag.tagName = 'body'
+    super(_Body, self).__init__(tag_name='body', **kwargs)
     self.tag.setAttribute('id', '__body__')
     self._gui = gui
 

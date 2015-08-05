@@ -77,13 +77,8 @@ def arg_to_js(x):
 class Container(Element, SequenceNode):
   """Contains and groups other elements."""
   def __init__(self, *children, **kwargs):
-    """
-    :param children: the elements the Container should contain
-    :type elements: :class:`Element`s
-    :param kwargs: may contain the key "inline" specifying whether the container should be inline or not (default not)
-    """
-    self._inline = kwargs.pop("inline", False)
-    super(Container, self).__init__(tag_name=("span" if self._inline else "div"), children=children, **kwargs)
+    kwargs.setdefault('tag_name', 'div')
+    super(Container, self).__init__(children=children, **kwargs)
 
   def append(self, child):
     super(Element, self).append(child)

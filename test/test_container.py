@@ -3,9 +3,6 @@ from . import BrowserGUITestCase
 
 class ContainerTest(BrowserGUITestCase):
   def test_construction(self):
-    Container()
-    Container(inline=True)
-
     left = Container()
     right = Container()
     top = Container(left, right)
@@ -16,3 +13,4 @@ class ContainerTest(BrowserGUITestCase):
 
   def test_tag(self):
     self.assertHTMLLike('<div />', Container())
+    self.assertHTMLLike('<span />', Container(tag_name='span'))
