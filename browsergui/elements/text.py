@@ -1,3 +1,4 @@
+import json
 import xml.dom.minidom
 from . import Element
 
@@ -23,7 +24,7 @@ class Text(Element):
 
     self._text.data = value
     if self.gui is not None:
-      self.gui.send_command("document.getElementById({id}).data = {text}".format(
+      self.gui.send_command("document.getElementById({id}).innerText = {text}".format(
         id=json.dumps(self.id),
         text=json.dumps(value)))
 
