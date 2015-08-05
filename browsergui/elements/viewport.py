@@ -5,10 +5,18 @@ from . import Element
 class Viewport(Element):
   """A scrollable window into some other (probably big) element."""
   def __init__(self, target, width, height, **kwargs):
-    super(Viewport, self).__init__(tag_name="div", children=[target], **kwargs)
+    if not isinstance(target, Element):
+      raise TypeError('expected Element, got {}'.format(type(target).__name__))
+    super(Viewport, self).__init__(tag_name='div', **kwargs)
+    self.tag.appendChild(target.tag)
     self.tag.setAttribute('style', 'overflow: scroll; width: 0; height: 0'.format(w=width, h=height))
+    self.target = target
     self.width = width
     self.height = height
+
+  @property
+  def children(self):
+    return (self.target,)
 
   @property
   def width(self):

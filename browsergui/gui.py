@@ -1,10 +1,11 @@
 import json
-from .elements import Element, new_tag
+from .elements import Container, SequenceNode, new_tag
 from . import commands
 
-class _Body(Element):
+class _Body(Container, SequenceNode):
   def __init__(self, gui, **kwargs):
-    super(_Body, self).__init__(tag_name='body', **kwargs)
+    super(_Body, self).__init__(**kwargs)
+    self.tag.tagName = 'body'
     self.tag.setAttribute('id', '__body__')
     self._gui = gui
 
