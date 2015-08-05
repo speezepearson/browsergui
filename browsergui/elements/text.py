@@ -1,8 +1,7 @@
 import xml.dom.minidom
-from . import Element
-from ._node import LeafNode
+from . import LeafElement
 
-class Text(Element, LeafNode):
+class Text(LeafElement):
   """Some simple text."""
   def __init__(self, text, tag_name="span", **kwargs):
     if not isinstance(text, str):
