@@ -4,8 +4,8 @@ from . import Element
 
 class Viewport(Element):
   """A scrollable window into some other (probably big) element."""
-  def __init__(self, target, width, height):
-    super(Viewport, self).__init__(tag_name="div", children=[target])
+  def __init__(self, target, width, height, **kwargs):
+    super(Viewport, self).__init__(tag_name="div", children=[target], **kwargs)
     self.tag.setAttribute('style', 'overflow: scroll; width: 0; height: 0'.format(w=width, h=height))
     self.width = width
     self.height = height

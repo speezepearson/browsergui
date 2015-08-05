@@ -3,8 +3,8 @@ from .elements import Element, new_tag
 from . import commands
 
 class _Body(Element):
-  def __init__(self, gui):
-    super(_Body, self).__init__(tag_name='body')
+  def __init__(self, gui, **kwargs):
+    super(_Body, self).__init__(tag_name='body', **kwargs)
     self.tag.setAttribute('id', '__body__')
     self._gui = gui
 
@@ -20,8 +20,8 @@ class GUI(object):
   :param Element elements: elements to immediately include in the GUI
   """
 
-  def __init__(self, *elements):
-    super(GUI, self).__init__()
+  def __init__(self, *elements, **kwargs):
+    super(GUI, self).__init__(**kwargs)
 
     self.body = _Body(gui=self)
     self.command_broadcaster = commands.Broadcaster()

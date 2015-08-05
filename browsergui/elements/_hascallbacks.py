@@ -5,8 +5,8 @@ class NoSuchCallbackError(Exception):
   pass
 
 class HasCallbacks(object):
-  def __init__(self):
-    super(HasCallbacks, self).__init__()
+  def __init__(self, **kwargs):
+    super(HasCallbacks, self).__init__(**kwargs)
     self.callbacks = collections.defaultdict(list)
 
   def add_callback(self, event_type, callback):

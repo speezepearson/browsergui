@@ -24,11 +24,11 @@ class Element(SequenceNode, HasCallbacks, HasStyling):
   Elements are arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
   Every element has a unique identifier, accessible by the :func:`id` method.
   """
-  def __init__(self, tag_name, children=()):
+  def __init__(self, tag_name, children=(), **kwargs):
     self.tag = new_tag(tag_name)
     self.tag.setAttribute('id', unique_id())
 
-    super(Element, self).__init__(children=children)
+    super(Element, self).__init__(children=children, **kwargs)
 
   def __str__(self):
     return "(#{})".format(self.id)

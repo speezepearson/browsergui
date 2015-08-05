@@ -4,11 +4,11 @@ import os.path
 from . import Element
 
 class Image(Element):
-  def __init__(self, filename, format=None):
+  def __init__(self, filename, format=None, **kwargs):
     """
     :param str filename: the name of the file to read image data from
     """
-    super(Image, self).__init__(tag_name='img')
+    super(Image, self).__init__(tag_name='img', **kwargs)
 
     self.filename = filename
     if format is None:
