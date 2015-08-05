@@ -32,7 +32,7 @@ class BrowserGUITestCase(unittest.TestCase):
     since they're presumably automatically generated and irrelevant.
     """
     expected_tag = xml.dom.minidom.parseString(expected_string).documentElement
-    tag = xml.dom.minidom.parseString(element.html).documentElement
+    tag = xml.dom.minidom.parseString(element.tag.toxml()).documentElement
     if ignore_id:
       delete_ids(tag)
 

@@ -48,11 +48,6 @@ class Element(Node, HasCallbacks, HasStyling):
     return self.tag.getAttribute('id')
 
   @property
-  def html(self):
-    """An HTML representation of the element and all its children."""
-    return self.tag.toprettyxml()
-
-  @property
   def gui(self):
     """The GUI the element belongs to, or None if there is none."""
     return (None if self.orphaned else self.parent.gui)
