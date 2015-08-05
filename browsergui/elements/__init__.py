@@ -3,7 +3,7 @@ import json
 import xml.dom.minidom
 import xml.parsers.expat
 
-from ._node import SequenceNode
+from ._node import Node, SequenceNode, LeafNode
 from ._hascallbacks import HasCallbacks, NoSuchCallbackError
 from ._hasstyling import HasStyling
 
@@ -18,17 +18,17 @@ def new_tag(tag_name):
   html = '<{t}></{t}>'.format(t=tag_name)
   return xml.dom.minidom.parseString(html).documentElement
 
-class Element(SequenceNode, HasCallbacks, HasStyling):
+class Element(Node, HasCallbacks, HasStyling):
   """A conceptual GUI element, like a button or a table.
 
   Elements are arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
   Every element has a unique identifier, accessible by the :func:`id` method.
   """
-  def __init__(self, tag_name, children=()):
+  def __init__(self, tag_name, **kwargs):
     self.tag = new_tag(tag_name)
     self.tag.setAttribute('id', unique_id())
 
-    super(Element, self).__init__(*children)
+    super(Element, self).__init__(**kwargs)
 
   def __str__(self):
     return "(#{})".format(self.id)
@@ -46,30 +46,6 @@ class Element(SequenceNode, HasCallbacks, HasStyling):
   @property
   def id(self):
     return self.tag.getAttribute('id')
-
-  def append(self, child):
-    super(Element, self).append(child)
-    self.tag.appendChild(child.tag)
-    if self.gui is not None:
-      self.gui.register_element(child)
-
-  def insert_before(self, new_child, reference_child):
-    super(Element, self).insert_before(new_child, reference_child)
-    self.tag.insertBefore(new_child.tag, reference_child.tag)
-    if self.gui is not None:
-      self.gui.register_element(new_child)
-
-  def insert_after(self, new_child, reference_child):
-    super(Element, self).insert_after(new_child, reference_child)
-    self.tag.insertBefore(new_child.tag, reference_child.tag.nextSibling)
-    if self.gui is not None:
-      self.gui.register_element(new_child)
-
-  def disown(self, child):
-    super(Element, self).disown(child)
-    self.tag.removeChild(child.tag)
-    if self.gui is not None:
-      self.gui.unregister_element(new_child)
 
   @property
   def html(self):
@@ -98,16 +74,39 @@ def arg_to_js(x):
     return json.dumps(x)
 
 
-class Container(Element):
+class Container(Element, SequenceNode):
   """Contains and groups other elements."""
   def __init__(self, *children, **kwargs):
-    """
-    :param children: the elements the Container should contain
-    :type elements: :class:`Element`s
-    :param kwargs: may contain the key "inline" specifying whether the container should be inline or not (default not)
-    """
-    self._inline = kwargs.pop("inline", False)
-    super(Container, self).__init__(tag_name=("span" if self._inline else "div"), children=children, **kwargs)
+    kwargs.setdefault('tag_name', 'div')
+    super(Container, self).__init__(children=children, **kwargs)
+
+  def append(self, child):
+    super(Element, self).append(child)
+    self.tag.appendChild(child.tag)
+    if self.gui is not None:
+      self.gui.register_element(child)
+
+  def insert_before(self, new_child, reference_child):
+    super(Element, self).insert_before(new_child, reference_child)
+    self.tag.insertBefore(new_child.tag, reference_child.tag)
+    if self.gui is not None:
+      self.gui.register_element(new_child)
+
+  def insert_after(self, new_child, reference_child):
+    super(Element, self).insert_after(new_child, reference_child)
+    self.tag.insertBefore(new_child.tag, reference_child.tag.nextSibling)
+    if self.gui is not None:
+      self.gui.register_element(new_child)
+
+  def disown(self, child):
+    super(Element, self).disown(child)
+    self.tag.removeChild(child.tag)
+    if self.gui is not None:
+      self.gui.unregister_element(new_child)
+
+
+class LeafElement(Element, LeafNode):
+  pass
 
 from .text import Text, Paragraph, CodeSnippet, CodeBlock
 from .button import Button

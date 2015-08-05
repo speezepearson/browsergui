@@ -8,8 +8,8 @@ class NotOrphanedError(Exception):
   pass
 
 class Node(object):
-  def __init__(self):
-    super(Node, self).__init__()
+  def __init__(self, **kwargs):
+    super(Node, self).__init__(**kwargs)
     self.parent_weakref = None
 
   @property
@@ -57,8 +57,8 @@ class LeafNode(Node):
     return ()
 
 class SequenceNode(Node):
-  def __init__(self, *children):
-    super(SequenceNode, self).__init__()
+  def __init__(self, children=(), **kwargs):
+    super(SequenceNode, self).__init__(**kwargs)
     self._children = []
 
     for child in children:

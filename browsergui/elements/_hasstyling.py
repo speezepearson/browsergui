@@ -2,8 +2,8 @@ def styling_to_css(styling):
   return ' '.join('{}: {};'.format(key, value) for key, value in styling.items())
 
 class HasStyling(object):
-  def __init__(self):
-    super(HasStyling, self).__init__()
+  def __init__(self, **kwargs):
+    super(HasStyling, self).__init__(**kwargs)
     self._styling = {}
 
   def set_styles(self, **rules):

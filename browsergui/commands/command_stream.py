@@ -19,7 +19,7 @@ class UnrelatedStreamError(Exception):
   pass
 
 class CommandStream(object):
-  def __init__(self):
+  def __init__(self, **kwargs):
     """A thread-safe stream of JavaScript commands.
 
     Commands (strings) may be put into the stream with ``put``;
@@ -32,7 +32,7 @@ class CommandStream(object):
     ``queue`` module, except with the :func:`destroy` method added,
     allowing waiting threads to be interrupted.
     """
-    super(CommandStream, self).__init__()
+    super(CommandStream, self).__init__(**kwargs)
     self.commands = []
     self.destroyed = False
     self.mutex = threading.Lock()
@@ -95,8 +95,8 @@ class CommandStream(object):
       return result
 
 class Broadcaster(object):
-  def __init__(self):
-    super(Broadcaster, self).__init__()
+  def __init__(self, **kwargs):
+    super(Broadcaster, self).__init__(**kwargs)
     self.streams = set()
 
   def broadcast(self, command):
