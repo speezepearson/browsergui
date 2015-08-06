@@ -97,7 +97,7 @@ class Container(Element, SequenceNode):
     super(Element, self).disown(child)
     self.tag.removeChild(child.tag)
     if self.gui is not None:
-      self.gui.unregister_element(new_child)
+      self.gui.unregister_element(child)
 
 
 class LeafElement(Element, LeafNode):

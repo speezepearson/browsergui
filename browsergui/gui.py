@@ -71,7 +71,7 @@ class GUI(object):
 
     :rtype: str
     """
-    return commands.compound(commands.insert_element(e) for e in self.body.children)
+    return commands.insert_element(self.body)
 
   def destroy(self):
     self.command_broadcaster.destroy()
