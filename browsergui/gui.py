@@ -21,6 +21,7 @@ class GUI(object):
   """
 
   def __init__(self, *elements, **kwargs):
+    self.title = kwargs.pop('title', 'browsergui')
     super(GUI, self).__init__(**kwargs)
 
     self.body = _Body(gui=self)
@@ -71,7 +72,9 @@ class GUI(object):
 
     :rtype: str
     """
-    return commands.insert_element(self.body)
+    return commands.compound((
+      commands.set_title(self.title),
+      commands.insert_element(self.body)))
 
   def destroy(self):
     self.command_broadcaster.destroy()

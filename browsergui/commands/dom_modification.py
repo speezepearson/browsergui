@@ -54,3 +54,8 @@ def remove_element(element):
   """Command to delete an element and all its descendants.
   """
   return "{var}.parentNode.removeChild({var})".format(var=_var(element.tag))
+
+def set_title(text):
+  """Command to set the browser page's title.
+  """
+  return 'document.getElementById("__title__").innerText = {}'.format(j(text))
