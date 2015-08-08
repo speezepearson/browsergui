@@ -5,7 +5,7 @@ Tools to design GUIs viewable in a browser.
 
 Everybody has a browser, and a lot of very smart people have designed browsers so that it's easy to make pretty, interactive pages. Wouldn't it be great if we could take advantage of this in Python? Well, now we can!
 
-Install with `pip install browsergui`, or download it and either run `python setup.py install` or plop the `browsergui` subfolder anywhere on your Python path. Once you've done that, you can run various demos with `python -m browsergui.examples`.
+Install with `pip install browsergui`, or download it and either run `python setup.py install` or plop the `browsergui` subfolder anywhere on your Python path. Once you've done that, you can run various demos with `python -m browsergui.examples [--help] [-e ...]`.
 
 
 Examples

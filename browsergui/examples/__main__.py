@@ -3,7 +3,7 @@ import os
 import browsergui.examples
 
 parser = argparse.ArgumentParser()
-parser.add_argument('example', choices=list(browsergui.examples.EXAMPLES.keys()))
+parser.add_argument('-e', '--example', choices=list(browsergui.examples.EXAMPLES.keys()), default='tour')
 
 def main():
   args = parser.parse_args()
