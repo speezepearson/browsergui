@@ -25,7 +25,9 @@ class HasCallbacks(object):
     :type callback: a function of one argument (the event being handled)
     """
     self.callbacks[event_type].append(callback)
-    self._call_dom_method('setAttribute', args=['on'+event_type, _javascript_to_notify_server(self, event_type)])
+    self.tag.setAttribute('on'+event_type, _javascript_to_notify_server(self, event_type))
+    if self.gui is not None:
+      self.gui.document.mark_dirty()
 
   def remove_callback(self, event_type, callback):
     """Stops calling ``callback`` when events of ``event_type`` are handled.
@@ -38,7 +40,9 @@ class HasCallbacks(object):
     self.callbacks[event_type].remove(callback)
 
     if not self.callbacks[event_type]:
-      self._call_dom_method('removeAttribute', args=['on'+event_type])
+      self.tag.removeAttribute('on'+event_type)
+      if self.gui is not None:
+        self.gui.document.mark_dirty()
 
   def handle_event(self, event):
     """Calls all the callbacks registered for the given event's type.

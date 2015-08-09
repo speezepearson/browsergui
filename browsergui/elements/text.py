@@ -24,9 +24,7 @@ class Text(LeafElement):
 
     self._text.data = value
     if self.gui is not None:
-      self.gui.send_command("document.getElementById({id}).innerText = {text}".format(
-        id=json.dumps(self.id),
-        text=json.dumps(value)))
+      self.gui.document.mark_dirty()
 
 class CodeSnippet(Text):
   """Inline text representing computer code."""

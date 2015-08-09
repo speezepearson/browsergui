@@ -26,5 +26,6 @@ class HasStyling(object):
       self.set_styles(display='none')
 
   def _update_styles(self):
-    self._call_dom_method(name='setAttribute', args=['style', styling_to_css(self._styling)])
-
+    self.tag.setAttribute('style', styling_to_css(self._styling))
+    if self.gui is not None:
+      self.gui.document.mark_dirty()

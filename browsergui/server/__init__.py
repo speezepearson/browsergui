@@ -13,7 +13,7 @@ import cgi
 import webbrowser
 import json
 
-from ..commands import Empty, Destroyed
+# from ..document import Destroyed
 
 ROOT_PATH = "/"
 PUPPET_PATH = "/puppet.js"
@@ -27,8 +27,6 @@ def read_json(request_headers, request_file):
   return json.loads(content_string)
 
 CURRENT_GUI = None
-CURRENT_HTML = None
-CURRENT_COMMAND_STREAM = None
 
 class GUIRequestHandler(BaseHTTPRequestHandler):
   """Handler for GUI-related requests.
@@ -69,9 +67,6 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
 
   def get_root(self):
     """Respond to a request for a new view of the underlying GUI."""
-    global CURRENT_COMMAND_STREAM
-    CURRENT_COMMAND_STREAM = CURRENT_GUI.command_broadcaster.create_stream()
-    CURRENT_COMMAND_STREAM.put(CURRENT_GUI.initialization_command())
     self.get_static_file('index.html')
 
   def get_command(self):
@@ -83,10 +78,11 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
     """
     try:
       try:
-        command = CURRENT_COMMAND_STREAM.get()
-      except Destroyed:
+        command = CURRENT_GUI.document.flush_changes()
+      except Exception as e: # TODO: this is a placeholder for Destroyed
         self.send_error(status_codes.NOT_FOUND)
         self.end_headers()
+        raise
       else:
         self.send_response(status_codes.OK)
         self.send_no_cache_headers()

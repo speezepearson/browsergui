@@ -1,6 +1,6 @@
 import json
 from browsergui import Element, Container, CLICK, KEYDOWN, KEYUP
-from browsergui.elements import NoSuchCallbackError, arg_to_js
+from browsergui.elements import NoSuchCallbackError
 
 from . import BrowserGUITestCase
 
@@ -35,11 +35,3 @@ class ElementTest(BrowserGUITestCase):
     self.assertEqual('none', e.get_style('display'))
     e.toggle_visibility()
     self.assertIsNone(e.get_style('display'))
-
-  def test_arg_to_js(self):
-    self.assertEqual("0", arg_to_js(0))
-    self.assertEqual("[1, 2]", arg_to_js([1, 2]))
-
-    element = Element(tag_name="a")
-    self.assertEqual("document.getElementById({})".format(json.dumps(element.id)), arg_to_js(element))
-    self.assertEqual("document.getElementById({})".format(json.dumps(element.id)), arg_to_js(element.tag))

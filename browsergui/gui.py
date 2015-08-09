@@ -1,8 +1,8 @@
 import json
-from .elements import Container, SequenceNode, new_tag
-from . import commands
+from .elements import Text, Container
+from .document import Document
 
-class _Body(Container, SequenceNode):
+class _Body(Container):
   def __init__(self, gui, **kwargs):
     super(_Body, self).__init__(tag_name='body', **kwargs)
     self.tag.setAttribute('id', '__body__')
@@ -21,23 +21,15 @@ class GUI(object):
   """
 
   def __init__(self, *elements, **kwargs):
-    self.title = kwargs.pop('title', 'browsergui')
-    super(GUI, self).__init__(**kwargs)
-
+    self.title = Text(tag_name='title', text=kwargs.pop('title', 'browsergui'))
     self.body = _Body(gui=self)
-    self.command_broadcaster = commands.Broadcaster()
+    self.document = Document(title_tag=self.title.tag, body_tag=self.body.tag)
+    super(GUI, self).__init__(**kwargs)
 
     self.elements_by_id = {}
 
     for element in elements:
       self.append(element)
-
-  def send_command(self, command):
-    """Sends a snippet of JavaScript to all the GUI's command streams.
-
-    :param str command: the JavaScript snippet
-    """
-    self.command_broadcaster.broadcast(command)
 
   def dispatch_event(self, event):
     """Dispatch the event to whatever element is responsible for handling it.
@@ -59,22 +51,13 @@ class GUI(object):
     """docstring"""
     for subelement in element.walk():
       self.elements_by_id[subelement.id] = subelement
-    self.send_command(commands.insert_element(element))
+    self.document.mark_dirty()
 
   def unregister_element(self, element):
     """docstring"""
     for subelement in element.walk():
       del self.elements_by_id[subelement.id]
-    self.send_command(commands.remove_element(element))
+    self.document.mark_dirty()
 
-  def initialization_command(self):
-    """JS command to immediately bring a command stream up to date.
-
-    :rtype: str
-    """
-    return commands.compound((
-      commands.set_title(self.title),
-      commands.insert_element(self.body)))
-
-  def destroy(self):
-    self.command_broadcaster.destroy()
+  # def destroy(self):
+  #   self.document.destroy()

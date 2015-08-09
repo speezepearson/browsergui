@@ -5,6 +5,7 @@ function obey(command) {
       eval(command);
     } catch (e) {
       alert(e.toString());
+      sleep(5)
     }
   }
 }
