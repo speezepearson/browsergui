@@ -59,5 +59,5 @@ class GUI(object):
       del self.elements_by_id[subelement.id]
     self.document.mark_dirty()
 
-  # def destroy(self):
-  #   self.document.destroy()
+  def destroy(self):
+    self.document.destroy()

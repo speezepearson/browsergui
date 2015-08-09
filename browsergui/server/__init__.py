@@ -13,7 +13,7 @@ import cgi
 import webbrowser
 import json
 
-# from ..document import Destroyed
+from ..document import Destroyed
 
 ROOT_PATH = "/"
 PUPPET_PATH = "/puppet.js"
@@ -79,10 +79,9 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
     try:
       try:
         command = CURRENT_GUI.document.flush_changes()
-      except Exception as e: # TODO: this is a placeholder for Destroyed
+      except Destroyed:
         self.send_error(status_codes.NOT_FOUND)
         self.end_headers()
-        raise
       else:
         self.send_response(status_codes.OK)
         self.send_no_cache_headers()

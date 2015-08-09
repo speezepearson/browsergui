@@ -2,8 +2,8 @@ import xml.dom.minidom
 import threading
 import json
 
-# class Destroyed(Exception):
-#   pass
+class Destroyed(Exception):
+  pass
 
 class Document(object):
   def __init__(self, title_tag, body_tag, **kwargs):
@@ -24,18 +24,18 @@ class Document(object):
     self._mutex = threading.RLock()
     self._changed_condition = threading.Condition(self._mutex)
     self._dirty = True
-  #   self._destroyed = False
+    self._destroyed = False
 
-  # def destroy(self):
-  #   with self._mutex:
-  #     self._destroyed = True
-  #     self._changed_condition.notify_all()
+  def destroy(self):
+    with self._mutex:
+      self._destroyed = True
+      self._changed_condition.notify_all()
 
   def flush_changes(self):
     with self._changed_condition:
-      self._changed_condition.wait_for(lambda: self._dirty)# or self._destroyed)
-      # if self._destroyed:
-      #   raise Destroyed(self)
+      self._changed_condition.wait_for(lambda: self._dirty or self._destroyed)
+      if self._destroyed:
+        raise Destroyed(self)
       self._dirty = False
       html_contents = self._head_tag.toxml() + self._body_tag.toxml()
       return 'document.documentElement.innerHTML = {xml}'.format(xml=json.dumps(html_contents))
