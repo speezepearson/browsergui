@@ -1,0 +1,56 @@
+import sys
+if sys.version_info >= (3, 3):
+  import collections.abc as collections_abc
+else:
+  import collections as collections_abc
+
+from . import Element
+
+class List(Element, collections_abc.MutableSequence):
+  """A bulleted/numbered list of elements.
+
+  May be indexed into like a normal list. (See :class:`collections.abc.MutableSequence`.)
+  """
+  def __init__(self, items=(), **kwargs):
+    super(List, self).__init__(tag_name='ul', **kwargs)
+    self._items = []
+    for item in items:
+      self.append(item)
+
+  @property
+  def children(self):
+    return tuple(self._items)
+
+  def __getitem__(self, index):
+    return self._items[index]
+  def __setitem__(self, index, child):
+    if isinstance(index, slice):
+      raise NotImplementedError("slice assignment to Lists not yet supported")
+
+    del self[index]
+    self.insert(index, child)
+
+  def __delitem__(self, index):
+    if isinstance(index, slice):
+      raise NotImplementedError("slice deletion from Lists not yet supported")
+
+    old_child = self._items[index]
+    del self._items[index]
+    old_child.parent = None
+    self.tag.removeChild(old_child.tag.parentNode)
+    self.mark_dirty()
+
+  def __len__(self):
+    return len(self._items)
+
+  def insert(self, index, child):
+    next_li = self._items[index].tag.parentNode.nextSibling if index < len(self._items) else None
+
+    self._items.insert(index, child)
+    li_tag = self.tag.ownerDocument.createElement('li')
+    li_tag.appendChild(child.tag)
+    self.tag.insertBefore(li_tag, next_li)
+
+    child.parent = self
+
+    self.mark_dirty()

@@ -20,7 +20,8 @@ elements = (
   button,
   Link("A link.", url="http://google.com"),
   Image(os.path.join(os.path.dirname(__file__), 'tour-image.png')),
-  viewport)
+  viewport,
+  List(items=(Text("lists"), CodeSnippet("lists"), List(items=(Text("sublists"),)))))
 
 gui = GUI(Paragraph("Here are all the elements available to you:"), title="Browser GUI tour")
 for element in elements:
