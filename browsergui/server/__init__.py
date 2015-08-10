@@ -119,17 +119,7 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
   """Server that responds to each request in a separate thread."""
-  # When the server shuts down, we don't care about being nice to the client.
-  # Therefore, it's okay if the request-handling threads get killed rudely.
-  #   (this will happen often with the long-polling ``command`` request)
-  # So we make them daemons.
-  #
-  # ################# WARNING #################
-  # THIS MUST CHANGE if any thread is to modify state external to the program.
-  # The daemon threads could be halted without warning at any point,
-  #  possibly leaving the external resources in an inconsistent state.
-
-  daemon_threads = True
+  pass
 
 def serve_forever(gui, server_class=ThreadedHTTPServer, request_handler_class=GUIRequestHandler, port=62345, quiet=False):
   """Start a server that will display the given GUI when a browser asks for it.
