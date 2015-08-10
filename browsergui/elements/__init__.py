@@ -52,22 +52,6 @@ class Element(Node, HasCallbacks, HasStyling):
     """The GUI the element belongs to, or None if there is none."""
     return (None if self.orphaned else self.parent.gui)
 
-  def _call_dom_method(self, name, args):
-    getattr(self.tag, name)(*args)
-    if self.gui is not None:
-      self.gui.send_command("document.getElementById({id}).{name}({args})".format(
-        id=json.dumps(self.id),
-        name=name,
-        args=', '.join(arg_to_js(x) for x in args)))
-
-def arg_to_js(x):
-  if isinstance(x, Element):
-    return "document.getElementById({})".format(json.dumps(x.id))
-  elif isinstance(x, xml.dom.minidom.Element):
-    return "document.getElementById({})".format(json.dumps(x.getAttribute('id')))
-  else:
-    return json.dumps(x)
-
 
 class Container(Element, SequenceNode):
   """Contains and groups other elements."""

@@ -26,11 +26,3 @@ class GUITest(BrowserGUITestCase):
     event = {'type': CLICK, 'id': button.id}
     gui.dispatch_event({'type': CLICK, 'id': button.id})
     self.assertEqual([1], xs)
-
-  def test_send_command(self):
-    gui = GUI()
-    stream = gui.command_broadcaster.create_stream()
-
-    gui.send_command("foo")
-    self.assertEqual("foo", stream.get(block=False))
-    self.assertTrue(stream.empty())
