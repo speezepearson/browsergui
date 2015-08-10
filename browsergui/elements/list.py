@@ -11,8 +11,9 @@ class List(Element, collections_abc.MutableSequence):
 
   May be indexed into like a normal list. (See :class:`collections.abc.MutableSequence`.)
   """
-  def __init__(self, items=(), **kwargs):
+  def __init__(self, items=(), numbered=False, **kwargs):
     super(List, self).__init__(tag_name='ul', **kwargs)
+    self.numbered = numbered
     self._items = []
     for item in items:
       self.append(item)
@@ -20,6 +21,14 @@ class List(Element, collections_abc.MutableSequence):
   @property
   def children(self):
     return tuple(self._items)
+
+  @property
+  def numbered(self):
+    return self.tag.tagName == 'ol'
+  @numbered.setter
+  def numbered(self, value):
+    self.tag.tagName = ('ol' if value else 'ul')
+    self.mark_dirty()
 
   def __getitem__(self, index):
     return self._items[index]
