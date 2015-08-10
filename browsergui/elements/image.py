@@ -1,14 +1,14 @@
 import base64
 import re
 import os.path
-from . import Element
+from . import LeafElement
 
-class Image(Element):
-  def __init__(self, filename, format=None):
+class Image(LeafElement):
+  def __init__(self, filename, format=None, **kwargs):
     """
     :param str filename: the name of the file to read image data from
     """
-    super(Image, self).__init__(tag_name='img')
+    super(Image, self).__init__(tag_name='img', **kwargs)
 
     self.filename = filename
     if format is None:
@@ -22,7 +22,7 @@ class Image(Element):
 
   @property
   def data(self):
-    src = self.tag.attributes['src'].value
+    src = self.tag.getAttribute('src')
     base64_data = re.search('base64,(.*)', src).group(1)
     return base64.b64decode(base64_data)
 
@@ -30,4 +30,4 @@ class Image(Element):
     """Reads image contents from disk, in case they've changed."""
     with open(self.filename, 'rb') as f:
       data = f.read()
-    self.tag.attributes['src'] = 'data:image/{format};base64,{data}'.format(format=self.format, data=base64.b64encode(data).decode('ascii'))
+    self.tag.setAttribute('src', 'data:image/{format};base64,{data}'.format(format=self.format, data=base64.b64encode(data).decode('ascii')))

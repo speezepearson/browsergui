@@ -13,8 +13,6 @@ import cgi
 import webbrowser
 import json
 
-from ..commands import Empty, Destroyed
-
 ROOT_PATH = "/"
 PUPPET_PATH = "/puppet.js"
 COMMAND_PATH = "/command"
@@ -27,8 +25,6 @@ def read_json(request_headers, request_file):
   return json.loads(content_string)
 
 CURRENT_GUI = None
-CURRENT_HTML = None
-CURRENT_COMMAND_STREAM = None
 
 class GUIRequestHandler(BaseHTTPRequestHandler):
   """Handler for GUI-related requests.
@@ -69,8 +65,7 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
 
   def get_root(self):
     """Respond to a request for a new view of the underlying GUI."""
-    global CURRENT_COMMAND_STREAM
-    CURRENT_COMMAND_STREAM = CURRENT_GUI.command_stream()
+    CURRENT_GUI.make_new_document(destroy=True)
     self.get_static_file('index.html')
 
   def get_command(self):
@@ -81,16 +76,11 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
     the response thread won't linger too long.
     """
     try:
-      try:
-        command = CURRENT_COMMAND_STREAM.get()
-      except Destroyed:
-        self.send_error(status_codes.NOT_FOUND)
-        self.end_headers()
-      else:
-        self.send_response(status_codes.OK)
-        self.send_no_cache_headers()
-        self.end_headers()
-        self.write_bytes(command)
+      command = CURRENT_GUI.change_tracker.flush_changes()
+      self.send_response(status_codes.OK)
+      self.send_no_cache_headers()
+      self.end_headers()
+      self.write_bytes(command)
     except BrokenPipeError:
       # The client stopped listening while we were waiting. Oh well!
       pass
@@ -122,17 +112,7 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
   """Server that responds to each request in a separate thread."""
-  # When the server shuts down, we don't care about being nice to the client.
-  # Therefore, it's okay if the request-handling threads get killed rudely.
-  #   (this will happen often with the long-polling ``command`` request)
-  # So we make them daemons.
-  #
-  # ################# WARNING #################
-  # THIS MUST CHANGE if any thread is to modify state external to the program.
-  # The daemon threads could be halted without warning at any point,
-  #  possibly leaving the external resources in an inconsistent state.
-
-  daemon_threads = True
+  pass
 
 def serve_forever(gui, server_class=ThreadedHTTPServer, request_handler_class=GUIRequestHandler, port=62345, quiet=False):
   """Start a server that will display the given GUI when a browser asks for it.
@@ -164,4 +144,4 @@ def run(gui, open_browser=True, port=62345, **kwargs):
     serve_forever(gui, port=port, **kwargs)
   except KeyboardInterrupt:
     print("Keyboard interrupt received. Quitting.")
-    gui.destroy_streams()
+    gui.destroy()

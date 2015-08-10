@@ -3,7 +3,7 @@ from ..events import CLICK
 
 class Button(Text):
   """A simple button that does something when clicked."""
-  def __init__(self, text="Click!", callback=None):
+  def __init__(self, text="Click!", callback=None, **kwargs):
     """
     :param text: the label of the button
     :type text: str
@@ -12,7 +12,7 @@ class Button(Text):
     """
     if not isinstance(text, str):
       raise TypeError(text)
-    super(Button, self).__init__(text, tag_name="button")
+    super(Button, self).__init__(text, tag_name="button", **kwargs)
     if callback is not None:
       self.set_callback(callback)
 
