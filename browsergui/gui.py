@@ -1,6 +1,6 @@
 import xml.dom.minidom
 from .elements import Text, Container
-from .document import DocumentChangeTracker
+from .documentchangetracker import DocumentChangeTracker
 
 class _Body(Container):
   def __init__(self, gui, **kwargs):

@@ -38,12 +38,16 @@ class DocumentChangeTracker(object):
     self._destroyed = False
 
   def destroy(self):
+    '''Wake up waiting threads and give them JS to close the browser window.'''
     with self._mutex:
       self._destroyed = True
       self._changed_condition.notify_all()
 
   def flush_changes(self):
-    ''''''
+    '''Wait until the document is dirty, then return JS to bring a browser up to date.
+
+    :returns: str
+    '''
     with self._changed_condition:
       self._changed_condition.wait_for(lambda: self._dirty or self._destroyed)
       if self._destroyed:
@@ -53,6 +57,7 @@ class DocumentChangeTracker(object):
       return 'document.documentElement.innerHTML = {innerHTML}'.format(innerHTML=json.dumps(innerHTML))
 
   def mark_dirty(self):
+    '''Mark the document as dirty, waking up calls to :func:`flush_changes`'''
     with self._changed_condition:
       if self._destroyed:
         raise Destroyed(self)
