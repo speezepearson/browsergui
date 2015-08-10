@@ -4,7 +4,13 @@ function obey(command) {
     try {
       eval(command);
     } catch (e) {
-      alert(e.toString());
+      window.close();
+      // If a second window is opened, something funny happens and obey() is given some HTML as its command.
+      // There's a syntax error, and we reach this block of code.
+      // JS may keep running after calling window.close(), causing another request to /command to be make
+      // and thereby stealing the command meant for the other window.
+      // A short sleep will keep the request from being made until the window is truly closed.
+      sleep(9999);
     }
   }
 }

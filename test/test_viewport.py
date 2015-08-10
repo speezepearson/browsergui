@@ -56,4 +56,4 @@ class TextTest(BrowserGUITestCase):
 
   def test_tag(self):
     viewport = Viewport(Text('Hi'), width=50, height=60)
-    self.assertHTMLLike('<div style="overflow: scroll; width: 50; height: 60">\n\t<span>Hi</span>\n</div>', viewport)
+    self.assertHTMLLike('<div style="overflow: scroll; width: 50; height: 60"><span>Hi</span></div>', viewport)

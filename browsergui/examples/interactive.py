@@ -34,7 +34,7 @@ def run_repl():
 def main():
   call_in_background(run, args=(gui,), kwargs=dict(quiet=True), daemon=True)
   run_repl()
-  gui.destroy_streams()
+  gui.destroy()
 
 
 if __name__ == '__main__':

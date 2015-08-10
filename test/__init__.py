@@ -5,7 +5,7 @@ import contextlib
 
 def delete_ids(tag):
   if tag.attributes is not None and 'id' in tag.attributes.keys():
-    del tag.attributes['id']
+    tag.removeAttribute('id')
   for child in tag.childNodes:
     delete_ids(child)
 
@@ -32,7 +32,7 @@ class BrowserGUITestCase(unittest.TestCase):
     since they're presumably automatically generated and irrelevant.
     """
     expected_tag = xml.dom.minidom.parseString(expected_string).documentElement
-    tag = xml.dom.minidom.parseString(element.html).documentElement
+    tag = xml.dom.minidom.parseString(element.tag.toxml()).documentElement
     if ignore_id:
       delete_ids(tag)
 
