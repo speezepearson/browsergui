@@ -13,8 +13,6 @@ import cgi
 import webbrowser
 import json
 
-from ..document import Destroyed
-
 ROOT_PATH = "/"
 PUPPET_PATH = "/puppet.js"
 COMMAND_PATH = "/command"
@@ -78,16 +76,11 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
     the response thread won't linger too long.
     """
     try:
-      try:
-        command = CURRENT_GUI.change_tracker.flush_changes()
-      except Destroyed:
-        self.send_error(status_codes.NOT_FOUND)
-        self.end_headers()
-      else:
-        self.send_response(status_codes.OK)
-        self.send_no_cache_headers()
-        self.end_headers()
-        self.write_bytes(command)
+      command = CURRENT_GUI.change_tracker.flush_changes()
+      self.send_response(status_codes.OK)
+      self.send_no_cache_headers()
+      self.end_headers()
+      self.write_bytes(command)
     except BrokenPipeError:
       # The client stopped listening while we were waiting. Oh well!
       pass
