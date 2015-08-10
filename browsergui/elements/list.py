@@ -53,13 +53,17 @@ class List(Element, collections_abc.MutableSequence):
     return len(self._items)
 
   def insert(self, index, child):
-    next_li = self._items[index].tag.parentNode.nextSibling if index < len(self._items) else None
-
-    self._items.insert(index, child)
-    li_tag = self.tag.ownerDocument.createElement('li')
-    li_tag.appendChild(child.tag)
-    self.tag.insertBefore(li_tag, next_li)
+    if not isinstance(child, Element):
+      raise TypeError("List children must be Elements")
 
     child.parent = self
+
+    li_tag = self.tag.ownerDocument.createElement('li')
+    li_tag.appendChild(child.tag)
+
+    self._items.insert(index, child)
+
+    next_li = self.tag.childNodes[index] if index < len(self.tag.childNodes) else None
+    self.tag.insertBefore(li_tag, next_li)
 
     self.mark_dirty()
