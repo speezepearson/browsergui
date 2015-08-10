@@ -28,4 +28,4 @@ class HasStyling(object):
   def _update_styles(self):
     self.tag.setAttribute('style', styling_to_css(self._styling))
     if self.gui is not None:
-      self.gui.document.mark_dirty()
+      self.gui.change_tracker.mark_dirty()

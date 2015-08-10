@@ -27,7 +27,7 @@ class HasCallbacks(object):
     self.callbacks[event_type].append(callback)
     self.tag.setAttribute('on'+event_type, _javascript_to_notify_server(self, event_type))
     if self.gui is not None:
-      self.gui.document.mark_dirty()
+      self.gui.change_tracker.mark_dirty()
 
   def remove_callback(self, event_type, callback):
     """Stops calling ``callback`` when events of ``event_type`` are handled.
@@ -42,7 +42,7 @@ class HasCallbacks(object):
     if not self.callbacks[event_type]:
       self.tag.removeAttribute('on'+event_type)
       if self.gui is not None:
-        self.gui.document.mark_dirty()
+        self.gui.change_tracker.mark_dirty()
 
   def handle_event(self, event):
     """Calls all the callbacks registered for the given event's type.

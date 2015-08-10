@@ -1,6 +1,6 @@
-import json
+import xml.dom.minidom
 from .elements import Text, Container
-from .document import Document
+from .document import DocumentChangeTracker
 
 class _Body(Container):
   def __init__(self, gui, **kwargs):
@@ -12,6 +12,18 @@ class _Body(Container):
   def gui(self):
     return self._gui
 
+
+def _create_gui_xml_document(title_tag, body_tag):
+  document = xml.dom.minidom.Document()
+  html_tag = document.createElement('html')
+  head_tag = document.createElement('head')
+
+  document.appendChild(html_tag)
+  html_tag.appendChild(head_tag)
+  head_tag.appendChild(title_tag)
+  html_tag.appendChild(body_tag)
+
+  return document
 
 
 class GUI(object):
@@ -51,18 +63,19 @@ class GUI(object):
     """docstring"""
     for subelement in element.walk():
       self.elements_by_id[subelement.id] = subelement
-    self.document.mark_dirty()
+    self.change_tracker.mark_dirty()
 
   def unregister_element(self, element):
     """docstring"""
     for subelement in element.walk():
       del self.elements_by_id[subelement.id]
-    self.document.mark_dirty()
+    self.change_tracker.mark_dirty()
 
   def make_new_document(self, destroy=True):
     if destroy:
-      self.document.destroy()
-    self.document = Document(title_tag=self.title.tag, body_tag=self.body.tag)
+      self.change_tracker.destroy()
+    self.document = _create_gui_xml_document(title_tag=self.title.tag, body_tag=self.body.tag)
+    self.change_tracker = DocumentChangeTracker(self.document)
 
   def destroy(self):
-    self.document.destroy()
+    self.change_tracker.destroy()

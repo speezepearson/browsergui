@@ -79,7 +79,7 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
     """
     try:
       try:
-        command = CURRENT_GUI.document.flush_changes()
+        command = CURRENT_GUI.change_tracker.flush_changes()
       except Destroyed:
         self.send_error(status_codes.NOT_FOUND)
         self.end_headers()

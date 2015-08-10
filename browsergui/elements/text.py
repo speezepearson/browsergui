@@ -24,7 +24,7 @@ class Text(LeafElement):
 
     self._text.data = value
     if self.gui is not None:
-      self.gui.document.mark_dirty()
+      self.gui.change_tracker.mark_dirty()
 
 class CodeSnippet(Text):
   """Inline text representing computer code."""
