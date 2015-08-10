@@ -9,8 +9,8 @@ class ListTest(BrowserGUITestCase):
   def test_construction(self):
     List()
     List(items=[List()])
-    List(ordered=True)
-    List(ordered=False)
+    List(numbered=True)
+    List(numbered=False)
 
   def test_children(self):
     first = List()
@@ -83,6 +83,6 @@ class ListTest(BrowserGUITestCase):
       List(items=[0])
 
   def test_tag(self):
-    self.assertHTMLLike('<ol />', List(ordered=True))
-    self.assertHTMLLike('<ul />', List(ordered=False))
+    self.assertHTMLLike('<ol />', List(numbered=True))
+    self.assertHTMLLike('<ul />', List(numbered=False))
     self.assertHTMLLike('<ul><li><ul /></li></ul>', List(items=[List()]))
