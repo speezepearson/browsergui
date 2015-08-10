@@ -67,6 +67,7 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
 
   def get_root(self):
     """Respond to a request for a new view of the underlying GUI."""
+    CURRENT_GUI.make_new_document(destroy=True)
     self.get_static_file('index.html')
 
   def get_command(self):

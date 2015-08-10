@@ -23,7 +23,7 @@ class GUI(object):
   def __init__(self, *elements, **kwargs):
     self.title = Text(tag_name='title', text=kwargs.pop('title', 'browsergui'))
     self.body = _Body(gui=self)
-    self.document = Document(title_tag=self.title.tag, body_tag=self.body.tag)
+    self.make_new_document(destroy=False)
     super(GUI, self).__init__(**kwargs)
 
     self.elements_by_id = {}
@@ -58,6 +58,11 @@ class GUI(object):
     for subelement in element.walk():
       del self.elements_by_id[subelement.id]
     self.document.mark_dirty()
+
+  def make_new_document(self, destroy=True):
+    if destroy:
+      self.document.destroy()
+    self.document = Document(title_tag=self.title.tag, body_tag=self.body.tag)
 
   def destroy(self):
     self.document.destroy()
