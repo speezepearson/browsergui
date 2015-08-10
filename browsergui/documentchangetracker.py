@@ -49,7 +49,8 @@ class DocumentChangeTracker(object):
     :returns: str
     '''
     with self._changed_condition:
-      self._changed_condition.wait_for(lambda: self._dirty or self._destroyed)
+      while not (self._dirty or self._destroyed):
+        self._changed_condition.wait()
       if self._destroyed:
         return 'window.close(); sleep(9999)'
       self._dirty = False
