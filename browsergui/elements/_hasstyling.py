@@ -27,5 +27,4 @@ class HasStyling(object):
 
   def _update_styles(self):
     self.tag.setAttribute('style', styling_to_css(self._styling))
-    if self.gui is not None:
-      self.gui.change_tracker.mark_dirty()
+    self.mark_dirty()

@@ -38,8 +38,6 @@ class GUI(object):
     self.make_new_document(destroy=False)
     super(GUI, self).__init__(**kwargs)
 
-    self.elements_by_id = {}
-
     for element in elements:
       self.append(element)
 
@@ -48,8 +46,12 @@ class GUI(object):
 
     :param dict event:
     """
-    element = self.elements_by_id[event['id']]
-    element.handle_event(event)
+    for element in self.body.walk():
+      if element.id == event['id']:
+        element.handle_event(event)
+        break
+    else:
+      raise KeyError('no element with id {!r}'.format(event['id']))
 
   def append(self, child):
     """To be cleaned up, per issue #23."""
@@ -58,18 +60,6 @@ class GUI(object):
   def disown(self, child):
     """To be cleaned up, per issue #23."""
     self.body.disown(child)
-
-  def register_element(self, element):
-    """docstring"""
-    for subelement in element.walk():
-      self.elements_by_id[subelement.id] = subelement
-    self.change_tracker.mark_dirty()
-
-  def unregister_element(self, element):
-    """docstring"""
-    for subelement in element.walk():
-      del self.elements_by_id[subelement.id]
-    self.change_tracker.mark_dirty()
 
   def make_new_document(self, destroy=True):
     if destroy:

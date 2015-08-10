@@ -52,6 +52,10 @@ class Element(Node, HasCallbacks, HasStyling):
     """The GUI the element belongs to, or None if there is none."""
     return (None if self.orphaned else self.parent.gui)
 
+  def mark_dirty(self):
+    if self.gui is not None:
+      self.gui.change_tracker.mark_dirty()
+
 
 class Container(Element, SequenceNode):
   """Contains and groups other elements."""
@@ -62,26 +66,22 @@ class Container(Element, SequenceNode):
   def append(self, child):
     super(Element, self).append(child)
     self.tag.appendChild(child.tag)
-    if self.gui is not None:
-      self.gui.register_element(child)
+    self.mark_dirty()
 
   def insert_before(self, new_child, reference_child):
     super(Element, self).insert_before(new_child, reference_child)
     self.tag.insertBefore(new_child.tag, reference_child.tag)
-    if self.gui is not None:
-      self.gui.register_element(new_child)
+    self.mark_dirty()
 
   def insert_after(self, new_child, reference_child):
     super(Element, self).insert_after(new_child, reference_child)
     self.tag.insertBefore(new_child.tag, reference_child.tag.nextSibling)
-    if self.gui is not None:
-      self.gui.register_element(new_child)
+    self.mark_dirty()
 
   def disown(self, child):
     super(Element, self).disown(child)
     self.tag.removeChild(child.tag)
-    if self.gui is not None:
-      self.gui.unregister_element(child)
+    self.mark_dirty()
 
 
 class LeafElement(Element, LeafNode):
