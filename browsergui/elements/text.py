@@ -28,8 +28,7 @@ class Text(LeafElement):
 class CodeSnippet(Text):
   """Inline text representing computer code."""
   def __init__(self, text, **kwargs):
-    super(CodeSnippet, self).__init__(text, tag_name="code", **kwargs)
-    self.set_styles(**{'white-space': 'pre'})
+    super(CodeSnippet, self).__init__(text, tag_name="code", styling={'white-space': 'pre'}, **kwargs)
 class Paragraph(Text):
   """A block of plain text."""
   def __init__(self, text, **kwargs):

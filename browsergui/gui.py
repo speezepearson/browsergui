@@ -4,9 +4,9 @@ from .documentchangetracker import DocumentChangeTracker
 
 class _Body(Container):
   def __init__(self, gui=None, **kwargs):
+    self._gui = gui # must happen before super().__init__, which talks about self.gui
     super(_Body, self).__init__(tag_name='body', **kwargs)
     self.tag.setAttribute('id', '__body__')
-    self._gui = gui
 
   @property
   def gui(self):
