@@ -1,19 +1,17 @@
 import collections
+from ._hasgui import HasGUI
+from ._hastag import HasTag
 
 class NoSuchCallbackError(Exception):
   """Raised when trying to remove a nonexistent callback from an Element."""
   pass
 
 def _javascript_to_notify_server(element, event_type):
-  return """
-    notify_server({{
-      type: '{type}',
-      id: '{id}'
-    }})""".format(
-      type=event_type,
-      id=element.id)
+  return "notify_server({{type: '{type}', id: '{id}'}})".format(
+    type=event_type,
+    id=element.id)
 
-class HasCallbacks(object):
+class HasCallbacks(HasGUI, HasTag):
   def __init__(self, **kwargs):
     super(HasCallbacks, self).__init__(**kwargs)
     self.callbacks = collections.defaultdict(list)
