@@ -1,7 +1,10 @@
+from ._hasgui import HasGUI
+from ._hastag import HasTag
+
 def styling_to_css(styling):
   return ' '.join('{}: {};'.format(key, value) for key, value in styling.items())
 
-class HasStyling(object):
+class HasStyling(HasGUI, HasTag):
   def __init__(self, **kwargs):
     super(HasStyling, self).__init__(**kwargs)
     self._styling = {}
