@@ -5,6 +5,22 @@ class Destroyed(Exception):
   '''Raised when trying to operate on a destroyed DocumentChangeTracker.'''
   pass
 
+def ancestors(tag):
+  while tag is not None:
+    yield tag
+    tag = tag.parentNode
+
+def innerHTML(tag):
+  return ''.join(child.toxml() for child in tag.childNodes)
+
+def javascript_to_update_tag(tag, variable_name):
+  lines = []
+  lines.extend(
+    '{var}.setAttribute({key}, {value})'.format(var=variable_name, key=json.dumps(attr), value=json.dumps(value))
+    for attr, value in tag.attributes.items())
+  lines.append('{var}.innerHTML = {innerHTML}'.format(var=variable_name, innerHTML=json.dumps(innerHTML(tag))))
+  return ';\n'.join(lines)
+
 class DocumentChangeTracker(object):
   '''Provides JavaScript to help a browser keep its document up to date with a local one.
 
@@ -34,7 +50,7 @@ class DocumentChangeTracker(object):
 
     self._mutex = threading.RLock()
     self._changed_condition = threading.Condition(self._mutex)
-    self._dirty = True
+    self._dirty_tags = set([document.documentElement])
     self._destroyed = False
 
   def destroy(self):
@@ -49,18 +65,33 @@ class DocumentChangeTracker(object):
     :returns: str
     '''
     with self._changed_condition:
-      while not (self._dirty or self._destroyed):
+      while not (self._dirty_tags or self._destroyed):
         self._changed_condition.wait()
       if self._destroyed:
         return 'window.close(); sleep(9999)'
-      self._dirty = False
-      innerHTML = ''.join(tag.toxml() for tag in self.document.documentElement.childNodes)
-      return 'document.documentElement.innerHTML = {innerHTML}'.format(innerHTML=json.dumps(innerHTML))
+      
+      result = ';\n'.join(
+        'temp = document.getElementById({id}); {update}'.format(
+          id=json.dumps(tag.getAttribute('id')),
+          update=javascript_to_update_tag(tag, variable_name='temp'))
+        for tag in self._dirty_tags)
+      self._dirty_tags = set()
+      return result
 
-  def mark_dirty(self):
-    '''Mark the document as dirty, waking up calls to :func:`flush_changes`'''
+  def mark_dirty(self, tag):
+    '''Mark the given tag as dirty, waking up calls to :func:`flush_changes`'''
     with self._changed_condition:
       if self._destroyed:
         raise Destroyed(self)
-      self._dirty = True
+      # If one of the tag's parents is dirty, we'll rewrite the tag anyway,
+      # so we don't need to add it to the list.
+      for old_dirty_tag in self._dirty_tags:
+        if old_dirty_tag in ancestors(tag):
+          return
+      # The new tag will eclipse the dirtiness of any of its descendants.
+      for old_dirty_tag in self._dirty_tags:
+        if tag in ancestors(old_dirty_tag):
+          self._dirty_tags.remove(old_dirty_tag)
+
+      self._dirty_tags.add(tag)
       self._changed_condition.notify_all()

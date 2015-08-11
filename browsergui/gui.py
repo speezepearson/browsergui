@@ -19,6 +19,7 @@ class _Body(Container):
 def _create_gui_xml_document(title_tag, body_tag):
   document = xml.dom.minidom.Document()
   html_tag = document.createElement('html')
+  html_tag.setAttribute('id', '__html__')
   head_tag = document.createElement('head')
 
   document.appendChild(html_tag)
