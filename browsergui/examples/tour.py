@@ -8,12 +8,18 @@ def note_click():
   button.text = 'Button ({} clicks)'.format(click_counter)
 button = Button('Button (0 clicks)', callback=note_click)
 
+reversed_text_field_contents = Text(''.join(reversed('Reversed')))
+def note_text_field_change():
+  reversed_text_field_contents.text = ''.join(reversed(text_field.value))
+text_field = TextField(value='Reversed', change_callback=note_text_field_change)
+
 elements = (
   Text("Plain text."),
   CodeSnippet("Inline code."),
   Paragraph("A paragraph of text."),
   CodeBlock("A block of code."),
   button,
+  Container(text_field, reversed_text_field_contents),
   Link("A link.", url="http://google.com"),
   Image(os.path.join(os.path.dirname(__file__), 'tour-image.png')),
   Viewport(Paragraph('viewport '*1000, styling={'width': 1000}), width=400, height=200),

@@ -36,9 +36,22 @@ class Event(object):
 class Click(Event):
   javascript_type_name = 'click'
 
+class Input(Event):
+  javascript_type_name = 'input'
+
+  def __init__(self, value, **kwargs):
+    super(Input, self).__init__(**kwargs)
+    self.value = value
+
+  @classmethod
+  def dict_to_notify_server(cls):
+    return dict(
+      value='this.value',
+      **super(Input, cls).dict_to_notify_server())
+
 EVENT_TYPES_BY_NAME = {
   cls.javascript_type_name: cls
-  for cls in [Click]}
+  for cls in [Click, Input]}
 
 def from_dict(event_dict):
   type_name = event_dict.pop('type_name')
