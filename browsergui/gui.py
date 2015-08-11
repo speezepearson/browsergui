@@ -3,8 +3,7 @@ from .elements import Text, Container
 from .documentchangetracker import DocumentChangeTracker
 
 class _Body(Container):
-  def __init__(self, gui, **kwargs):
-    self._gui = None
+  def __init__(self, gui=None, **kwargs):
     super(_Body, self).__init__(tag_name='body', **kwargs)
     self.tag.setAttribute('id', '__body__')
     self._gui = gui
@@ -12,6 +11,9 @@ class _Body(Container):
   @property
   def gui(self):
     return self._gui
+  @gui.setter
+  def gui(self, gui):
+    self._gui = gui
 
 
 def _create_gui_xml_document(title_tag, body_tag):
@@ -35,9 +37,11 @@ class GUI(object):
 
   def __init__(self, *elements, **kwargs):
     self.title = Text(tag_name='title', text=kwargs.pop('title', 'browsergui'))
-    self.body = _Body(gui=self)
+    self.body = _Body()
     self.make_new_document(destroy=False)
     super(GUI, self).__init__(**kwargs)
+
+    self.body.gui = self
 
     for element in elements:
       self.append(element)
