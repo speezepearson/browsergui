@@ -5,8 +5,9 @@ class StylingTest(BrowserGUITestCase):
   def setUp(self):
     self.text = Text('Hi!')
 
-  def test_get_style_initial_is_None(self):
+  def test_initial_styling(self):
     self.assertIsNone(self.text.get_style('color'))
+    self.assertEqual('red', Text('hi', styling={'color': 'red'}).get_style('color'))
 
   def test_set_styles(self):
     self.text.set_styles(color='red')
