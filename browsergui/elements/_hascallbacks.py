@@ -1,5 +1,4 @@
 import collections
-from ..events import Event
 from ._hasgui import HasGUI
 from ._hastag import HasTag
 
@@ -19,7 +18,7 @@ class HasCallbacks(HasGUI, HasTag):
     :type callback: a function of one argument (the event being handled)
     """
     self.callbacks[event_type].append(callback)
-    Event.enable_server_notification(event_type, self.tag)
+    event_type.enable_server_notification(self.tag)
     self.mark_dirty()
 
   def remove_callback(self, event_type, callback):
@@ -33,7 +32,7 @@ class HasCallbacks(HasGUI, HasTag):
     self.callbacks[event_type].remove(callback)
 
     if not self.callbacks[event_type]:
-      Event.disable_server_notification(event_type, self.tag)
+      event_type.disable_server_notification(self.tag)
       self.mark_dirty()
 
   def handle_event(self, event):
@@ -41,5 +40,7 @@ class HasCallbacks(HasGUI, HasTag):
 
     :param Event event:
     """
-    for callback in self.callbacks[event.type_name]:
-      callback(event)
+    for callback_event_class, callbacks in self.callbacks.items():
+      if isinstance(event, callback_event_class):
+        for callback in callbacks:
+          callback(event)

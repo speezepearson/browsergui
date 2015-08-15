@@ -93,7 +93,7 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
   def post_event(self):
     """Parse the event from the client and notify the GUI."""
     data = read_json(self.headers, self.rfile)
-    event = browsergui.Event.from_dict(data)
+    event = browsergui.events.from_dict(data)
     self.send_response(status_codes.OK)
     self.end_headers()
     CURRENT_GUI.dispatch_event(event)

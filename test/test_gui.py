@@ -1,4 +1,4 @@
-from browsergui import GUI, Text, Button, Event, CLICK
+from browsergui import GUI, Text, Button, Event, Click
 
 from . import BrowserGUITestCase
 
@@ -23,5 +23,5 @@ class GUITest(BrowserGUITestCase):
 
     gui = GUI(decoy1, button, decoy2)
 
-    gui.dispatch_event(Event(type_name=CLICK, target_id=button.id))
+    gui.dispatch_event(Click(target_id=button.id))
     self.assertEqual([1], xs)

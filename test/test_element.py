@@ -1,5 +1,5 @@
 import json
-from browsergui import Element, Container, Event, CLICK, KEYDOWN, KEYUP
+from browsergui import Element, Container, Event, Click
 from browsergui.elements import NoSuchCallbackError
 
 from . import BrowserGUITestCase
@@ -12,20 +12,14 @@ class ElementTest(BrowserGUITestCase):
   def test_callbacks(self):
 
     e = Element(tag_name="a")
-    e.add_callback(CLICK, self.set_last_event)
-    e.add_callback(KEYDOWN, self.set_last_event)
+    self.assertEqual(list(e.callbacks[Click]), [])
 
-    event = Event(type_name=CLICK, target_id=e.id)
-    e.handle_event(event)
-    self.assertEqual(self.last_event, event)
+    e.add_callback(Click, self.set_last_event)
+    self.assertEqual(list(e.callbacks[Click]), [self.set_last_event])
 
-    e.remove_callback(CLICK, self.set_last_event)
+    e.remove_callback(Click, self.set_last_event)
     with self.assertRaises(NoSuchCallbackError):
-      e.remove_callback(CLICK, self.set_last_event)
-
-    self.assertEqual(list(e.callbacks[CLICK]), [])
-    self.assertEqual(list(e.callbacks[KEYDOWN]), [self.set_last_event])
-    self.assertEqual(list(e.callbacks[KEYUP]), [])
+      e.remove_callback(Click, self.set_last_event)
 
   def test_toggle_visibility(self):
     e = Element(tag_name='a')

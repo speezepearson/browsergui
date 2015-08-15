@@ -1,4 +1,4 @@
-from browsergui import Container
+from browsergui import Container, Click
 from . import BrowserGUITestCase
 
 class ContainerTest(BrowserGUITestCase):
@@ -44,5 +44,5 @@ class ContainerTest(BrowserGUITestCase):
     c.append(Container())
     self.assertEqual(h, hash(c))
 
-    c.add_callback("blahblahtrigger", self.set_last_event)
+    c.add_callback(Click, self.set_last_event)
     self.assertEqual(h, hash(c))
