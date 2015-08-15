@@ -20,6 +20,7 @@ class TextField(LeafElement):
   def value(self, value):
     self.tag.setAttribute('value', value)
     self.mark_dirty()
+    self.handle_event(Input(target_id=self.id, value=self.value))
 
   @property
   def placeholder(self):
