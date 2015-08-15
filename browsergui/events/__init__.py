@@ -2,7 +2,7 @@
 def _dict_to_javascript_object(dict):
   return ''.join((
     '{',
-    ', '.join('{}: {}'.format(k, v) for k, v in dict.items()),
+    ', '.join('{}: {}'.format(k, v) for k, v in sorted(dict.items())),
     '}'))
 
 class Event(object):
@@ -23,6 +23,8 @@ class Event(object):
 
   @classmethod
   def disable_server_notification(cls, tag):
+    if 'on'+cls.javascript_type_name not in tag.attributes.keys():
+      raise KeyError("tag is not set up to notify server for {} events".format(cls.__name__))
     tag.removeAttribute('on'+cls.javascript_type_name)
 
   @classmethod
@@ -40,6 +42,4 @@ EVENT_TYPES_BY_NAME = {
 
 def from_dict(event_dict):
   type_name = event_dict.pop('type_name')
-  for cls_type_name, cls in EVENT_TYPES_BY_NAME.items():
-    if type_name == cls_type_name:
-      return cls.from_dict(event_dict)
+  return EVENT_TYPES_BY_NAME[type_name].from_dict(event_dict)
