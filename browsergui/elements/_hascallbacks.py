@@ -1,15 +1,11 @@
 import collections
+from ..events import Event
 from ._hasgui import HasGUI
 from ._hastag import HasTag
 
 class NoSuchCallbackError(Exception):
   """Raised when trying to remove a nonexistent callback from an Element."""
   pass
-
-def _javascript_to_notify_server(element, event_type):
-  return "notify_server({{type: '{type}', id: '{id}'}})".format(
-    type=event_type,
-    id=element.id)
 
 class HasCallbacks(HasGUI, HasTag):
   def __init__(self, **kwargs):
@@ -23,7 +19,7 @@ class HasCallbacks(HasGUI, HasTag):
     :type callback: a function of one argument (the event being handled)
     """
     self.callbacks[event_type].append(callback)
-    self.tag.setAttribute('on'+event_type, _javascript_to_notify_server(self, event_type))
+    Event.enable_server_notification(event_type, self.tag)
     self.mark_dirty()
 
   def remove_callback(self, event_type, callback):
@@ -37,13 +33,13 @@ class HasCallbacks(HasGUI, HasTag):
     self.callbacks[event_type].remove(callback)
 
     if not self.callbacks[event_type]:
-      self.tag.removeAttribute('on'+event_type)
+      Event.disable_server_notification(event_type, self.tag)
       self.mark_dirty()
 
   def handle_event(self, event):
     """Calls all the callbacks registered for the given event's type.
 
-    :type event: dict
+    :param Event event:
     """
-    for callback in self.callbacks[event['type']]:
+    for callback in self.callbacks[event.type_name]:
       callback(event)

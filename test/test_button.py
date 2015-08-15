@@ -1,4 +1,4 @@
-from browsergui import Button, CLICK
+from browsergui import Button, Event, CLICK
 from . import BrowserGUITestCase
 
 class ButtonTest(BrowserGUITestCase):
@@ -14,12 +14,12 @@ class ButtonTest(BrowserGUITestCase):
   def test_set_callback(self):
     xs = []
     b = Button(callback=(lambda: xs.append(1)))
-    b.handle_event({'type': CLICK, 'id': b.id})
+    b.handle_event(Event(type_name=CLICK, target_id=b.id))
     self.assertEqual([1], xs)
 
     xs = []
     b.set_callback(lambda: xs.append(2))
-    b.handle_event({'type': CLICK, 'id': b.id})
+    b.handle_event(Event(type_name=CLICK, target_id=b.id))
     self.assertEqual([2], xs)
 
   def test_tag(self):

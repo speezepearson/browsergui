@@ -1,5 +1,5 @@
 import json
-from browsergui import Element, Container, CLICK, KEYDOWN, KEYUP
+from browsergui import Element, Container, Event, CLICK, KEYDOWN, KEYUP
 from browsergui.elements import NoSuchCallbackError
 
 from . import BrowserGUITestCase
@@ -15,11 +15,9 @@ class ElementTest(BrowserGUITestCase):
     e.add_callback(CLICK, self.set_last_event)
     e.add_callback(KEYDOWN, self.set_last_event)
 
-    e.handle_event({'type': CLICK, 'id': e.id})
-    self.assertEqual(self.last_event, {'type': CLICK, 'id': e.id})
-
-    e.handle_event({'type': KEYDOWN, 'id': e.id, 'key': 'a'})
-    self.assertEqual(self.last_event, {'type': KEYDOWN, 'id': e.id, 'key': 'a'})
+    event = Event(type_name=CLICK, target_id=e.id)
+    e.handle_event(event)
+    self.assertEqual(self.last_event, event)
 
     e.remove_callback(CLICK, self.set_last_event)
     with self.assertRaises(NoSuchCallbackError):
