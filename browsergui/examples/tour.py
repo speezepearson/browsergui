@@ -8,9 +8,10 @@ def note_click():
   button.text = 'Button ({} clicks)'.format(click_counter)
 button = Button('Button (0 clicks)', callback=note_click)
 
-big_thing = Paragraph('viewport '*1000)
-big_thing.set_styles(width=1000)
-viewport = Viewport(big_thing, width=400, height=200)
+reversed_text_field_contents = Text(''.join(reversed('Reversed')))
+def note_text_field_change():
+  reversed_text_field_contents.text = ''.join(reversed(text_field.value))
+text_field = TextField(value='Reversed', change_callback=note_text_field_change)
 
 elements = (
   Text("Plain text."),
@@ -18,16 +19,18 @@ elements = (
   Paragraph("A paragraph of text."),
   CodeBlock("A block of code."),
   button,
+  Container(text_field, reversed_text_field_contents),
   Link("A link.", url="http://google.com"),
   Image(os.path.join(os.path.dirname(__file__), 'tour-image.png')),
-  viewport,
-  List(items=(Text("lists"), CodeSnippet("lists"), List(items=(Text("sublists"),)))))
+  Viewport(Paragraph('viewport '*1000, styling={'width': 1000}), width=400, height=200),
+  List(items=(Text("lists"), CodeSnippet("lists"), List(items=(Text("sublists"),)))),
+  Grid([[None, Text('browsergui', styling={'font-weight':'600'}), Text('tkinter', styling={'font-weight':'600'})],
+        [Text('has grids', styling={'font-weight':'600'}), Text('yes'), Text('yes')],
+        [Text('made by me', styling={'font-weight':'600'}), Text('yes'), Text('no')]]))
 
 gui = GUI(Paragraph("Here are all the elements available to you:"), title="Browser GUI tour")
 for element in elements:
-  container = Container(element)
-  container.set_styles(**{'margin': '1em', 'border': '1px solid black'})
-  gui.append(container)
+  gui.append(Container(element, styling={'margin': '1em', 'border': '1px solid black'}))
 
 def main():
   run(gui)

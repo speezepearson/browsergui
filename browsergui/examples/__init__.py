@@ -1,4 +1,4 @@
-from . import helloworld, clickcount, clock, buttons, interactive, longrunning, tour
+from . import helloworld, clickcount, clock, buttons, interactive, longrunning, tour, minesweeper
 
 EXAMPLES = {
   'helloworld': helloworld,
@@ -7,4 +7,5 @@ EXAMPLES = {
   'buttons': buttons,
   'interactive': interactive,
   'longrunning': longrunning,
-  'tour': tour}
+  'tour': tour,
+  'minesweeper': minesweeper}

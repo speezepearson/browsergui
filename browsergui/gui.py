@@ -3,19 +3,23 @@ from .elements import Text, Container
 from .documentchangetracker import DocumentChangeTracker
 
 class _Body(Container):
-  def __init__(self, gui, **kwargs):
+  def __init__(self, gui=None, **kwargs):
+    self._gui = gui # must happen before super().__init__, which talks about self.gui
     super(_Body, self).__init__(tag_name='body', **kwargs)
     self.tag.setAttribute('id', '__body__')
-    self._gui = gui
 
   @property
   def gui(self):
     return self._gui
+  @gui.setter
+  def gui(self, gui):
+    self._gui = gui
 
 
 def _create_gui_xml_document(title_tag, body_tag):
   document = xml.dom.minidom.Document()
   html_tag = document.createElement('html')
+  html_tag.setAttribute('id', '__html__')
   head_tag = document.createElement('head')
 
   document.appendChild(html_tag)
@@ -34,9 +38,11 @@ class GUI(object):
 
   def __init__(self, *elements, **kwargs):
     self.title = Text(tag_name='title', text=kwargs.pop('title', 'browsergui'))
-    self.body = _Body(gui=self)
+    self.body = _Body()
     self.make_new_document(destroy=False)
     super(GUI, self).__init__(**kwargs)
+
+    self.body.gui = self
 
     for element in elements:
       self.append(element)
@@ -47,11 +53,11 @@ class GUI(object):
     :param dict event:
     """
     for element in self.body.walk():
-      if element.id == event['id']:
+      if element.id == event.target_id:
         element.handle_event(event)
         break
     else:
-      raise KeyError('no element with id {!r}'.format(event['id']))
+      raise KeyError('no element with id {!r}'.format(event.target_id))
 
   def append(self, child):
     """To be cleaned up, per issue #23."""

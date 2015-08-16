@@ -3,58 +3,22 @@ import json
 import xml.dom.minidom
 import xml.parsers.expat
 
-from ._node import Node, SequenceNode, LeafNode
+from ._node import SequenceNode, LeafNode
 from ._hascallbacks import HasCallbacks, NoSuchCallbackError
 from ._hasstyling import HasStyling
 
-_unique_id_counter = 0
-def unique_id():
-  """Returns a new string suitable for an :class:`Element` id every time it's called."""
-  global _unique_id_counter
-  _unique_id_counter += 1
-  return "_element_{}".format(_unique_id_counter)
-
-def new_tag(tag_name):
-  html = '<{t}></{t}>'.format(t=tag_name)
-  return xml.dom.minidom.parseString(html).documentElement
-
-class Element(Node, HasCallbacks, HasStyling):
+class Element(HasCallbacks, HasStyling):
   """A conceptual GUI element, like a button or a table.
 
   Elements are arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
   Every element has a unique identifier, accessible by the :func:`id` method.
   """
-  def __init__(self, tag_name, **kwargs):
-    self.tag = new_tag(tag_name)
-    self.tag.setAttribute('id', unique_id())
-
-    super(Element, self).__init__(**kwargs)
 
   def __str__(self):
     return "(#{})".format(self.id)
 
   def __repr__(self):
-    return "Element(id={!r})".format(self.id)
-
-  def __hash__(self):
-    return id(self)
-
-  def __eq__(self, other):
-    if isinstance(other, Element):
-      return self.tag.toxml() == other.tag.toxml() and self.callbacks == other.callbacks
-
-  @property
-  def id(self):
-    return self.tag.getAttribute('id')
-
-  @property
-  def gui(self):
-    """The GUI the element belongs to, or None if there is none."""
-    return (None if self.orphaned else self.parent.gui)
-
-  def mark_dirty(self):
-    if self.gui is not None:
-      self.gui.change_tracker.mark_dirty()
+    return "{cls}(id={id!r})".format(cls=type(self).__name__, id=self.id)
 
 
 class Container(Element, SequenceNode):
@@ -93,3 +57,5 @@ from .link import Link
 from .viewport import Viewport
 from .image import Image
 from .list import List
+from .grid import Grid
+from .textfield import TextField
