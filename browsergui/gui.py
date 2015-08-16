@@ -53,11 +53,11 @@ class GUI(object):
     :param dict event:
     """
     for element in self.body.walk():
-      if element.id == event['id']:
+      if element.id == event.target_id:
         element.handle_event(event)
         break
     else:
-      raise KeyError('no element with id {!r}'.format(event['id']))
+      raise KeyError('no element with id {!r}'.format(event.target_id))
 
   def append(self, child):
     """To be cleaned up, per issue #23."""

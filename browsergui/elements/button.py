@@ -1,5 +1,5 @@
 from .text import Text
-from ..events import CLICK
+from ..events import Click
 
 class Button(Text):
   """A simple button that does something when clicked."""
@@ -22,6 +22,6 @@ class Button(Text):
     :param callback: the function to be called
     :type callback: function of zero arguments
     """
-    if self.callbacks[CLICK]:
-      self.remove_callback(CLICK, self.callbacks[CLICK][0])
-    self.add_callback(CLICK, (lambda event: callback()))
+    if self.callbacks[Click]:
+      self.remove_callback(Click, self.callbacks[Click][0])
+    self.add_callback(Click, (lambda event: callback()))
