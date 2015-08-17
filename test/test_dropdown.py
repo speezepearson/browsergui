@@ -2,7 +2,7 @@ from browsergui import Dropdown, Text
 from . import BrowserGUITestCase
 
 def dropdown_xml(*options):
-  return '<select oninput="notify_server({{target_id: this.getAttribute(&quot;id&quot;), type_name: event.type, value: this.value}})">{}</select>'.format(''.join('<option value="{s}">{s}</option>'.format(s=s) for s in options))
+  return '<select>{}</select>'.format(''.join('<option value="{s}">{s}</option>'.format(s=s) for s in options))
 
 class DropdownTest(BrowserGUITestCase):
 
@@ -35,7 +35,7 @@ class DropdownTest(BrowserGUITestCase):
     with self.assertRaises(IndexError):
       d[1]
 
-    self.assertHTMLLike(dropdown_xml('b'), d)
+    self.assertHTMLLike(dropdown_xml('b'), d, ignored_attrs=['id', 'oninput', 'selected'])
 
   def test_setitem(self):
     d = Dropdown(['a', 'b'])
@@ -44,7 +44,7 @@ class DropdownTest(BrowserGUITestCase):
     self.assertEqual(d[0], 'c')
     self.assertEqual(2, len(d))
 
-    self.assertHTMLLike(dropdown_xml('c', 'b'), d)
+    self.assertHTMLLike(dropdown_xml('c', 'b'), d, ignored_attrs=['id', 'oninput', 'selected'])
 
   def test_insert(self):
     d = Dropdown()
@@ -54,7 +54,8 @@ class DropdownTest(BrowserGUITestCase):
     d.insert(99, 'd')
     d.insert(-1, 'c')
     self.assertEqual(['a', 'b', 'c', 'd'], list(d))
-    self.assertHTMLLike(dropdown_xml('a', 'b', 'c', 'd'), d)
+    self.assertHTMLLike(dropdown_xml('a', 'b', 'c', 'd'), d, ignored_attrs=['id', 'oninput', 'selected'])
 
   def test_tag(self):
-    self.assertHTMLLike(dropdown_xml(), Dropdown())
+    self.assertHTMLLike('<select oninput="notify_server({target_id: this.getAttribute(&quot;id&quot;), type_name: event.type, value: this.value})" />', Dropdown(), ignored_attrs=['id'])
+    self.assertHTMLLike('<select><option value="a">a</option><option value="b">b</option></select>', Dropdown(['a', 'b']), ignored_attrs=['id', 'oninput', 'selected'])
