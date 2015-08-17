@@ -13,6 +13,12 @@ def note_text_field_change():
   reversed_text_field_contents.text = ''.join(reversed(text_field.value))
 text_field = TextField(value='Reversed', change_callback=note_text_field_change)
 
+selected_dropdown_item = Text('')
+def note_dropdown_change():
+  selected_dropdown_item.text = dropdown.value
+dropdown = Dropdown(['Dr', 'op', 'do', 'wn'], change_callback=note_dropdown_change)
+selected_dropdown_item.text = dropdown.value
+
 elements = (
   Text("Plain text."),
   CodeSnippet("Inline code."),
@@ -20,6 +26,7 @@ elements = (
   CodeBlock("A block of code."),
   button,
   Container(text_field, reversed_text_field_contents),
+  Container(dropdown, Text('Selected: '), selected_dropdown_item),
   Link("A link.", url="http://google.com"),
   Image(os.path.join(os.path.dirname(__file__), 'tour-image.png')),
   Viewport(Paragraph('viewport '*1000, styling={'width': 1000}), width=400, height=200),
