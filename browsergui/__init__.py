@@ -8,7 +8,7 @@ The central concepts here are:
 
 from . import server, gui, elements, events, utilities
 from .gui import GUI
-from .elements import Element, Container, Button, Text, Paragraph, CodeSnippet, CodeBlock, Link, Viewport, Image, List, Grid, TextField, Dropdown, NumberField
+from .elements import Element, Container, Button, Text, Paragraph, CodeSnippet, CodeBlock, Link, Viewport, Image, List, Grid, TextField, Dropdown, NumberField, ColorField
 from .server import run
 from .events import *
 from .utilities import RepeatingTimer, call_in_background

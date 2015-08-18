@@ -25,6 +25,11 @@ def note_number_change():
 number_field = NumberField(value=12, change_callback=note_number_change)
 number_field_contents.text = str(number_field.value)
 
+colored_text = Text('colored')
+def note_color_change():
+  colored_text.set_styles(color=color_field.value_to_xml_string(color_field.value))
+color_field = ColorField(change_callback=note_color_change)
+
 elements = (
   Text("Plain text."),
   CodeSnippet("Inline code."),
@@ -34,6 +39,7 @@ elements = (
   Container(text_field, reversed_text_field_contents),
   Container(dropdown, Text('Selected: '), selected_dropdown_item),
   Container(number_field, Text('You entered: '), number_field_contents),
+  Container(color_field, colored_text),
   Link("A link.", url="http://google.com"),
   Image(os.path.join(os.path.dirname(__file__), 'tour-image.png')),
   Viewport(Paragraph('viewport '*1000, styling={'width': 1000}), width=400, height=200),
