@@ -19,6 +19,12 @@ def note_dropdown_change():
 dropdown = Dropdown(['Dr', 'op', 'do', 'wn'], change_callback=note_dropdown_change)
 selected_dropdown_item.text = dropdown.value
 
+number_field_contents = Text('')
+def note_number_change():
+  number_field_contents.text = number_field.value
+number_field = NumberField(value=12, change_callback=note_number_change)
+number_field_contents.text = str(number_field.value)
+
 elements = (
   Text("Plain text."),
   CodeSnippet("Inline code."),
@@ -27,6 +33,7 @@ elements = (
   button,
   Container(text_field, reversed_text_field_contents),
   Container(dropdown, Text('Selected: '), selected_dropdown_item),
+  Container(number_field, Text('You entered: '), number_field_contents),
   Link("A link.", url="http://google.com"),
   Image(os.path.join(os.path.dirname(__file__), 'tour-image.png')),
   Viewport(Paragraph('viewport '*1000, styling={'width': 1000}), width=400, height=200),

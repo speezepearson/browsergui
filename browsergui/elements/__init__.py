@@ -60,3 +60,4 @@ from .list import List
 from .grid import Grid
 from .textfield import TextField
 from .dropdown import Dropdown
+from .number_field import NumberField
