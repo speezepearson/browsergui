@@ -4,22 +4,18 @@ if sys.version_info >= (3, 3):
 else:
   import collections as collections_abc
 
-from . import LeafElement
+from .input_field import InputField
 from ..events import Input
 
-class Dropdown(LeafElement, collections_abc.MutableSequence):
-  def __init__(self, options=(), change_callback=None, **kwargs):
-    super(Dropdown, self).__init__(tag_name="select", **kwargs)
+class Dropdown(InputField, collections_abc.MutableSequence):
+  def __init__(self, options=(), **kwargs):
+    super(Dropdown, self).__init__(tag_name='select', **kwargs)
 
     for option in options:
       self.append(option)
 
     if options:
-      self._select(options[0])
-
-    self.add_callback(Input, self._handle_value_change_event)
-    if change_callback is not None:
-      self.add_callback(Input, (lambda event: change_callback()))
+      self.set_cached_value(options[0])
 
   def __getitem__(self, index):
     if isinstance(index, slice):
@@ -55,26 +51,9 @@ class Dropdown(LeafElement, collections_abc.MutableSequence):
     self.tag.insertBefore(option_tag, next_option_tag)
     self.mark_dirty()
 
-  @property
-  def value(self):
-    for child in self.tag.childNodes:
-      if child.getAttribute('selected'):
-        return child.childNodes[0].data
-    return None
-  @value.setter
-  def value(self, value):
-    if value not in self:
-      raise ValueError(value)
-    self._select(value)
-    self.handle_event(Input(target_id=self.id, value=self.value))
-    self.mark_dirty()
-
-  def _select(self, option):
+  def update_tag_with_cached_value(self):
     for child in self.tag.childNodes:
       if 'selected' in child.attributes.keys():
         child.removeAttribute('selected')
-      if option == child.childNodes[0].data:
+      if self.cached_value == child.childNodes[0].data:
         child.setAttribute('selected', 'true')
-
-  def _handle_value_change_event(self, event):
-    self._select(event.value)
