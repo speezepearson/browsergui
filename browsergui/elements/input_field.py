@@ -7,7 +7,7 @@ class InputField(LeafElement):
     super(InputField, self).__init__(tag_name=tag_name, **kwargs)
     self.update_tag_with_cached_value()
 
-    self.add_callback(Input, lambda event: self.set_cached_value(event.value))
+    self.add_callback(Input, lambda event: self.set_cached_value(self.value_from_xml_string(event.value)))
     if change_callback is not None:
       self.add_callback(Input, (lambda event: change_callback()))
 
@@ -19,7 +19,7 @@ class InputField(LeafElement):
   @value.setter
   def value(self, value):
     self.set_cached_value(value)
-    self.handle_event(Input(target_id=self.id, value=self.value))
+    self.handle_event(Input(target_id=self.id, value=self.value_to_xml_string(value)))
     self.mark_dirty()
 
   @property
@@ -43,7 +43,13 @@ class InputField(LeafElement):
       if 'value' in self.tag.attributes.keys():
         self.tag.removeAttribute('value')
     else:
-      self.tag.setAttribute('value', self.cached_value)
+      self.tag.setAttribute('value', self.value_to_xml_string(self.cached_value))
 
   def set_cached_value(self, value):
     self.cached_value = value
+
+  def value_from_xml_string(self, value):
+    return value
+
+  def value_to_xml_string(self, value):
+    return str(value)
