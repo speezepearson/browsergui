@@ -25,3 +25,13 @@ class TextFieldTest(BrowserGUITestCase):
     e = TextField(change_callback=(lambda: xs.append(1)))
     e.value = 'hi'
     self.assertEqual([1], xs)
+
+  def test_validation(self):
+    t = TextField()
+
+    for good_object in ('', 'abc', 'a b c'):
+      t.value = good_object
+
+    for bad_object in (None, 0, [], ()):
+      with self.assertRaises(TypeError):
+        t.value = bad_object

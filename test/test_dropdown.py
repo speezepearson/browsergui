@@ -59,3 +59,21 @@ class DropdownTest(BrowserGUITestCase):
   def test_tag(self):
     self.assertHTMLLike('<select oninput="notify_server({target_id: this.getAttribute(&quot;id&quot;), type_name: event.type, value: this.value})" />', Dropdown(), ignored_attrs=['id'])
     self.assertHTMLLike('<select><option value="a">a</option><option value="b">b</option></select>', Dropdown(['a', 'b']), ignored_attrs=['id', 'oninput', 'selected'])
+
+  def test_validation(self):
+    d = Dropdown(['a', 'b', 'c'])
+
+    for good_object in ('a', 'b', 'c'):
+      d.value = good_object
+
+    for bad_object in (0, []):
+      with self.assertRaises(TypeError):
+        d.value = bad_object
+
+    # Commented for now because testing whether the value is in the set of options is hard,
+    # because of how all the __init__ methods get tangled up, with tag-modification
+    # and value-setting and validation.
+    #
+    # for bad_object in ('not in it'):
+    #   with self.assertRaises(ValueError):
+    #     d.value = bad_object

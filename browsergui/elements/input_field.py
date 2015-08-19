@@ -46,6 +46,7 @@ class InputField(LeafElement):
       self.tag.setAttribute('value', self.value_to_xml_string(self.cached_value))
 
   def set_cached_value(self, value):
+    self.ensure_is_valid_value(value)
     self.cached_value = value
 
   def value_from_xml_string(self, value):
@@ -53,3 +54,6 @@ class InputField(LeafElement):
 
   def value_to_xml_string(self, value):
     return str(value)
+
+  def ensure_is_valid_value(self, value):
+    pass

@@ -57,3 +57,7 @@ class Dropdown(InputField, collections_abc.MutableSequence):
         child.removeAttribute('selected')
       if self.cached_value == child.childNodes[0].data:
         child.setAttribute('selected', 'true')
+
+  def ensure_is_valid_value(self, value):
+    if not (value is None or isinstance(value, str)):
+      raise TypeError('expected value of type str (or None), got {}'.format(type(value).__name__))
