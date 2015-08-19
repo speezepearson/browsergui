@@ -30,6 +30,14 @@ def note_color_change():
   colored_text.set_styles(color=color_field.value_to_xml_string(color_field.value))
 color_field = ColorField(change_callback=note_color_change)
 
+weekday_text = Text('...')
+def note_date_change():
+  if date_field.value is None:
+    weekday_text.text = '...'
+  d = date_field.value.weekday()
+  weekday_text.text = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][d]
+date_field = DateField(change_callback=note_date_change)
+
 elements = (
   Text("Plain text."),
   CodeSnippet("Inline code."),
@@ -40,6 +48,7 @@ elements = (
   Container(dropdown, Text('Selected: '), selected_dropdown_item),
   Container(number_field, Text('You entered: '), number_field_contents),
   Container(color_field, colored_text),
+  Container(date_field, Text(' is a '), weekday_text),
   Link("A link.", url="http://google.com"),
   Image(os.path.join(os.path.dirname(__file__), 'tour-image.png')),
   Viewport(Paragraph('viewport '*1000, styling={'width': 1000}), width=400, height=200),
