@@ -1,3 +1,6 @@
+import sys
+LEGAL_VALUE_TYPES = (str,) if sys.version_info >= (3, 0) else (str, unicode)
+
 from .input_field import InputField
 
 class TextField(InputField):
@@ -6,6 +9,6 @@ class TextField(InputField):
     self.tag.setAttribute('type', 'text')
 
   def ensure_is_valid_value(self, value):
-    if not isinstance(value, str):
-      raise TypeError('expected value of type str (or None), got {}'.format(type(value).__name__))
+    if not isinstance(value, LEGAL_VALUE_TYPES):
+      raise TypeError('expected value to be str (or None), got {}'.format(type(value).__name__))
     super(TextField, self).ensure_is_valid_value(value)
