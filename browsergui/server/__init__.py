@@ -120,26 +120,23 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
   """Server that responds to each request in a separate thread."""
   pass
 
-def serve_forever(gui, server_class=ThreadedHTTPServer, request_handler_class=GUIRequestHandler, port=62345, quiet=False):
-  """Start a server that will display the given GUI when a browser asks for it.
-
-  :param bool quiet: whether to suppress the server's normal response-handling info messages
-  """
-  global CURRENT_GUI
-  CURRENT_GUI = gui
-  if quiet:
-    def noop(*args): pass
-    request_handler_class.log_message = noop
-
-  server = server_class(('localhost', port), request_handler_class)
-  server.serve_forever()
-
-def run(gui, open_browser=True, port=62345, **kwargs):
+def run(gui, open_browser=True, port=0, quiet=False):
   """Helper function to simply display a GUI in the browser.
 
   :param bool open_browser: whether to immediately display the GUI in a new browser window
   :param kwargs: passed through to :func:`serve_forever`
   """
+  global CURRENT_GUI
+  CURRENT_GUI = gui
+
+  if quiet:
+    def noop(*args): pass
+    GUIRequestHandler.log_message = noop
+
+  server = ThreadedHTTPServer(('localhost', port), GUIRequestHandler)
+  if port == 0:
+    port = server.socket.getsockname()[1]
+
   if open_browser:
     url = "http://localhost:{}".format(port)
     print('Directing browser to {}'.format(url))
@@ -147,7 +144,7 @@ def run(gui, open_browser=True, port=62345, **kwargs):
 
   print('Starting server. Use <Ctrl-C> to stop.')
   try:
-    serve_forever(gui, port=port, **kwargs)
+    server.serve_forever()
   except KeyboardInterrupt:
     print("Keyboard interrupt received. Quitting.")
     gui.destroy()
