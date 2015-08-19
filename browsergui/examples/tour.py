@@ -19,15 +19,44 @@ def note_dropdown_change():
 dropdown = Dropdown(['Dr', 'op', 'do', 'wn'], change_callback=note_dropdown_change)
 selected_dropdown_item.text = dropdown.value
 
+number_field_contents = Text('')
+def note_number_change():
+  number_field_contents.text = '' if number_field.value is None else str(number_field.value**2)
+number_field = NumberField(change_callback=note_number_change)
+number_field.value = 12
+
+colored_text = Text('colored')
+def note_color_change():
+  colored_text.set_styles(color=color_field.value_to_xml_string(color_field.value))
+color_field = ColorField(change_callback=note_color_change)
+color_field.value = (0, 0, 255)
+
+weekday_text = Text('...')
+def note_date_change():
+  if date_field.value is None:
+    weekday_text.text = '...'
+  d = date_field.value.weekday()
+  weekday_text.text = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][d]
+date_field = DateField(change_callback=note_date_change)
+
 elements = (
-  Text("Plain text."),
-  CodeSnippet("Inline code."),
-  Paragraph("A paragraph of text."),
-  CodeBlock("A block of code."),
-  button,
-  Container(text_field, reversed_text_field_contents),
-  Container(dropdown, Text('Selected: '), selected_dropdown_item),
-  Link("A link.", url="http://google.com"),
+  Container(
+    Text("Text of many flavors:"),
+    List(items=(
+      Text("plain"),
+      CodeSnippet("code"),
+      Container(Paragraph("paragraphs"), Paragraph("paragraphs"), Paragraph("paragraphs woohoo")),
+      CodeBlock('code blocks\ncode blocks\ncode blocks woohoo'),
+      Link("links", url="http://github.com/speezepearson/browsergui")))),
+  Container(
+    Text("Input of many flavors:"),
+    List(items=(
+      button,
+      Container(Text('Text:'), text_field, reversed_text_field_contents),
+      Container(Text('Dropdown:'), dropdown, Text(' Selected: '), selected_dropdown_item),
+      Container(Text('Number:'), number_field, Text('x^2: '), number_field_contents),
+      Container(Text('Color (on some browsers):'), color_field, colored_text),
+      Container(Text('Date (on some browsers):'), date_field, Text(' is a '), weekday_text)))),
   Image(os.path.join(os.path.dirname(__file__), 'tour-image.png')),
   Viewport(Paragraph('viewport '*1000, styling={'width': 1000}), width=400, height=200),
   List(items=(Text("lists"), CodeSnippet("lists"), List(items=(Text("sublists"),)))),
@@ -36,8 +65,7 @@ elements = (
         [Text('made by me', styling={'font-weight':'600'}), Text('yes'), Text('no')]]))
 
 gui = GUI(Paragraph("Here are all the elements available to you:"), title="Browser GUI tour")
-for element in elements:
-  gui.append(Container(element, styling={'margin': '1em', 'border': '1px solid black'}))
+gui.append(List(items=elements))
 
 def main():
   run(gui)
