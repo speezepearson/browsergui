@@ -34,10 +34,6 @@ class InputField(LeafElement):
       self.tag.setAttribute('placeholder', placeholder)
     self.mark_dirty()
 
-  def mark_dirty(self):
-    self.update_tag_with_cached_value()
-    super(InputField, self).mark_dirty()
-
   def update_tag_with_cached_value(self):
     if self.cached_value is None:
       if 'value' in self.tag.attributes.keys():
@@ -48,6 +44,8 @@ class InputField(LeafElement):
   def set_cached_value(self, value):
     self.ensure_is_valid_value(value)
     self.cached_value = value
+    if hasattr(self, 'tag'):
+      self.update_tag_with_cached_value()
 
   def value_from_xml_string(self, value):
     return value
