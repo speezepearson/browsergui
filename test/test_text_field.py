@@ -29,7 +29,7 @@ class TextFieldTest(BrowserGUITestCase):
   def test_validation(self):
     t = TextField()
 
-    for good_object in ('', 'abc', 'a b c'):
+    for good_object in ('', 'abc', u'abc', 'a b c'):
       t.value = good_object
 
     for bad_object in (None, 0, [], ()):
