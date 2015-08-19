@@ -2,8 +2,6 @@ import datetime
 import logging
 from .input_field import InputField
 
-logger = logging.Logger('browsergui.DateField')
-
 CLIENT_DATE_FORMAT = '%Y-%m-%d'
 
 class DateField(InputField):
@@ -15,7 +13,7 @@ class DateField(InputField):
     self.tag.setAttribute('type', 'date')
 
     if self.warn_about_potential_browser_incompatibility:
-      logger.warning('DateField not supported in all major browsers (as of August 2015)')
+      logging.warning('DateField not supported in all major browsers (as of August 2015)')
 
   def value_from_xml_string(self, s):
     return datetime.datetime.strptime(s, CLIENT_DATE_FORMAT).date() if s else None

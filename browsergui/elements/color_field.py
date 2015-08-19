@@ -3,8 +3,6 @@ import numbers
 import logging
 from .input_field import InputField
 
-logger = logging.Logger('browsergui.ColorField')
-
 class ColorField(InputField):
 
   warn_about_potential_browser_incompatibility = True
@@ -17,7 +15,7 @@ class ColorField(InputField):
     self.tag.setAttribute('type', 'color')
 
     if self.warn_about_potential_browser_incompatibility:
-      logger.warning('ColorField not supported in all major browsers (as of August 2015)')
+      logging.warning('ColorField not supported in all major browsers (as of August 2015)')
 
   @staticmethod
   def value_from_xml_string(s):
