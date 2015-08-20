@@ -28,7 +28,11 @@ class List(Element, collections_abc.MutableSequence):
   @numbered.setter
   def numbered(self, value):
     self.tag.tagName = ('ol' if value else 'ul')
-    self.mark_dirty()
+    # According to the W3C DOM API spec, it is impossible to change the tagName of an element.
+    # So we can't just modify the corresponding tag on the client - we have to rewrite it completely.
+    # (So we mark the parent as dirty, which replaces all its children with fresh ones.)
+    if self.parent is not None:
+      self.parent.mark_dirty()
 
   def __getitem__(self, index):
     return self._items[index]

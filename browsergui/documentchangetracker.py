@@ -15,9 +15,21 @@ def innerHTML(tag):
 
 def javascript_to_update_tag(tag, variable_name):
   lines = []
+
+  # In Chrome, doing `tag.setAttribute("value", ...)` usually updates the value displayed to the user,
+  # but for color-type inputs, the displayed value does not update. So we need this following clause.
+  # Furthermore, doing `tag.value = x` has no effect if `tag.getAttribute("value") == x`,
+  # so this clause must come before the attribute-setting.
+  # Crazy, I know.
+  if tag.tagName == 'input':
+    lines.append('{var}.value = {value}'.format(var=variable_name, value=json.dumps(tag.getAttribute('value'))))
+
+  # Update tag attributes
   lines.extend(
     '{var}.setAttribute({key}, {value})'.format(var=variable_name, key=json.dumps(attr), value=json.dumps(value))
     for attr, value in tag.attributes.items())
+
+  # Update tag children
   lines.append('{var}.innerHTML = {innerHTML}'.format(var=variable_name, innerHTML=json.dumps(innerHTML(tag))))
   return ';\n'.join(lines)
 
