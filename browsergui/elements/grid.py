@@ -15,6 +15,7 @@ class Grid(Element):
   """A two-dimensional grid of elements."""
   def __init__(self, cells=(), n_rows=None, n_columns=None, **kwargs):
     super(Grid, self).__init__(tag_name='table', **kwargs)
+    self.set_styles(**{'border-spacing': '0', 'border-collapse': 'collapse'})
 
     if not all(all(isinstance(x, Element) or x is None for x in row) for row in cells):
       raise TypeError('cell contents must be Elements')
@@ -53,9 +54,9 @@ class Grid(Element):
     else:
       while len(self._cells) < value:
         self._cells.append([None]*self.n_columns)
-        tr = self.tag.ownerDocument.createElement('tr')
+        tr = self._new_tr()
         for j in range(self.n_columns):
-          td = self.tag.ownerDocument.createElement('td')
+          td = self._new_td()
           tr.appendChild(td)
         self.tag.appendChild(tr)
 
@@ -80,12 +81,20 @@ class Grid(Element):
       for i, row in enumerate(self._cells):
         while len(row) < value:
           row.append(None)
-          self.tag.childNodes[i].appendChild(self.tag.ownerDocument.createElement('td'))
+          td = self._new_td()
+          self.tag.childNodes[i].appendChild(td)
     self._n_columns = value
 
   @property
   def children(self):
     return [x for x in sum(self._cells, []) if x is not None]
+
+  def _new_tr(self):
+    return self.tag.ownerDocument.createElement('tr')
+  def _new_td(self):
+    td = self.tag.ownerDocument.createElement('td')
+    td.setAttribute('style', 'border: 1px solid black')
+    return td
 
   def __getitem__(self, indices):
     (i, j) = indices

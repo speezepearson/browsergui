@@ -46,3 +46,8 @@ class BrowserGUITestCase(unittest.TestCase):
           descendant.removeAttribute(attr)
 
     self.assertEqual(tag.toxml(), expected_tag.toxml())
+
+  def assertUnstyledHTMLLike(self, xml, grid, ignored_attrs=['id']):
+    ignored_attrs = set(ignored_attrs)
+    ignored_attrs.add('style')
+    self.assertHTMLLike(xml, grid, ignored_attrs=ignored_attrs)

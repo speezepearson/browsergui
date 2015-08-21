@@ -55,7 +55,7 @@ class ButtonTest(BrowserGUITestCase):
     self.assertEqual(g, b.parent)
     self.assertEqual([a,b,c,d], list(g.children))
     self.assertEqual(b, g[0,1])
-    self.assertHTMLLike(grid_of_text_xml(['a','b'], ['c','d']), g)
+    self.assertUnstyledHTMLLike(grid_of_text_xml(['a','b'], ['c','d']), g)
 
     t = Text('t')
     g[0,1] = t
@@ -63,7 +63,7 @@ class ButtonTest(BrowserGUITestCase):
     self.assertEqual(g, t.parent)
     self.assertEqual([a,t,c,d], list(g.children))
     self.assertEqual(t, g[0,1])
-    self.assertHTMLLike(grid_of_text_xml(['a','t'], ['c','d']), g)
+    self.assertUnstyledHTMLLike(grid_of_text_xml(['a','t'], ['c','d']), g)
 
   def test_delitem(self):
     a, b, c, d = Text('a'), Text('b'), Text('c'), Text('d')
@@ -72,7 +72,7 @@ class ButtonTest(BrowserGUITestCase):
     del g[1,0]
     self.assertIsNone(c.parent)
     self.assertEqual([a,d], list(g.children))
-    self.assertHTMLLike(grid_of_text_xml(['a',None],[None,'d']), g)
+    self.assertUnstyledHTMLLike(grid_of_text_xml(['a',None],[None,'d']), g)
 
   def test_set_n_rows(self):
     a, b, c, d = Text('a'), Text('b'), Text('c'), Text('d')
@@ -87,7 +87,7 @@ class ButtonTest(BrowserGUITestCase):
     self.assertEqual(1, g.n_rows)
     with self.assertRaises(IndexError):
       g[1,0]
-    self.assertHTMLLike(grid_of_text_xml(['a','b']), g)
+    self.assertUnstyledHTMLLike(grid_of_text_xml(['a','b']), g)
 
     g.n_rows = 2
     self.assertIsNone(g[1,0])
@@ -95,7 +95,22 @@ class ButtonTest(BrowserGUITestCase):
     g[1,0] = c
     self.assertEqual(g, c.parent)
     self.assertEqual([a,b,c], list(g.children))
-    self.assertHTMLLike(grid_of_text_xml(['a','b'],['c',None]), g)
+    self.assertUnstyledHTMLLike(grid_of_text_xml(['a','b'],['c',None]), g)
+
+  def test_set_n_rows_to_0(self):
+    g = Grid(n_rows=2, n_columns=1)
+    g.n_rows = 0
+    self.assertUnstyledHTMLLike('<table></table>', g)
+    g.n_rows = 1
+    self.assertUnstyledHTMLLike('<table><tr><td /></tr></table>', g)
+
+  def test_set_n_columns_to_0(self):
+    g = Grid(n_rows=1, n_columns=2)
+    g.n_columns = 0
+    self.assertUnstyledHTMLLike('<table><tr></tr></table>', g)
+    g.n_columns = 1
+    self.assertUnstyledHTMLLike('<table><tr><td /></tr></table>', g)
+
 
   def test_set_n_columns(self):
     a, b, c, d = Text('a'), Text('b'), Text('c'), Text('d')
@@ -110,7 +125,7 @@ class ButtonTest(BrowserGUITestCase):
     self.assertEqual(1, g.n_columns)
     with self.assertRaises(IndexError):
       g[0,1]
-    self.assertHTMLLike(grid_of_text_xml(['a'],['c']), g)
+    self.assertUnstyledHTMLLike(grid_of_text_xml(['a'],['c']), g)
 
     g.n_columns = 2
     self.assertIsNone(g[0,1])
@@ -118,7 +133,15 @@ class ButtonTest(BrowserGUITestCase):
     g[0,1] = b
     self.assertEqual(g, b.parent)
     self.assertEqual([a,b,c], list(g.children))
-    self.assertHTMLLike(grid_of_text_xml(['a','b'], ['c', None]), g)
+    self.assertUnstyledHTMLLike(grid_of_text_xml(['a','b'], ['c', None]), g)
 
   def test_tag(self):
-    self.assertHTMLLike('<table></table>', Grid(n_rows=0, n_columns=0))
+    self.assertUnstyledHTMLLike('<table></table>', Grid(n_rows=0, n_columns=0))
+    self.assertUnstyledHTMLLike('<table></table>', Grid(n_rows=0, n_columns=1))
+    self.assertUnstyledHTMLLike('<table><tr></tr></table>', Grid(n_rows=1, n_columns=0))
+    self.assertUnstyledHTMLLike('<table><tr><td /></tr></table>', Grid(n_rows=1, n_columns=1))
+    self.assertUnstyledHTMLLike('<table><tr><td /><td /></tr></table>', Grid(n_rows=1, n_columns=2))
+
+  def test_cell_styling(self):
+    g = Grid(n_rows=1, n_columns=1)
+    self.assertEqual('border: 1px solid black', g.tag.childNodes[0].childNodes[0].getAttribute('style'))
