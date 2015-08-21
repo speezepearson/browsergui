@@ -51,7 +51,7 @@ class Container(Element, SequenceNode):
 class LeafElement(Element, LeafNode):
   pass
 
-from .text import Text, Paragraph, CodeSnippet, CodeBlock
+from .text import Text, Paragraph, CodeSnippet, CodeBlock, EmphasizedText
 from .button import Button
 from .link import Link
 from .viewport import Viewport

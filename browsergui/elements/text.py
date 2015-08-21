@@ -40,3 +40,7 @@ class CodeBlock(Text):
   """A block of computer code."""
   def __init__(self, text, **kwargs):
     super(CodeBlock, self).__init__(text, tag_name="pre", **kwargs)
+class EmphasizedText(Text):
+  """Text that should have emphasis on it."""
+  def __init__(self, text, **kwargs):
+    super(EmphasizedText, self).__init__(text, tag_name="strong", **kwargs)

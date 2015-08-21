@@ -31,6 +31,7 @@ def main():
       Text("Text of many flavors:"),
       List(items=(
         Text("plain"),
+        EmphasizedText("emphasized"),
         CodeSnippet("code"),
         Container(Paragraph("paragraphs"), Paragraph("paragraphs"), Paragraph("paragraphs woohoo")),
         CodeBlock('code blocks\ncode blocks\ncode blocks woohoo'),
@@ -44,12 +45,16 @@ def main():
         Container(Text('Number:'), number_field, Text('x^2: '), number_field_squared),
         Container(Text('Color (on some browsers):'), color_field, colored_text),
         Container(Text('Date (on some browsers):'), date_field, Text(' is a '), weekday_text)))),
-    Image(os.path.join(os.path.dirname(__file__), 'tour-image.png')),
-    Viewport(Paragraph('viewport '*1000, styling={'width': 1000}), width=400, height=200),
-    List(items=(Text("lists"), CodeSnippet("lists"), List(items=(Text("sublists"),)))),
-    Grid([[None, Text('browsergui', styling={'font-weight':'600'}), Text('tkinter', styling={'font-weight':'600'})],
-          [Text('has grids', styling={'font-weight':'600'}), Text('yes'), Text('yes')],
-          [Text('made by me', styling={'font-weight':'600'}), Text('yes'), Text('no')]]))
+    Container(
+      Text("Structural elements of many flavors:"),
+      List(items=(
+        Viewport(CodeBlock('\n'.join(50*'viewport ' for _ in range(100))), width=400, height=200),
+        List(items=(Text("lists"), CodeSnippet("lists"), List(items=[Text("sublists")]))),
+        Grid([[None, EmphasizedText('browsergui'), EmphasizedText('tkinter')],
+              [EmphasizedText('has grids'), Text('yes'), Text('yes')],
+              [EmphasizedText('made by me'), Text('yes'), Text('no')]]))
+        )),
+    Image(os.path.join(os.path.dirname(__file__), 'tour-image.png')))
 
   gui = GUI(Paragraph("Here are all the elements available to you:"), title="Browser GUI tour")
   gui.append(List(items=elements))
