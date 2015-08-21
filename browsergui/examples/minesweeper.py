@@ -76,7 +76,7 @@ class MinesweeperGUI(GUI):
       else:
         for nij in self.game.expand_region(ij):
           nmn = self.game.n_mine_neighbors(nij)
-          self.grid[nij] = Text(' ' if nmn == 0 else str(nmn))
+          self.grid[nij] = Text('-' if nmn == 0 else str(nmn))
 
     return Button('?', callback=callback)
 
