@@ -25,6 +25,9 @@ class Text(LeafElement):
     self._text.data = value
     self.mark_dirty()
 
+  def set_text(self, value):
+    self.text = value
+
 class CodeSnippet(Text):
   """Inline text representing computer code."""
   def __init__(self, text, **kwargs):
