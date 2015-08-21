@@ -63,17 +63,13 @@ class DropdownTest(BrowserGUITestCase):
   def test_validation(self):
     d = Dropdown(['a', 'b', 'c'])
 
-    for good_object in ('a', 'b', 'c'):
+    for good_object in ('a', 'b', 'c', u'a'):
       d.value = good_object
 
     for bad_object in (0, []):
       with self.assertRaises(TypeError):
         d.value = bad_object
 
-    # Commented for now because testing whether the value is in the set of options is hard,
-    # because of how all the __init__ methods get tangled up, with tag-modification
-    # and value-setting and validation.
-    #
-    # for bad_object in ('not in it'):
-    #   with self.assertRaises(ValueError):
-    #     d.value = bad_object
+    for bad_object in ('not in it'):
+      with self.assertRaises(ValueError):
+        d.value = bad_object
