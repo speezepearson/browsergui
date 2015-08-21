@@ -61,6 +61,7 @@ class Grid(Element):
         self.tag.appendChild(tr)
 
     self._n_rows = value
+    self.mark_dirty()
 
   @property
   def n_columns(self):
@@ -84,6 +85,7 @@ class Grid(Element):
           td = self._new_td()
           self.tag.childNodes[i].appendChild(td)
     self._n_columns = value
+    self.mark_dirty()
 
   @property
   def children(self):

@@ -40,6 +40,7 @@ class InputField(LeafElement):
         self.tag.removeAttribute('value')
     else:
       self.tag.setAttribute('value', self.value_to_xml_string(self.cached_value))
+    self.mark_dirty()
 
   def set_cached_value(self, value):
     self.ensure_is_valid_value(value)
