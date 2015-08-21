@@ -1,10 +1,14 @@
-def styling_to_css(styling):
-  return ' '.join('{}: {};'.format(key, value) for key, value in styling.items())
+from ._hasgui import HasGUI
+from ._hastag import HasTag
 
-class HasStyling(object):
-  def __init__(self, **kwargs):
+def styling_to_css(styling):
+  return '; '.join('{}: {}'.format(key, value) for key, value in sorted(styling.items()))
+
+class HasStyling(HasGUI, HasTag):
+  def __init__(self, styling={}, **kwargs):
     super(HasStyling, self).__init__(**kwargs)
     self._styling = {}
+    self.set_styles(**styling)
 
   def set_styles(self, **rules):
     self._styling.update(**rules)
@@ -26,5 +30,8 @@ class HasStyling(object):
       self.set_styles(display='none')
 
   def _update_styles(self):
-    self.tag.setAttribute('style', styling_to_css(self._styling))
+    if self._styling:
+      self.tag.setAttribute('style', styling_to_css(self._styling))
+    elif 'style' in self.tag.attributes.keys():
+      self.tag.removeAttribute('style')
     self.mark_dirty()

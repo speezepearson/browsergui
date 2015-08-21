@@ -13,3 +13,4 @@ class Link(Text):
   @url.setter
   def url(self, value):
     self.tag.setAttribute('href', value)
+    self.mark_dirty()

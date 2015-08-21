@@ -25,11 +25,13 @@ class Text(LeafElement):
     self._text.data = value
     self.mark_dirty()
 
+  def set_text(self, value):
+    self.text = value
+
 class CodeSnippet(Text):
   """Inline text representing computer code."""
   def __init__(self, text, **kwargs):
-    super(CodeSnippet, self).__init__(text, tag_name="code", **kwargs)
-    self.set_styles(**{'white-space': 'pre'})
+    super(CodeSnippet, self).__init__(text, tag_name="code", styling={'white-space': 'pre'}, **kwargs)
 class Paragraph(Text):
   """A block of plain text."""
   def __init__(self, text, **kwargs):
@@ -38,3 +40,7 @@ class CodeBlock(Text):
   """A block of computer code."""
   def __init__(self, text, **kwargs):
     super(CodeBlock, self).__init__(text, tag_name="pre", **kwargs)
+class EmphasizedText(Text):
+  """Text that should have emphasis on it."""
+  def __init__(self, text, **kwargs):
+    super(EmphasizedText, self).__init__(text, tag_name="strong", **kwargs)

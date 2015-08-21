@@ -11,3 +11,9 @@ class TextTest(BrowserGUITestCase):
 
   def test_tag(self):
     self.assertHTMLLike('<span>Hi</span>', Text('Hi'))
+
+  def test_set_text(self):
+    t = Text('blah')
+    t.set_text('foo')
+    self.assertEqual(t.text, 'foo')
+    self.assertHTMLLike('<span>foo</span>', t)
