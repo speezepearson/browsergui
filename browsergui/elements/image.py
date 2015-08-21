@@ -31,3 +31,4 @@ class Image(LeafElement):
     with open(self.filename, 'rb') as f:
       data = f.read()
     self.tag.setAttribute('src', 'data:image/{format};base64,{data}'.format(format=self.format, data=base64.b64encode(data).decode('ascii')))
+    self.mark_dirty()

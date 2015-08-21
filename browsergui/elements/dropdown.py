@@ -61,3 +61,7 @@ class Dropdown(InputField, collections_abc.MutableSequence):
   def ensure_is_valid_value(self, value):
     if not (value is None or isinstance(value, str)):
       raise TypeError('expected value of type str (or None), got {}'.format(type(value).__name__))
+    if hasattr(self, 'tag') and value not in self:
+      # the `hasattr` check is a kludge because the value might get set during __init__,
+      # before the tag is initialized. Really gotta disentangle this all at some point.
+      raise ValueError('value not in options: {!r}'.format(value))
