@@ -81,7 +81,7 @@ setup(
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     package_data={
-        'browsergui': ['server/*.html', 'server/*.js'],
+        'browsergui': ['server/*.html', 'server/*.js', 'examples/*.png'],
     },
 
     # Although 'package_data' is the preferred approach, in some case you may
