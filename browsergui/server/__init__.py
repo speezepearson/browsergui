@@ -1,19 +1,14 @@
-import sys
-if sys.version_info >= (3, 0):
-  import http.client as status_codes
-  from http.server import HTTPServer, BaseHTTPRequestHandler
-  from socketserver import ThreadingMixIn
-else:
-  import httplib as status_codes
-  from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
-  from SocketServer import ThreadingMixIn
-
 import socket
 
 import os
 import cgi
 import webbrowser
 import json
+
+from ..pythoncompatibility import (
+  http_status_codes as status_codes,
+  HTTPServer, BaseHTTPRequestHandler,
+  HTTPServerThreadingMixin as ThreadingMixIn)
 
 import browsergui
 

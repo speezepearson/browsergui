@@ -1,10 +1,5 @@
-import sys
-if sys.version_info >= (3, 3):
-  import collections.abc as collections_abc
-else:
-  import collections as collections_abc
-
 from . import Element
+from ..pythoncompatibility import collections_abc
 
 class List(Element, collections_abc.MutableSequence):
   """A bulleted/numbered list of elements.
