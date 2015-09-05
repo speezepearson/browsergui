@@ -1,3 +1,6 @@
+document.addEventListener('change', function(event){event.target.dispatchEvent(new Event('input'))});
+document.addEventListener('propertychange', function(event){event.target.dispatchEvent(new Event('input'))});
+
 function obey(command) {
   if (command) {
     console.log("evaluating:", command);
@@ -9,8 +12,8 @@ function obey(command) {
       // There's a syntax error, and we reach this block of code.
       // JS may keep running after calling window.close(), causing another request to /command to be make
       // and thereby stealing the command meant for the other window.
-      // A short sleep will keep the request from being made until the window is truly closed.
-      sleep(9999);
+      // Re-raising the error will stop the request from being made.
+      throw e;
     }
   }
 }
