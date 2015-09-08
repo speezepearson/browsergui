@@ -1,13 +1,6 @@
-import sys
-if sys.version_info >= (3, 3):
-  import collections.abc as collections_abc
-else:
-  import collections as collections_abc
-
-LEGAL_VALUE_TYPES = (str,) if sys.version_info >= (3, 0) else (str, unicode)
-
 from .input_field import InputField
 from ..events import Input
+from ..pythoncompatibility import collections_abc, STRING_TYPES
 
 class Dropdown(InputField, collections_abc.MutableSequence):
   def __init__(self, options=(), **kwargs):
@@ -61,7 +54,7 @@ class Dropdown(InputField, collections_abc.MutableSequence):
         child.setAttribute('selected', 'true')
 
   def ensure_is_valid_value(self, value):
-    if not (value is None or isinstance(value, LEGAL_VALUE_TYPES)):
+    if not (value is None or isinstance(value, STRING_TYPES)):
       raise TypeError('expected value of type str (or None), got {}'.format(type(value).__name__))
     if hasattr(self, 'tag') and value not in self:
       # the `hasattr` check is a kludge because the value might get set during __init__,

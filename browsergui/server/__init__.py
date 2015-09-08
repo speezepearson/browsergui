@@ -1,20 +1,14 @@
-import sys
-if sys.version_info >= (3, 0):
-  import http.client as status_codes
-  from http.server import HTTPServer, BaseHTTPRequestHandler
-  from socketserver import ThreadingMixIn
-  client_hung_up_error = BrokenPipeError
-else:
-  import httplib as status_codes
-  from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
-  from SocketServer import ThreadingMixIn
-
-  from socket import error as client_hung_up_error
+import socket
 
 import os
 import cgi
 import webbrowser
 import json
+
+from ..pythoncompatibility import (
+  http_status_codes as status_codes,
+  HTTPServer, BaseHTTPRequestHandler,
+  HTTPServerThreadingMixin as ThreadingMixIn)
 
 import browsergui
 
@@ -86,7 +80,7 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
       self.send_no_cache_headers()
       self.end_headers()
       self.write_bytes(command)
-    except client_hung_up_error:
+    except socket.error:
       # The client stopped listening while we were waiting. Oh well!
       pass
 
