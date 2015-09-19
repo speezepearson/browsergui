@@ -2,6 +2,7 @@ import collections
 import json
 import xml.dom.minidom
 import xml.parsers.expat
+import logging
 
 from ._node import SequenceNode, LeafNode
 from ._hascallbacks import HasCallbacks, NoSuchCallbackError
@@ -50,6 +51,13 @@ class Container(Element, SequenceNode):
 
 class LeafElement(Element, LeafNode):
   pass
+
+class NotUniversallySupportedElement(Element):
+  warn_about_potential_browser_incompatibility = True
+  def __init__(self, **kwargs):
+    super(NotUniversallySupportedElement, self).__init__(**kwargs)
+    if self.warn_about_potential_browser_incompatibility:
+      logging.warning('{} not supported in all major browsers'.format(type(self).__name__))
 
 from .text import Text, Paragraph, CodeSnippet, CodeBlock, EmphasizedText
 from .button import Button

@@ -1,21 +1,15 @@
 import types
 import numbers
-import logging
+from . import NotUniversallySupportedElement
 from .input_field import InputField
 
-class ColorField(InputField):
-
-  warn_about_potential_browser_incompatibility = True
-
+class ColorField(InputField, NotUniversallySupportedElement):
   def __init__(self, value=None, **kwargs):
     if value is None:
       value = (0, 0, 0)
 
     super(ColorField, self).__init__(value=value, **kwargs)
     self.tag.setAttribute('type', 'color')
-
-    if self.warn_about_potential_browser_incompatibility:
-      logging.warning('ColorField not supported in all major browsers (as of August 2015)')
 
   @staticmethod
   def value_from_xml_string(s):
