@@ -2,7 +2,7 @@ from browsergui import List, Text
 from . import BrowserGUITestCase
 
 def list_of_texts_xml(*strings):
-  return '<ul>{}</ul>'.format(''.join('<li><span>{}</span></li>'.format(s) for s in strings))
+  return '<ol style="list-style-type: disc">{}</ol>'.format(''.join('<li><span>{}</span></li>'.format(s) for s in strings))
 
 class ListTest(BrowserGUITestCase):
 
@@ -83,6 +83,6 @@ class ListTest(BrowserGUITestCase):
       List(items=[0])
 
   def test_tag(self):
-    self.assertHTMLLike('<ol />', List(numbered=True))
-    self.assertHTMLLike('<ul />', List(numbered=False))
-    self.assertHTMLLike('<ul><li><ul /></li></ul>', List(items=[List()]))
+    self.assertHTMLLike('<ol style="list-style-type: disc"/>', List(numbered=False))
+    self.assertHTMLLike('<ol style="list-style-type: decimal"/>', List(numbered=True))
+    self.assertHTMLLike('<ol style="list-style-type: disc"><li><span>hi</span></li></ol>', List(items=[Text("hi")]))

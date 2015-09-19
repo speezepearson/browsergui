@@ -7,7 +7,7 @@ class List(Element, collections_abc.MutableSequence):
   May be indexed into like a normal list. (See :class:`collections.abc.MutableSequence`.)
   """
   def __init__(self, items=(), numbered=False, **kwargs):
-    super(List, self).__init__(tag_name='ul', **kwargs)
+    super(List, self).__init__(tag_name='ol', **kwargs)
     self.numbered = numbered
     self._items = []
     for item in items:
@@ -19,15 +19,16 @@ class List(Element, collections_abc.MutableSequence):
 
   @property
   def numbered(self):
-    return self.tag.tagName == 'ol'
+    return (self.get_style('list-style-type') == 'decimal')
   @numbered.setter
   def numbered(self, value):
-    self.tag.tagName = ('ol' if value else 'ul')
-    # According to the W3C DOM API spec, it is impossible to change the tagName of an element.
-    # So we can't just modify the corresponding tag on the client - we have to rewrite it completely.
-    # (So we mark the parent as dirty, which replaces all its children with fresh ones.)
-    if self.parent is not None:
-      self.parent.mark_dirty()
+    # The "right" way to do this would be to change the tagName between "ol" and "ul",
+    # but the DOM API doesn't specify a way to change a tagName. Using CSS seems like
+    # a better solution than destroying the tag and creating a new one.
+    #
+    # According to https://developer.mozilla.org/en-US/docs/Web/CSS/list-style-type#Browser_compatibility
+    # the values "disc" and "decimal" are supported in all major browsers.
+    self.set_styles(**{'list-style-type': ('decimal' if value else 'disc')})
 
   def __getitem__(self, index):
     return self._items[index]
