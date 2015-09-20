@@ -5,8 +5,7 @@ class Button(Text):
   """A simple button that does something when clicked."""
   def __init__(self, text="Click!", callback=None, **kwargs):
     """
-    :param text: the label of the button
-    :type text: str
+    :param str text: the label of the button
     :param callback: the function to be called
     :type callback: function of zero arguments
     """

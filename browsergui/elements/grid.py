@@ -12,7 +12,18 @@ def smallest_fitting_dimensions(cells):
   return (len(cells), (max(len(row) for row in cells) if cells else 0))
 
 class Grid(Element):
-  """A two-dimensional grid of elements."""
+  """A two-dimensional grid of elements.
+
+  A grid's number of rows and columns are given by `n_rows` and `n_columns`.
+  Those properties may also be set, to change the number of rows and columns.
+
+  Grids are indexable by pairs of non-negative integers, e.g.
+
+          my_grid[0, 0]
+          my_grid[3, 2] = Text('hi')
+          my_grid[1, 2] = None
+          del my_grid[3, 3]
+  """
   def __init__(self, cells=(), n_rows=None, n_columns=None, **kwargs):
     super(Grid, self).__init__(tag_name='table', **kwargs)
     self.set_styles(**{'border-spacing': '0', 'border-collapse': 'collapse'})

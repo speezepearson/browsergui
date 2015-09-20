@@ -2,9 +2,18 @@ from . import Element
 from ..pythoncompatibility import collections_abc
 
 class List(Element, collections_abc.MutableSequence):
-  """A bulleted/numbered list of elements.
+  """A list of elements.
 
-  May be indexed into like a normal list. (See :class:`collections.abc.MutableSequence`.)
+  May be numbered or bulleted, according to the `numbered` property (a boolean).
+
+  Supports pretty much all the operations that a normal list does, e.g.
+
+      my_list = List(items=[first, second])
+      my_list.append(third)
+      my_list.insert(0, new_first)
+      assert my_list[0] is new_first
+      my_list[1] = new_second
+      del my_list[2]
   """
   def __init__(self, items=(), numbered=False, **kwargs):
     super(List, self).__init__(tag_name='ol', **kwargs)

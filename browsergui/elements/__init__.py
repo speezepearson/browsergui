@@ -12,7 +12,6 @@ class Element(HasCallbacks, HasStyling):
   """A conceptual GUI element, like a button or a table.
 
   Elements are arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
-  Every element has a unique identifier, accessible by the :func:`id` method.
   """
 
   def __str__(self):

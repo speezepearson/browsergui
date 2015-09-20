@@ -3,7 +3,12 @@ import xml.dom.minidom
 from . import LeafElement
 
 class Text(LeafElement):
-  """Some simple text."""
+  """An element containing only a text string.
+
+  The currently displayed string may be accessed or changed via the `text` attribute.
+
+  :param str text: the text to display
+  """
   def __init__(self, text, tag_name="span", **kwargs):
     if not isinstance(text, str):
       raise TypeError(text)
@@ -14,11 +19,9 @@ class Text(LeafElement):
 
   @property
   def text(self):
-    """docstring"""
     return self._text.data
   @text.setter
   def text(self, value):
-    """docstring"""
     if self.text == value:
       return
 

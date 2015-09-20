@@ -7,6 +7,7 @@ class Image(LeafElement):
   def __init__(self, filename, format=None, **kwargs):
     """
     :param str filename: the name of the file to read image data from
+    :param str format: the image's file format, or None to guess from filename
     """
     super(Image, self).__init__(tag_name='img', **kwargs)
 
@@ -22,8 +23,9 @@ class Image(LeafElement):
 
   @property
   def data(self):
+    '''The raw image data, as bytes.'''
     src = self.tag.getAttribute('src')
-    base64_data = re.search('base64,(.*)', src).group(1)
+    base64_data = re.search(r'base64,(.*)', src).group(1)
     return base64.b64decode(base64_data)
 
   def reload_data(self):

@@ -71,8 +71,8 @@ class SequenceNode(Node):
   def append(self, child):
     """Add a new child after all existing children.
 
-    :raises TypeError: if `child` isn't a Node
-    :raises NotOrphanedError: if `child` already has a parent Node
+    :raises TypeError: if ``child`` isn't a Node
+    :raises NotOrphanedError: if ``child`` already has a parent Node
     """
     if not isinstance(child, Node):
       raise TypeError('can only append Nodes, not {}'.format(type(child).__name__))
@@ -82,23 +82,23 @@ class SequenceNode(Node):
   def insert_before(self, new_child, reference_child):
     """Add a new child before a given child.
 
-    :raises NotOrphanedError: if `new_child` already has a parent Node
-    :raises IndexError: if `reference_child` is not a child of this node
+    :raises NotOrphanedError: if ``new_child`` already has a parent Node
+    :raises IndexError: if ``reference_child`` is not a child of this node
     """
     self.insert(self.children.index(reference_child), new_child)
 
   def insert_after(self, new_child, reference_child):
     """Add a new child after a given child.
 
-    :raises NotOrphanedError: if `new_child` already has a parent Node
-    :raises IndexError: if `reference_child` is not a child of this node
+    :raises NotOrphanedError: if ``new_child`` already has a parent Node
+    :raises IndexError: if ``reference_child`` is not a child of this node
     """
     self.insert(self.children.index(reference_child) + 1, new_child)
 
   def insert(self, index, child):
     """Add a new child at a specified position.
 
-    :raises NotOrphanedError: if `child` already has a parent Node
+    :raises NotOrphanedError: if ``child`` already has a parent Node
     """
     child.parent = self
     self._children.insert(index, child)
@@ -106,7 +106,7 @@ class SequenceNode(Node):
   def disown(self, child):
     """Remove a child from this node.
 
-    :raises ValueError: if `child` is not a child of this node
+    :raises ValueError: if ``child`` is not a child of this node
     """
     self._children.remove(child)
     child.parent = None

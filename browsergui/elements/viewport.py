@@ -3,7 +3,14 @@ import numbers
 from . import Element
 
 class Viewport(Element):
-  """A scrollable window into some other (probably big) element."""
+  """A scrollable window into some other (probably big) element.
+
+  Width and height can be accessed or changed using the `width` and `height` attributes.
+
+  :param Element target: the element to be displayed inside the box
+  :param int width: the width, in pixels, of the viewport
+  :param int height: the height, in pixels, of the viewport
+  """
   def __init__(self, target, width, height, **kwargs):
     if not isinstance(target, Element):
       raise TypeError('expected Element, got {}'.format(type(target).__name__))
