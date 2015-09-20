@@ -143,12 +143,14 @@ This is accomplished by passing the function as an argument when instantiating t
 
 The last important concept is the `GUI`. The `GUI` class ties responsible for high-level stuff
 that doesn't belong to any individual element, e.g. setting the page title and alerting the server
-when an element changes. Pretty much all you need to know about the GUI class is that you instantiate it
-like
+when an element changes. Pretty much all you need to know about the GUI class is:
+- you instantiate it like
 
         GUI(element_1, ..., title='Browser page title')
 
-and you can pass it into `run()` to start it running, like
+- `gui.body` is an Element that you can index/modify/iterate over like a `list`
+
+- you can pass a GUI into `run()` to start it running, like
 
         run(GUI(Text('Hello, world!')))
 
