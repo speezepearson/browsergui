@@ -8,5 +8,6 @@ class HasGUI(Node, HasTag):
     return (None if self.orphaned else self.parent.gui)
 
   def mark_dirty(self):
+    '''Marks the element as needing redrawing.'''
     if self.gui is not None:
       self.gui.change_tracker.mark_dirty(self.tag)

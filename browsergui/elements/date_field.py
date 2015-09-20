@@ -1,19 +1,13 @@
 import datetime
-import logging
+from . import NotUniversallySupportedElement
 from .input_field import InputField
 
 CLIENT_DATE_FORMAT = '%Y-%m-%d'
 
-class DateField(InputField):
-
-  warn_about_potential_browser_incompatibility = True
-
+class DateField(InputField, NotUniversallySupportedElement):
   def __init__(self, **kwargs):
     super(DateField, self).__init__(**kwargs)
     self.tag.setAttribute('type', 'date')
-
-    if self.warn_about_potential_browser_incompatibility:
-      logging.warning('DateField not supported in all major browsers (as of August 2015)')
 
   def value_from_xml_string(self, s):
     return datetime.datetime.strptime(s, CLIENT_DATE_FORMAT).date() if s else None

@@ -2,6 +2,14 @@ from . import LeafElement
 from ..events import Input
 
 class InputField(LeafElement):
+  '''Any form of user value-input element.
+
+  Access/change the value using the ``value`` attribute. Some kinds of input also support
+  a ``placeholder`` attribute, displayed to the user when no value is entered.
+
+  :param change_callback: function to be called whenever the input's value changes
+  :type change_callback: function of zero arguments
+  '''
   def __init__(self, tag_name='input', value=None, placeholder=None, change_callback=None, **kwargs):
     self.set_cached_value(value)
     super(InputField, self).__init__(tag_name=tag_name, **kwargs)

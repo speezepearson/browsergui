@@ -49,7 +49,12 @@ def main():
       Text("Structural elements of many flavors:"),
       List(items=(
         Viewport(CodeBlock('\n'.join(50*'viewport ' for _ in range(100))), width=400, height=200),
-        List(items=(Text("lists"), CodeSnippet("lists"), List(items=[Text("sublists")]))),
+        List(items=(
+          Text("bulleted"),
+          Text("lists"),
+          List(numbered=True, items=[
+            Text("numbered"),
+            Text("lists")]))),
         Grid([[None, EmphasizedText('browsergui'), EmphasizedText('tkinter')],
               [EmphasizedText('has grids'), Text('yes'), Text('yes')],
               [EmphasizedText('made by me'), Text('yes'), Text('no')]]))
