@@ -82,14 +82,14 @@ def main():
       text_field = TextField(change_callback=text_field_changed)
       text_field.value = "Reversed"'''))
 
-  # examples[Dropdown] = Example(
-  #   'Container(dropdown, selected_dropdown_item)',
-  #   strip_whitespace('''
-  #     selected_dropdown_item = Text('')
-  #     dropdown = Dropdown(
-  #       ['Dr', 'op', 'do', 'wn'],
-  #       change_callback=lambda: selected_dropdown_item.set_text(dropdown.value))
-  #     dropdown.value = "wn"'''))
+  examples[Dropdown] = Example(
+    'Container(dropdown, selected_dropdown_item)',
+    strip_whitespace('''
+      selected_dropdown_item = Text('')
+      dropdown = Dropdown(
+        ['Dr', 'op', 'do', 'wn'],
+        change_callback=lambda: selected_dropdown_item.set_text(dropdown.value))
+      dropdown.value = "wn"'''))
 
   examples[NumberField] = Example(
     'Container(number_field, number_field_squared)',
@@ -138,7 +138,7 @@ def main():
         example_grid_for_types(Text, Paragraph, EmphasizedText, CodeSnippet, CodeBlock, Link)),
       Container(
         Paragraph('Input of many flavors:'),
-        example_grid_for_types(Button, TextField, NumberField, ColorField, DateField)),
+        example_grid_for_types(Button, TextField, Dropdown, NumberField, ColorField, DateField)),
       Container(
         Paragraph('Structural elements of many flavors:'),
         example_grid_for_types(Container, Viewport, List, Grid)),

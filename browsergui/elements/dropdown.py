@@ -1,16 +1,44 @@
-from .input_field import InputField
+from . import LeafElement
 from ..events import Input
 from ..pythoncompatibility import collections_abc, STRING_TYPES
 
-class Dropdown(InputField, collections_abc.MutableSequence):
-  def __init__(self, options=(), **kwargs):
+class Dropdown(LeafElement, collections_abc.MutableSequence):
+  def __init__(self, options=(), change_callback=None, **kwargs):
     super(Dropdown, self).__init__(tag_name='select', **kwargs)
+    self.change_callback = None
 
     for option in options:
       self.append(option)
 
     if options:
-      self.set_cached_value(options[0])
+      self._set_value(options[0])
+
+    self.add_callback(Input, lambda event: self._set_value(event.value))
+    self.change_callback = change_callback
+
+  @property
+  def value(self):
+    for option_tag in self.tag.childNodes:
+      if option_tag.getAttribute('selected') == 'true':
+        return option_tag.childNodes[0].data
+    return None
+  @value.setter
+  def value(self, value):
+    self._set_value(value)
+    self.mark_dirty()
+
+  def _set_value(self, value):
+    self.ensure_is_valid_value(value)
+    for child in self.tag.childNodes:
+      if 'selected' in child.attributes.keys():
+        child.removeAttribute('selected')
+      if child.childNodes[0].data == value:
+        child.setAttribute('selected', 'true')
+
+    if self.change_callback is not None:
+      self.change_callback()
+
+  # MutableSequence implementation
 
   def __getitem__(self, index):
     if isinstance(index, slice):
@@ -45,13 +73,6 @@ class Dropdown(InputField, collections_abc.MutableSequence):
     next_option_tag = self.tag.childNodes[index] if index < len(self.tag.childNodes) else None
     self.tag.insertBefore(option_tag, next_option_tag)
     self.mark_dirty()
-
-  def update_tag_with_cached_value(self):
-    for child in self.tag.childNodes:
-      if 'selected' in child.attributes.keys():
-        child.removeAttribute('selected')
-      if self.cached_value == child.childNodes[0].data:
-        child.setAttribute('selected', 'true')
 
   def ensure_is_valid_value(self, value):
     if not (value is None or isinstance(value, STRING_TYPES)):

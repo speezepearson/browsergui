@@ -4,7 +4,7 @@ from . import BrowserGUITestCase
 def dropdown_xml(*options):
   return '<select>{}</select>'.format(''.join('<option value="{s}">{s}</option>'.format(s=s) for s in options))
 
-class DropdownTest(object):
+class DropdownTest(BrowserGUITestCase):
 
   def test_construction(self):
     self.assertEqual([], list(Dropdown()))
