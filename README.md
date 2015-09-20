@@ -8,7 +8,11 @@ Everybody has a browser, and a lot of very smart people have designed browsers s
 Ways to install:
 - `pip install browsergui`
 - `easy_install browsergui`
-- [download](https://github.com/speezepearson/browsergui/archive/master.zip), unzip, and either
+- download this directory, through either
+  - unzipping [this](https://github.com/speezepearson/browsergui/archive/master.zip), or
+  - `git clone git@github.com:speezepearson/browsergui.git`
+
+  and then install it with either
   - `python setup.py install`, or
   - plop the `browsergui` subfolder anywhere on your Python path
 
@@ -18,7 +22,7 @@ Once it's installed, I recommend running `python -m browsergui.examples` to see 
 Examples
 --------
 
-Here are a few short demos, to give you a taste of what this GUI framework looks like.
+Here are a few short demos, to give you a taste of what this GUI framework looks like. (You can close/reopen the browser window at any time; Ctrl-C will stop the server.)
 
 - Hello world:
 
