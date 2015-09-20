@@ -248,22 +248,26 @@ class SimpleList(Element):
     return self._children
 
   def append(self, new_child):
-    new_child.parent = self
-    self._children.append(new_child)
-
-    # add a new <li> and put the child's tag in it
+    # add a new item to our HTML list tag
     li = self.tag.ownerDocument.createElement('li')
     self.tag.appendChild(li)
     li.appendChild(new_child.tag)
 
-    self.mark_dirty() # should be called every time we modify self.tag
+    # make parent/child stuff reflect the new HTML structure
+    new_child.parent = self
+    self._children.append(new_child)
+
+    # make sure the tag gets redrawn
+    self.mark_dirty()
 
   def delete(self, old_child):
+    # remove the item containing the child from our HTML list tag
+    self.tag.removeChild(old_child.tag.parentNode)
+
+    # make parent/child stuff reflect the new HTML structure
     self._children.remove(old_child)
     old_child.parent = None
 
-    # old_child's tag is in an <li>; remove the <li> from our tag
-    self.tag.removeChild(old_child.tag.parentNode)
-
-    self.mark_dirty() # should be called every time we modify self.tag
+    # make sure the tag gets redrawn
+    self.mark_dirty()
 ```
