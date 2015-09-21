@@ -15,7 +15,7 @@ class InputField(LeafElement):
     self.change_callback = None
     self._set_value(value)
 
-    self.add_callback(Input, lambda event: self._set_value(self.value_from_xml_string(event.value)))
+    self.add_callback(Input, self._handle_input_event)
 
     self.placeholder = placeholder
     self.change_callback = change_callback
@@ -51,6 +51,15 @@ class InputField(LeafElement):
 
     if self.change_callback is not None:
       self.change_callback()
+
+  def _handle_input_event(self, event):
+    xml_value_string = event.value
+    try:
+      value = self.value_from_xml_string(xml_value_string)
+    except ValueError:
+      # We got some garbage value from the browser for some reason. Abort!
+      return
+    self._set_value(value)
 
   def value_from_xml_string(self, value):
     return value
