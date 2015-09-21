@@ -245,7 +245,7 @@ class SimpleList(Element):
 
   @property
   def children(self):
-    return self._children
+    return self._children[:] # return a copy to prevent modification
 
   def append(self, new_child):
     # add a new item to our HTML list tag
