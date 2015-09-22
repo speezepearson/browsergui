@@ -1,18 +1,23 @@
 import types
 import numbers
+import re
 from . import NotUniversallySupportedElement
 from .input_field import InputField
 
 class ColorField(InputField, NotUniversallySupportedElement):
-  def __init__(self, value=None, **kwargs):
-    if value is None:
-      value = (0, 0, 0)
-
-    super(ColorField, self).__init__(value=value, **kwargs)
+  def __init__(self, value=(0, 0, 0), placeholder='#xxxxxx', **kwargs):
+    super(ColorField, self).__init__(value=value, placeholder=placeholder, **kwargs)
     self.tag.setAttribute('type', 'color')
 
   @staticmethod
   def value_from_xml_string(s):
+    # Kludge incoming.
+    # Some browsers don't support date-input fields, and display them as text instead.
+    # We still get notified about changes, but the reported value might be malformed.
+    # In this case, we might get '#f0f0' as a value, which should not be accepted.
+    # So we throw an error here.
+    if not re.match(r'#[0-9a-f]{6}', s):
+      raise ValueError('malformed hex color: {!r}'.format(s))
     return tuple(int(hex_repr, 16) for hex_repr in (s[1:3], s[3:5], s[5:7]))
 
   @staticmethod

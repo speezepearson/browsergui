@@ -7,8 +7,10 @@ def dropdown_xml(*options):
 class DropdownTest(BrowserGUITestCase):
 
   def test_construction(self):
-    self.assertEqual([], list(Dropdown()))
     self.assertEqual(['a', 'b'], list(Dropdown(['a', 'b'])))
+
+    with self.assertRaises(ValueError):
+      Dropdown([])
 
   def test_options_must_be_strings(self):
     with self.assertRaises(TypeError):
@@ -47,9 +49,7 @@ class DropdownTest(BrowserGUITestCase):
     self.assertHTMLLike(dropdown_xml('c', 'b'), d, ignored_attrs=['id', 'oninput', 'selected'])
 
   def test_insert(self):
-    d = Dropdown()
-
-    d.insert(0, 'b')
+    d = Dropdown(['b'])
     d.insert(0, 'a')
     d.insert(99, 'd')
     d.insert(-1, 'c')
@@ -57,7 +57,7 @@ class DropdownTest(BrowserGUITestCase):
     self.assertHTMLLike(dropdown_xml('a', 'b', 'c', 'd'), d, ignored_attrs=['id', 'oninput', 'selected'])
 
   def test_tag(self):
-    self.assertHTMLLike('<select oninput="notify_server({target_id: this.getAttribute(&quot;id&quot;), type_name: event.type, value: this.value})" />', Dropdown(), ignored_attrs=['id'])
+    self.assertHTMLLike('<select oninput="notify_server({target_id: this.getAttribute(&quot;id&quot;), type_name: event.type, value: this.value})"><option value="a" selected="true">a</option></select>', Dropdown(['a']), ignored_attrs=['id'])
     self.assertHTMLLike('<select><option value="a">a</option><option value="b">b</option></select>', Dropdown(['a', 'b']), ignored_attrs=['id', 'oninput', 'selected'])
 
   def test_validation(self):

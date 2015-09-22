@@ -11,23 +11,21 @@ class InputField(LeafElement):
   :type change_callback: function of zero arguments
   '''
   def __init__(self, tag_name='input', value=None, placeholder=None, change_callback=None, **kwargs):
-    self.set_cached_value(value)
     super(InputField, self).__init__(tag_name=tag_name, **kwargs)
-    self.update_tag_with_cached_value()
+    self.change_callback = None
+    self._set_value(value)
 
-    self.add_callback(Input, lambda event: self.set_cached_value(self.value_from_xml_string(event.value)))
-    if change_callback is not None:
-      self.add_callback(Input, (lambda event: change_callback()))
+    self.add_callback(Input, self._handle_input_event)
 
     self.placeholder = placeholder
+    self.change_callback = change_callback
 
   @property
   def value(self):
-    return self.cached_value
+    return self.value_from_xml_string(self.tag.getAttribute('value'))
   @value.setter
   def value(self, value):
-    self.set_cached_value(value)
-    self.handle_event(Input(target_id=self.id, value=self.value_to_xml_string(value)))
+    self._set_value(value)
     self.mark_dirty()
 
   @property
@@ -42,19 +40,26 @@ class InputField(LeafElement):
       self.tag.setAttribute('placeholder', placeholder)
     self.mark_dirty()
 
-  def update_tag_with_cached_value(self):
-    if self.cached_value is None:
+  def _set_value(self, value):
+    self.ensure_is_valid_value(value)
+
+    if value is None:
       if 'value' in self.tag.attributes.keys():
         self.tag.removeAttribute('value')
     else:
-      self.tag.setAttribute('value', self.value_to_xml_string(self.cached_value))
-    self.mark_dirty()
+      self.tag.setAttribute('value', self.value_to_xml_string(value))
 
-  def set_cached_value(self, value):
-    self.ensure_is_valid_value(value)
-    self.cached_value = value
-    if hasattr(self, 'tag'):
-      self.update_tag_with_cached_value()
+    if self.change_callback is not None:
+      self.change_callback()
+
+  def _handle_input_event(self, event):
+    xml_value_string = event.value
+    try:
+      value = self.value_from_xml_string(xml_value_string)
+    except ValueError:
+      # We got some garbage value from the browser for some reason. Abort!
+      return
+    self._set_value(value)
 
   def value_from_xml_string(self, value):
     return value
