@@ -11,16 +11,21 @@ class ButtonTest(BrowserGUITestCase):
   def test_default_text(self):
     self.assertEqual(Button().text, "Click!")
 
-  def test_set_callback(self):
+  def test_callback_is_settable(self):
     xs = []
     b = Button(callback=(lambda: xs.append(1)))
     b.handle_event(Click(target_id=b.id))
     self.assertEqual([1], xs)
 
     xs = []
-    b.set_callback(lambda: xs.append(2))
+    b.callback = (lambda: xs.append(2))
     b.handle_event(Click(target_id=b.id))
     self.assertEqual([2], xs)
 
+    xs = []
+    b.callback = None
+    b.handle_event(Click(target_id=b.id))
+    self.assertEqual([], xs)
+
   def test_tag(self):
-    self.assertHTMLLike('<button>Hi</button>', Button('Hi'))
+    self.assertHTMLLike('<button onclick="notify_server({target_id: this.getAttribute(&quot;id&quot;), type_name: event.type})">Hi</button>', Button('Hi'))
