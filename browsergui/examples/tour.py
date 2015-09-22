@@ -10,156 +10,122 @@ def strip_whitespace(s):
   n = min(n_leading_spaces(line) for line in s.split('\n') if line)
   return '\n'.join(line[n:] for line in s.split('\n'))
 
+def exec_then_eval(to_exec, to_eval):
+  # Due to some scoping subtlety, the locals and globals in
+  # exec and eval should be the same, or we won't be able to
+  # exec a program like
+  #
+  #   xs = []
+  #   (lambda: xs)()
+  #
+  # I dunno. I just dunno.
+  scope = globals().copy()
+  if to_exec is not None:
+    exec(to_exec, scope, scope)
+  return eval(to_eval, scope, scope)
+
+class Example(object):
+  def __init__(self, show_code, prep_code=None):
+    self.show_code = show_code
+    self.prep_code = prep_code
+
+  def to_grid_row(self):
+    element = exec_then_eval(to_exec=self.prep_code, to_eval=self.show_code)
+    code = self.show_code if self.prep_code is None else (self.prep_code + '\n\n' + self.show_code)
+    return [CodeBlock(code), element]
+
 def main():
 
-  example_codes = {}
-  example_elements = {}
+  examples = {}
 
   def example_grid_for_types(*types):
     header_row = [EmphasizedText('Code'), EmphasizedText('Result')]
-    rows = [[CodeBlock(example_codes[t]), example_elements[t]] for t in types]
+    rows = [examples[t].to_grid_row() for t in types]
     return Grid(cells=[header_row] + rows)
 
-  example_codes[Text] = 'Text("some plain text")'
-  example_elements[Text] = Text("some plain text")
+  examples[Text] = Example('Text("some plain text")')
+  examples[Paragraph] = Example('Container(Paragraph("one"), Paragraph("two"))')
+  examples[EmphasizedText] = Example('EmphasizedText("some bold text")')
+  examples[CodeSnippet] = Example('CodeSnippet("some code")')
+  examples[CodeBlock] = Example(r'CodeBlock("one\ntwo")')
+  examples[Link] = Example('Link("google", url="http://google.com")')
 
-  example_codes[Paragraph] = 'Paragraph("one"), Paragraph("two")'
-  example_elements[Paragraph] = Container(Paragraph("one"), Paragraph("two"))
-
-  example_codes[EmphasizedText] = 'EmphasizedText("some bold text")'
-  example_elements[EmphasizedText] = EmphasizedText("some bold text")
-
-  example_codes[CodeSnippet] = 'CodeSnippet("some code")'
-  example_elements[CodeSnippet] = CodeSnippet("some code")
-
-  example_codes[CodeBlock] = r'CodeBlock("one\ntwo")'
-  example_elements[CodeBlock] = CodeBlock("one\ntwo")
-
-  example_codes[Link] = 'Link("google", url="http://google.com")'
-  example_elements[Link] = Link("google", url="http://google.com")
-
-  example_codes[Container] = 'Container(Text("one"), CodeSnippet("two"))'
-  example_elements[Container] = Container(Text("one"), CodeSnippet("two"))
-
-  example_codes[Viewport] = strip_whitespace('''
+  examples[Container] = Example('Container(Text("one"), CodeSnippet("two"))')
+  examples[Viewport] = Example(strip_whitespace(r'''
     Viewport(
-      CodeBlock('\\n'.join(50*'viewport ' for _ in range(100))),
-      width=400, height=200)''')
-  example_elements[Viewport] = Viewport(
-    CodeBlock('\n'.join(50*'viewport ' for _ in range(100))),
-    width=400, height=200)
-
-  example_codes[List] = 'List(items=[Text("one"), Text("two")])'
-  example_elements[List] = List(items=[Text("one"), Text("two")])
-
-  example_codes[Grid] = strip_whitespace('''
+      CodeBlock('\n'.join(50*'viewport ' for _ in range(100))),
+      width=400, height=200)'''))
+  examples[List] = Example('List(items=[Text("one"), Text("two")])')
+  examples[Grid] = Example(strip_whitespace('''
     Grid(cells=[
       [Text("00"), Text("01")],
-      [Text("10"), Text("11")]])''')
-  example_elements[Grid] =  Grid(cells=[
-    [Text("00"), Text("01")],
-    [Text("10"), Text("11")]])
+      [Text("10"), Text("11")]])'''))
 
-  example_codes[Image] = "Image(path)"
-  example_elements[Image] = Image(os.path.join(os.path.dirname(__file__), 'tour-image.png'))
+  examples[Image] = Example("Image(os.path.join(os.path.dirname(__file__), 'tour-image.png'))")
 
-  example_codes[Button] = strip_whitespace('''
-    click_count = Text('0')
-    def button_clicked():
-      n = int(click_count.text)
-      click_count.text = str(n+1)
-    button = Button('Click me!', callback=button_clicked''')
-  click_count = Text('0')
-  def button_clicked():
-    n = int(click_count.text)
-    click_count.text = str(n+1)
-  button = Button('Click me!', callback=button_clicked)
-  example_elements[Button] = Container(click_count, button)
+  examples[Button] = Example(
+    'Container(click_count, button)',
+    strip_whitespace('''
+      click_count = Text('0')
+      def button_clicked():
+        n = int(click_count.text)
+        click_count.text = str(n+1)
+      button = Button('Click me!', callback=button_clicked)'''))
 
-  example_codes[TextField] = strip_whitespace('''
-    reversed_text_field_contents = Text('')
-    def text_field_changed():
-      reversed_contents = ''.join(reversed(text_field.value))
-      reversed_text_field_contents.text = reversed_contents
-    text_field = TextField(change_callback=text_field_changed)
-    text_field.value = 'reversed' ''')
-  reversed_text_field_contents = Text('')
-  def text_field_changed():
-    reversed_contents = ''.join(reversed(text_field.value))
-    reversed_text_field_contents.text = reversed_contents
-  text_field = TextField(change_callback=text_field_changed)
-  text_field.value = 'reversed'
-  example_elements[TextField] = Container(text_field, reversed_text_field_contents)
+  examples[TextField] = Example(
+    'Container(text_field, reversed_text_field_contents)',
+    strip_whitespace('''
+      reversed_text_field_contents = Text('')
+      def text_field_changed():
+        reversed_contents = ''.join(reversed(text_field.value))
+        reversed_text_field_contents.text = reversed_contents
+      text_field = TextField(change_callback=text_field_changed)
+      text_field.value = "Reversed"'''))
 
-  example_codes[Dropdown] = strip_whitespace('''
-    selected_dropdown_item = Text('')
-    dropdown = Dropdown(
-      ['Dr', 'op', 'do', 'wn'],
-      change_callback=lambda: selected_dropdown_item.set_text(dropdown.value))
-    dropdown.value = "wn"''')
-  selected_dropdown_item = Text('')
-  dropdown = Dropdown(
-    ['Dr', 'op', 'do', 'wn'],
-    change_callback=lambda: selected_dropdown_item.set_text(dropdown.value))
-  dropdown.value = "wn"
-  example_elements[Dropdown] = Container(dropdown, selected_dropdown_item)
+  examples[Dropdown] = Example(
+    'Container(dropdown, selected_dropdown_item)',
+    strip_whitespace('''
+      selected_dropdown_item = Text('')
+      dropdown = Dropdown(
+        ['Dr', 'op', 'do', 'wn'],
+        change_callback=lambda: selected_dropdown_item.set_text(dropdown.value))
+      dropdown.value = "wn"'''))
 
-  example_codes[NumberField] = strip_whitespace('''
-    number_field_squared = Text('')
-    def number_changed():
-      if number_field.value is None:
-        number_field_squared.text = ''
-      else:
-        number_field_squared.text = str(number_field.value ** 2)
-    number_field = NumberField(change_callback=number_changed)
-    number_field.value = 12''')
-  number_field_squared = Text('')
-  def number_changed():
-    if number_field.value is None:
-      number_field_squared.text = ''
-    else:
-      number_field_squared.text = str(number_field.value ** 2)
-  number_field = NumberField(change_callback=number_changed)
-  number_field.value = 12
-  example_elements[NumberField] = Container(number_field, number_field_squared)
+  examples[NumberField] = Example(
+    'Container(number_field, number_field_squared)',
+    strip_whitespace('''
+      number_field_squared = Text('')
+      def number_changed():
+        if number_field.value is None:
+          number_field_squared.text = ''
+        else:
+          number_field_squared.text = str(number_field.value ** 2)
+      number_field = NumberField(change_callback=number_changed)
+      number_field.value = 12'''))
 
-  example_codes[ColorField] = strip_whitespace('''
-    colored_text = Text('colored')
-    def color_changed():
-      color = color_field.value
-      color_hex = '#{:02x}{:02x}{:02x}'.format(*color)
-      colored_text.set_styles(color=color_hex)
-    color_field = ColorField(change_callback=color_changed)
-    color_field.value = (0, 0, 255)''')
-  colored_text = Text('colored')
-  def color_changed():
-    color = color_field.value
-    color_hex = '#{:02x}{:02x}{:02x}'.format(*color)
-    colored_text.set_styles(color=color_hex)
-  color_field = ColorField(change_callback=color_changed)
-  color_field.value = (0, 0, 255)
-  example_elements[ColorField] = Container(color_field, colored_text)
+  examples[ColorField] = Example(
+    'Container(color_field, colored_text)',
+    strip_whitespace('''
+      colored_text = Text('colored')
+      def color_changed():
+        color = color_field.value
+        color_hex = '#{:02x}{:02x}{:02x}'.format(*color)
+        colored_text.set_styles(color=color_hex)
+      color_field = ColorField(change_callback=color_changed)
+      color_field.value = (0, 0, 255)'''))
 
-  example_codes[DateField] = strip_whitespace('''
-    weekday_text = Text('...')
-    DAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday',
-            'Friday', 'Saturday', 'Sunday')
-    def date_changed():
-      if date_field.value is None:
-        weekday_text.text = ''
-      else:
-        weekday_text.text = DAYS[date_field.value.weekday()]
-    date_field = DateField(change_callback=date_changed)''')
-  weekday_text = Text('...')
-  DAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday',
-          'Friday', 'Saturday', 'Sunday')
-  def date_changed():
-    if date_field.value is None:
-      weekday_text.text = ''
-    else:
-      weekday_text.text = DAYS[date_field.value.weekday()]
-  date_field = DateField(change_callback=date_changed)
-  example_elements[DateField] = Container(date_field, weekday_text)
+  examples[DateField] = Example(
+    'Container(date_field, weekday_text)',
+    strip_whitespace('''
+      weekday_text = Text('...')
+      DAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday',
+              'Friday', 'Saturday', 'Sunday')
+      def date_changed():
+        if date_field.value is None:
+          weekday_text.text = ''
+        else:
+          weekday_text.text = DAYS[date_field.value.weekday()]
+      date_field = DateField(change_callback=date_changed)'''))
 
 
   run(GUI(
