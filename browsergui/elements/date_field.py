@@ -1,3 +1,4 @@
+import re
 import datetime
 from . import NotUniversallySupportedElement
 from .input_field import InputField
@@ -5,12 +6,22 @@ from .input_field import InputField
 CLIENT_DATE_FORMAT = '%Y-%m-%d'
 
 class DateField(InputField, NotUniversallySupportedElement):
-  def __init__(self, **kwargs):
-    super(DateField, self).__init__(**kwargs)
+  def __init__(self, placeholder='yyyy-mm-dd', **kwargs):
+    super(DateField, self).__init__(placeholder=placeholder, **kwargs)
     self.tag.setAttribute('type', 'date')
 
   def value_from_xml_string(self, s):
-    return datetime.datetime.strptime(s, CLIENT_DATE_FORMAT).date() if s else None
+    if s:
+      # Kludge incoming.
+      # Some browsers don't support date-input fields, and display them as text instead.
+      # We still get notified about changes, but the reported value might be malformed.
+      # In this case, we might get '2013-3-1' as a value, which I don't think should be accepted.
+      # However, `date.strptime` will happily parse it. So we have to throw an error here.
+      if not re.match(r'\d{4}-\d{2}-\d{2}', s):
+        raise ValueError('malformed date: {!r}'.format(s))
+      return datetime.datetime.strptime(s, CLIENT_DATE_FORMAT).date()
+    else:
+      return None
 
   def value_to_xml_string(self, value):
     return '' if value is None else value.strftime(CLIENT_DATE_FORMAT)

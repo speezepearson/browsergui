@@ -8,7 +8,11 @@ Everybody has a browser, and a lot of very smart people have designed browsers s
 Ways to install:
 - `pip install browsergui`
 - `easy_install browsergui`
-- [download](https://github.com/speezepearson/browsergui/archive/master.zip), unzip, and either
+- download this directory, through either
+  - unzipping [this](https://github.com/speezepearson/browsergui/archive/master.zip), or
+  - `git clone git@github.com:speezepearson/browsergui.git`
+
+  and then install it with either
   - `python setup.py install`, or
   - plop the `browsergui` subfolder anywhere on your Python path
 
@@ -18,7 +22,7 @@ Once it's installed, I recommend running `python -m browsergui.examples` to see 
 Examples
 --------
 
-Here are a few short demos, to give you a taste of what this GUI framework looks like.
+Here are a few short demos, to give you a taste of what this GUI framework looks like. (You can close/reopen the browser window at any time; Ctrl-C will stop the server.)
 
 - Hello world:
 
@@ -241,25 +245,29 @@ class SimpleList(Element):
 
   @property
   def children(self):
-    return self._children
+    return self._children[:] # return a copy to prevent modification
 
   def append(self, new_child):
-    new_child.parent = self
-    self._children.append(new_child)
-
-    # add a new <li> and put the child's tag in it
+    # add a new item to our HTML list tag
     li = self.tag.ownerDocument.createElement('li')
     self.tag.appendChild(li)
     li.appendChild(new_child.tag)
 
-    self.mark_dirty() # should be called every time we modify self.tag
+    # make parent/child stuff reflect the new HTML structure
+    new_child.parent = self
+    self._children.append(new_child)
+
+    # make sure the tag gets redrawn
+    self.mark_dirty()
 
   def delete(self, old_child):
+    # remove the item containing the child from our HTML list tag
+    self.tag.removeChild(old_child.tag.parentNode)
+
+    # make parent/child stuff reflect the new HTML structure
     self._children.remove(old_child)
     old_child.parent = None
 
-    # old_child's tag is in an <li>; remove the <li> from our tag
-    self.tag.removeChild(old_child.tag.parentNode)
-
-    self.mark_dirty() # should be called every time we modify self.tag
+    # make sure the tag gets redrawn
+    self.mark_dirty()
 ```
