@@ -18,9 +18,9 @@ class ButtonTest(BrowserGUITestCase):
     self.assertEqual([1], xs)
 
     xs = []
-    b.set_callback(lambda: xs.append(2))
+    b.callback = (lambda: xs.append(2))
     b.handle_event(Click(target_id=b.id))
     self.assertEqual([2], xs)
 
   def test_tag(self):
-    self.assertHTMLLike('<button>Hi</button>', Button('Hi'))
+    self.assertHTMLLike('<button onclick="notify_server({target_id: this.getAttribute(&quot;id&quot;), type_name: event.type})">Hi</button>', Button('Hi'))
