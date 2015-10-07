@@ -8,8 +8,9 @@ from ._node import Node, SequenceNode, LeafNode
 from ._hastag import HasTag
 
 class HasOptionalTag(object):
-  def __init__(self, tag=None):
+  def __init__(self, tag=None, tag_modification_callback=None):
     self._tag = tag
+    self.tag_modification_callback = tag_modification_callback
     super(HasOptionalTag, self).__init__()
 
   @property
@@ -27,18 +28,19 @@ class HasOptionalTag(object):
       self.attach_to_tag()
 
   def detach_from_tag(self):
-    pass
+    self.tag_modification_callback()
   def attach_to_tag(self):
-    pass
+    self.tag_modification_callback()
 
 class Styler(HasOptionalTag, collections.MutableMapping):
-  def __init__(self, **rules):
+  def __init__(self, tag_modification_callback=None, **rules):
     self.rules = rules
-    super(Styler, self).__init__()
+    super(Styler, self).__init__(tag_modification_callback=tag_modification_callback)
 
   def detach_from_tag(self):
     if 'style' in self.tag.attributes.keys():
       self.tag.removeAttribute('style')
+      self.tag_modification_callback()
   def attach_to_tag(self):
     self._update_tag_style_attribute()
 
@@ -47,6 +49,7 @@ class Styler(HasOptionalTag, collections.MutableMapping):
       self.tag.setAttribute('style', self._css())
     elif 'style' in self.tag.attributes.keys():
       self.tag.removeAttribute('style')
+    self.tag_modification_callback()
 
   def _css(self):
     return '; '.join('{}: {}'.format(k, v) for k, v in sorted(self.items()))
@@ -69,16 +72,18 @@ class Styler(HasOptionalTag, collections.MutableMapping):
     return len(self.rules)
 
 class CallbackSetter(HasOptionalTag, collections.MutableMapping):
-  def __init__(self):
+  def __init__(self, **kwargs):
     self.callbacks = {}
-    super(CallbackSetter, self).__init__()
+    super(CallbackSetter, self).__init__(**kwargs)
 
   def detach_from_tag(self):
     for event_type in self:
       event_type.disable_server_notification(self.tag)
+      self.tag_modification_callback()
   def attach_to_tag(self):
     for event_type in self:
       event_type.enable_server_notification(self.tag)
+      self.tag_modification_callback()
 
   def __getitem__(self, key):
     return self.callbacks[key]
@@ -87,11 +92,13 @@ class CallbackSetter(HasOptionalTag, collections.MutableMapping):
     self.callbacks[key] = value
     if self.tag is not None:
       key.enable_server_notification(self.tag)
+      self.tag_modification_callback()
 
   def __delitem__(self, key):
     del self.callbacks[key]
     if self.tag is not None:
       key.disable_server_notification(self.tag)
+      self.tag_modification_callback()
 
   def __iter__(self):
     return iter(self.callbacks)
@@ -107,11 +114,11 @@ class Element(Node, HasTag):
   """
 
   def __init__(self, styling={}, **kwargs):
-    self.callback_setter = CallbackSetter()
-    self.styler = Styler(**styling)
+    self.callbacks = CallbackSetter(tag_modification_callback=self.mark_dirty)
+    self.styles = Styler(tag_modification_callback=self.mark_dirty, **styling)
     super(Element, self).__init__(**kwargs)
-    self.callback_setter.set_tag(self.tag)
-    self.styler.set_tag(self.tag)
+    self.callbacks.set_tag(self.tag)
+    self.styles.set_tag(self.tag)
 
   def __str__(self):
     return "(#{})".format(self.id)
@@ -119,36 +126,9 @@ class Element(Node, HasTag):
   def __repr__(self):
     return "{cls}(id={id!r})".format(cls=type(self).__name__, id=self.id)
 
-  # WRAP STYLER FUNCTIONALITY TO ENSURE mark_dirty() GETS CALLED
-
-  def get_style(self, key):
-    return self.styler.get(key)
-
-  def set_styles(self, **kwargs):
-    for key, value in kwargs.items():
-      self.styler[key] = value
-    self.mark_dirty()
-
-  def delete_style(self, key):
-    del self.styler[key]
-    self.mark_dirty()
-
-  # WRAP CALLBACK FUNCTIONALITY TO ENSURE mark_dirty() GETS CALLED
-
-  def get_callback(self, key):
-    return self.callback_setter.get(key)
-
-  def set_callback(self, key, value):
-    self.callback_setter[key] = value
-    self.mark_dirty()
-
-  def delete_callback(self, key):
-    del self.callback_setter[key]
-    self.mark_dirty()
-
   def handle_event(self, event):
-    if type(event) in self.callback_setter:
-      self.callback_setter[type(event)](event)
+    if type(event) in self.callbacks:
+      self.callbacks[type(event)](event)
 
   # Convenience functions accessing the GUI
 

@@ -12,11 +12,11 @@ class ElementTest(BrowserGUITestCase):
 
     e = Element(tag_name="a")
 
-    e.set_callback(Click, self.set_last_event)
-    self.assertEqual(e.get_callback(Click), self.set_last_event)
+    e.callbacks[Click] = self.set_last_event
+    self.assertEqual(e.callbacks[Click], self.set_last_event)
 
-    e.delete_callback(Click)
-    self.assertIsNone(e.get_callback(Click))
+    del e.callbacks[Click]
+    self.assertNotIn(Click, e.callbacks)
 
     with self.assertRaises(KeyError):
-      e.delete_callback(Click)
+      del e.callbacks[Click]

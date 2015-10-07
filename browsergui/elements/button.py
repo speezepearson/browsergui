@@ -12,13 +12,10 @@ class Button(Text):
     if not isinstance(text, str):
       raise TypeError(text)
     super(Button, self).__init__(text, tag_name="button", **kwargs)
-    if callback is not None:
-      self.set_callback(callback)
 
-  def set_callback(self, callback):
-    """Sets the function to be called whenever the button is clicked.
+    self.callback = callback
+    self.callbacks[Click] = self._handle_click_event
 
-    :param callback: the function to be called
-    :type callback: function of zero arguments
-    """
-    super(Button, self).set_callback(Click, (lambda event: callback()))
+  def _handle_click_event(self, event):
+    if self.callback is not None:
+      self.callback()
