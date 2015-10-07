@@ -13,7 +13,7 @@ class StylingTest(BrowserGUITestCase):
     self.text.set_styles(color='red')
     self.assertEqual('red', self.text.get_style('color'))
 
-  def test_delete_styles(self):
+  def test_delete_style(self):
     self.text.set_styles(color='red')
-    self.text.delete_styles('color')
+    self.text.delete_style('color')
     self.assertIsNone(self.text.get_style('color'))
