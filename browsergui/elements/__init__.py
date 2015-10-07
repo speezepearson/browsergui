@@ -33,7 +33,7 @@ class HasOptionalTag(object):
 
 class Styler(HasOptionalTag, collections.MutableMapping):
   def __init__(self, **rules):
-    self.rules = rules 
+    self.rules = rules
     super(Styler, self).__init__()
 
   def detach_from_tag(self):
@@ -141,10 +141,6 @@ class Element(Node, HasTag):
   def set_callback(self, key, value):
     self.callback_setter[key] = value
     self.mark_dirty()
-
-  def add_callback(self, key, value):
-    'temporary thing to not break everything'
-    self.set_callback(key, value)
 
   def delete_callback(self, key):
     del self.callback_setter[key]

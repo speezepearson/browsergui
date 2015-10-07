@@ -44,5 +44,5 @@ class ContainerTest(BrowserGUITestCase):
     c.append(Container())
     self.assertEqual(h, hash(c))
 
-    c.add_callback(Click, self.set_last_event)
+    c.set_callback(Click, self.set_last_event)
     self.assertEqual(h, hash(c))

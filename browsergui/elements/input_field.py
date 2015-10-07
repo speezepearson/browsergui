@@ -15,7 +15,7 @@ class InputField(LeafElement):
     self.change_callback = None
     self._set_value(value)
 
-    self.add_callback(Input, self._handle_input_event)
+    self.set_callback(Input, self._handle_input_event)
 
     self.placeholder = placeholder
     self.change_callback = change_callback
