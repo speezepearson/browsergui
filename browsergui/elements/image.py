@@ -1,9 +1,9 @@
 import base64
 import re
 import os.path
-from . import LeafElement
+from . import Element
 
-class Image(LeafElement):
+class Image(Element):
   def __init__(self, filename, format=None, **kwargs):
     """
     :param str filename: the name of the file to read image data from

@@ -18,13 +18,8 @@ class List(Element, collections_abc.MutableSequence):
   def __init__(self, items=(), numbered=False, **kwargs):
     super(List, self).__init__(tag_name='ol', **kwargs)
     self.numbered = numbered
-    self._items = []
     for item in items:
       self.append(item)
-
-  @property
-  def children(self):
-    return tuple(self._items)
 
   @property
   def numbered(self):
@@ -40,7 +35,7 @@ class List(Element, collections_abc.MutableSequence):
     self.styles['list-style-type'] = ('decimal' if value else 'disc')
 
   def __getitem__(self, index):
-    return self._items[index]
+    return self.children[index]
   def __setitem__(self, index, child):
     if isinstance(index, slice):
       raise NotImplementedError("slice assignment to Lists not yet supported")
@@ -52,25 +47,20 @@ class List(Element, collections_abc.MutableSequence):
     if isinstance(index, slice):
       raise NotImplementedError("slice deletion from Lists not yet supported")
 
-    old_child = self._items[index]
-    del self._items[index]
-    old_child.parent = None
+    old_child = self.children[index]
+    del self.children[index]
     self.tag.removeChild(old_child.tag.parentNode)
     self.mark_dirty()
 
   def __len__(self):
-    return len(self._items)
+    return len(self.children)
 
   def insert(self, index, child):
     if not isinstance(child, Element):
       raise TypeError("List children must be Elements")
 
-    child.parent = self
-
     li_tag = self.tag.ownerDocument.createElement('li')
     li_tag.appendChild(child.tag)
-
-    self._items.insert(index, child)
 
     next_li = self.tag.childNodes[index] if index < len(self.tag.childNodes) else None
     self.tag.insertBefore(li_tag, next_li)

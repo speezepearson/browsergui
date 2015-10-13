@@ -20,13 +20,8 @@ class Viewport(Element):
     self.width = width
     self.height = height
 
-    target.parent = self
     self.target = target
     self.tag.appendChild(target.tag)
-
-  @property
-  def children(self):
-    return (self.target,)
 
   @property
   def width(self):

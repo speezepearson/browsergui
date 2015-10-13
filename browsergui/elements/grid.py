@@ -99,10 +99,6 @@ class Grid(Element):
     self._n_columns = value
     self.mark_dirty()
 
-  @property
-  def children(self):
-    return [x for x in sum(self._cells, []) if x is not None]
-
   def _new_tr(self):
     return self.tag.ownerDocument.createElement('tr')
   def _new_td(self):
@@ -124,11 +120,9 @@ class Grid(Element):
       raise NotImplementedError("slice assignment to Grids not yet supported")
 
     td = self.tag.childNodes[i].childNodes[j]
-    child.parent = self
     
     old_child = self._cells[i][j]
     if old_child is not None:
-      old_child.parent = None
       td.removeChild(td.childNodes[0])
 
     self._cells[i][j] = child
@@ -144,6 +138,5 @@ class Grid(Element):
 
     old_child = self._cells[i][j]
     self._cells[i][j] = None
-    old_child.parent = None
     old_child.tag.parentNode.removeChild(old_child.tag)
     self.mark_dirty()

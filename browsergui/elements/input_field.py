@@ -1,7 +1,7 @@
-from . import LeafElement
+from . import Element
 from ..events import Input
 
-class InputField(LeafElement):
+class InputField(Element):
   '''Any form of user value-input element.
 
   Access/change the value using the ``value`` attribute. Some kinds of input also support
