@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 import random
 from browsergui import *
 
@@ -72,7 +74,7 @@ class MinesweeperGUI(GUI):
   def button_for(self, ij):
     def callback():
       if ij in self.game.mine_locations:
-        self.grid[ij] = Text('YOU LOSE')
+        self.grid[ij] = Text('💣')
       else:
         for nij in self.game.expand_region(ij):
           nmn = self.game.n_mine_neighbors(nij)

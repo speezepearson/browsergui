@@ -4,12 +4,12 @@ import xml.dom.minidom
 import xml.parsers.expat
 import logging
 
-from ._hastag import HasTag
+from ._xmltagshield import XMLTagShield
 from ._callbacksetter import CallbackSetter
 from ._styler import Styler
 
 
-class Element(HasTag):
+class Element(XMLTagShield):
   """A conceptual GUI element, like a button or a table.
 
   Elements are arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
