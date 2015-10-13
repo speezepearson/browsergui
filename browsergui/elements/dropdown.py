@@ -16,7 +16,7 @@ class Dropdown(LeafElement, collections_abc.MutableSequence):
 
     self._set_value(options[0])
 
-    self.add_callback(Input, lambda event: self._set_value(event.value))
+    self.callbacks[Input] = lambda event: self._set_value(event.value)
     self.change_callback = change_callback
 
   @property

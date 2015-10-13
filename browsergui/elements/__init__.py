@@ -4,21 +4,47 @@ import xml.dom.minidom
 import xml.parsers.expat
 import logging
 
-from ._node import SequenceNode, LeafNode
-from ._hascallbacks import HasCallbacks, NoSuchCallbackError
-from ._hasstyling import HasStyling
+from ._hastag import HasTag
+from ._node import Node, SequenceNode, LeafNode
+from ._callbacksetter import CallbackSetter
+from ._styler import Styler
 
-class Element(HasCallbacks, HasStyling):
+
+class Element(Node, HasTag):
   """A conceptual GUI element, like a button or a table.
 
   Elements are arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
   """
+
+  def __init__(self, styling={}, **kwargs):
+    self.callbacks = CallbackSetter(element=self)
+    self.styles = Styler(element=self)
+    super(Element, self).__init__(**kwargs)
+
+    for key, value in styling.items():
+      self.styles[key] = value
 
   def __str__(self):
     return "(#{})".format(self.id)
 
   def __repr__(self):
     return "{cls}(id={id!r})".format(cls=type(self).__name__, id=self.id)
+
+  def handle_event(self, event):
+    if type(event) in self.callbacks:
+      self.callbacks[type(event)](event)
+
+  # Convenience functions accessing the GUI
+
+  @property
+  def gui(self):
+    """The GUI the element belongs to, or None if there is none."""
+    return (None if self.orphaned else self.parent.gui)
+
+  def mark_dirty(self):
+    '''Marks the element as needing redrawing.'''
+    if self.gui is not None:
+      self.gui.change_tracker.mark_dirty(self.tag)
 
 
 class Container(Element, SequenceNode):

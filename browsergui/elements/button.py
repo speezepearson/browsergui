@@ -21,6 +21,4 @@ class Button(Text):
     :param callback: the function to be called
     :type callback: function of zero arguments
     """
-    if self.callbacks[Click]:
-      self.remove_callback(Click, self.callbacks[Click][0])
-    self.add_callback(Click, (lambda event: callback()))
+    self.callbacks[Click] = (lambda event: callback())
