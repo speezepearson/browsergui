@@ -61,7 +61,7 @@ class MinesweeperGUI(GUI):
     self.game = Game(w=w, h=h, mine_density=mine_density)
 
     if self.grid is not None:
-      self.body.disown(self.grid)
+      self.body.remove(self.grid)
     self.grid = Grid(n_rows=self.game.h, n_columns=self.game.w)
     self.append(self.grid)
 

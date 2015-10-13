@@ -3,7 +3,7 @@ import os
 import browsergui.examples
 
 parser = argparse.ArgumentParser()
-parser.add_argument('examplename', nargs='?', choices=list(browsergui.examples.EXAMPLES.keys()), default='tour',
+parser.add_argument('examplename', nargs='?', choices=list(sorted(browsergui.examples.EXAMPLES.keys())), default='tour',
                     help='name of example to run (default: tour)')
 
 def main():
