@@ -28,10 +28,9 @@ class TreeTraversalMixin(object):
   @property
   def ancestors(self):
     '''Lists the object's parent, parent's parent, etc.'''
-    result = [self.parent]
-    while result[-1].parent is not None:
-      result.append(result[-1].parent)
-    return result
+    if self.orphaned:
+      return []
+    return [self.parent] + self.parent.ancestors
 
   @property
   def root(self):
