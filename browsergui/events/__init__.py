@@ -49,9 +49,22 @@ class Input(Event):
       value='this.value',
       **super(Input, cls).dict_to_notify_server())
 
+class Change(Event):
+  javascript_type_name = 'change'
+
+  def __init__(self, value, **kwargs):
+    super(Change, self).__init__(**kwargs)
+    self.value = value
+
+  @classmethod
+  def dict_to_notify_server(cls):
+    return dict(
+      value='this.value',
+      **super(Change, cls).dict_to_notify_server())
+
 EVENT_TYPES_BY_NAME = {
   cls.javascript_type_name: cls
-  for cls in [Click, Input]}
+  for cls in [Click, Input, Change]}
 
 def from_dict(event_dict):
   type_name = event_dict.pop('type_name')

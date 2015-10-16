@@ -1,6 +1,3 @@
-document.addEventListener('change', function(event){event.target.dispatchEvent(new Event('input'))});
-document.addEventListener('propertychange', function(event){event.target.dispatchEvent(new Event('input'))});
-
 function obey(command) {
   if (command) {
     console.log("evaluating:", command);
