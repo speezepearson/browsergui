@@ -65,6 +65,11 @@ class ButtonTest(BrowserGUITestCase):
     self.assertEqual(t, g[0,1])
     self.assertUnstyledHTMLLike(grid_of_text_xml(['a','t'], ['c','d']), g)
 
+  def test_setitem__marks_dirty(self):
+    g = Grid([[Text('before')]])
+    with self.assertMarksDirty(g):
+      g[0,0] = Text('after')
+
   def test_delitem(self):
     a, b, c, d = Text('a'), Text('b'), Text('c'), Text('d')
     g = Grid([[a], [c, d]])
@@ -73,6 +78,11 @@ class ButtonTest(BrowserGUITestCase):
     self.assertIsNone(c.parent)
     self.assertEqual([a,d], list(g.children))
     self.assertUnstyledHTMLLike(grid_of_text_xml(['a',None],[None,'d']), g)
+
+  def test_delitem__marks_dirty(self):
+    g = Grid([[Text('a')]])
+    with self.assertMarksDirty(g):
+      del g[0,0]
 
   def test_set_n_rows(self):
     a, b, c, d = Text('a'), Text('b'), Text('c'), Text('d')
@@ -134,6 +144,21 @@ class ButtonTest(BrowserGUITestCase):
     self.assertEqual(g, b.parent)
     self.assertEqual([a,b,c], list(g.children))
     self.assertUnstyledHTMLLike(grid_of_text_xml(['a','b'], ['c', None]), g)
+
+  def test_set_dimensions__marks_dirty(self):
+    g = Grid([[Text('a')]])
+    with self.assertMarksDirty(g):
+      g.n_rows = 2
+    with self.assertMarksDirty(g):
+      g.n_rows = 0
+    with self.assertMarksDirty(g):
+      g.n_rows = 1
+    with self.assertMarksDirty(g):
+      g.n_columns = 2
+    with self.assertMarksDirty(g):
+      g.n_columns = 0
+    with self.assertMarksDirty(g):
+      g.n_columns = 1
 
   def test_tag(self):
     self.assertUnstyledHTMLLike('<table></table>', Grid(n_rows=0, n_columns=0))

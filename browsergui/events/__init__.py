@@ -12,10 +12,6 @@ class Event(object):
     self.target_id = target_id
 
   @classmethod
-  def from_dict(cls, event_dict):
-    return cls(**event_dict)
-
-  @classmethod
   def enable_server_notification(cls, tag):
     tag.setAttribute(
       'on'+cls.javascript_type_name,
@@ -33,9 +29,27 @@ class Event(object):
       target_id='this.getAttribute("id")',
       type_name='event.type')
 
+  registered_subclasses_by_name = {}
+  @staticmethod
+  def register_subclass(cls):
+    Event.registered_subclasses_by_name[cls.javascript_type_name] = cls
+    return cls
+
+  @staticmethod
+  def from_dict(event_dict):
+    type_name = event_dict.pop('type_name')
+    cls = Event.registered_subclasses_by_name[type_name]
+    return cls.from_dict_of_right_type(event_dict)
+
+  @classmethod
+  def from_dict_of_right_type(cls, event_dict):
+    return cls(**event_dict)
+
+@Event.register_subclass
 class Click(Event):
   javascript_type_name = 'click'
 
+@Event.register_subclass
 class Input(Event):
   javascript_type_name = 'input'
 
@@ -49,10 +63,16 @@ class Input(Event):
       value='this.value',
       **super(Input, cls).dict_to_notify_server())
 
-EVENT_TYPES_BY_NAME = {
-  cls.javascript_type_name: cls
-  for cls in [Click, Input]}
+@Event.register_subclass
+class Change(Event):
+  javascript_type_name = 'change'
 
-def from_dict(event_dict):
-  type_name = event_dict.pop('type_name')
-  return EVENT_TYPES_BY_NAME[type_name].from_dict(event_dict)
+  def __init__(self, value, **kwargs):
+    super(Change, self).__init__(**kwargs)
+    self.value = value
+
+  @classmethod
+  def dict_to_notify_server(cls):
+    return dict(
+      value='this.value',
+      **super(Change, cls).dict_to_notify_server())

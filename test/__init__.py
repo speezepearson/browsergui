@@ -22,6 +22,18 @@ class BrowserGUITestCase(unittest.TestCase):
     yield
     self.assertEqual(event, self.last_event)
 
+  @contextlib.contextmanager
+  def assertMarksDirty(self, element):
+    xs = []
+    def dummy():
+      xs.append(0)
+    element.mark_dirty = dummy
+    try:
+      yield
+    finally:
+      del element.mark_dirty
+    self.assertTrue(xs)
+
   def assertHTMLIn(self, included, html):
     self.assertIn(re.sub("\s", "", included), re.sub("\s", "", html))
 

@@ -42,6 +42,11 @@ class ListTest(BrowserGUITestCase):
 
     self.assertHTMLLike(list_of_texts_xml('2'), top)
 
+  def test_delitem__marks_dirty(self):
+    l = List([Text('a')])
+    with self.assertMarksDirty(l):
+      del l[0]
+
   def test_setitem(self):
     first = Text('1')
     second = Text('2')
@@ -55,6 +60,11 @@ class ListTest(BrowserGUITestCase):
     self.assertEqual(list(top.children), [new, second])
 
     self.assertHTMLLike(list_of_texts_xml('new', '2'), top)
+
+  def test_setitem__marks_dirty(self):
+    l = List([Text('a')])
+    with self.assertMarksDirty(l):
+      l[0] = Text('b')
 
   def test_insert(self):
     first = Text('1')
@@ -78,9 +88,21 @@ class ListTest(BrowserGUITestCase):
 
     self.assertHTMLLike(list_of_texts_xml('1', '2', '3', '4'), top)
 
+  def test_insert__marks_dirty(self):
+    l = List()
+    with self.assertMarksDirty(l):
+      l.append(Text('a'))
+
   def test_children_must_be_elements(self):
     with self.assertRaises(TypeError):
       List(items=[0])
+
+  def test_set_numbered__marks_dirty(self):
+    l = List(numbered=True)
+    with self.assertMarksDirty(l):
+      l.numbered = False
+    with self.assertMarksDirty(l):
+      l.numbered = True
 
   def test_tag(self):
     self.assertHTMLLike('<ol style="list-style-type: disc"/>', List(numbered=False))

@@ -37,7 +37,12 @@ class DropdownTest(BrowserGUITestCase):
     with self.assertRaises(IndexError):
       d[1]
 
-    self.assertHTMLLike(dropdown_xml('b'), d, ignored_attrs=['id', 'oninput', 'selected'])
+    self.assertHTMLLike(dropdown_xml('b'), d, ignored_attrs=['id', 'onchange', 'selected'])
+
+  def test_delitem__marks_dirty(self):
+    d = Dropdown(['a', 'b'])
+    with self.assertMarksDirty(d):
+      del d[0]
 
   def test_setitem(self):
     d = Dropdown(['a', 'b'])
@@ -46,7 +51,12 @@ class DropdownTest(BrowserGUITestCase):
     self.assertEqual(d[0], 'c')
     self.assertEqual(2, len(d))
 
-    self.assertHTMLLike(dropdown_xml('c', 'b'), d, ignored_attrs=['id', 'oninput', 'selected'])
+    self.assertHTMLLike(dropdown_xml('c', 'b'), d, ignored_attrs=['id', 'onchange', 'selected'])
+
+  def test_setitem__marks_dirty(self):
+    d = Dropdown(['a'])
+    with self.assertMarksDirty(d):
+      d[0] = 'b'
 
   def test_insert(self):
     d = Dropdown(['b'])
@@ -54,11 +64,23 @@ class DropdownTest(BrowserGUITestCase):
     d.insert(99, 'd')
     d.insert(-1, 'c')
     self.assertEqual(['a', 'b', 'c', 'd'], list(d))
-    self.assertHTMLLike(dropdown_xml('a', 'b', 'c', 'd'), d, ignored_attrs=['id', 'oninput', 'selected'])
+    self.assertHTMLLike(dropdown_xml('a', 'b', 'c', 'd'), d, ignored_attrs=['id', 'onchange', 'selected'])
+
+  def test_insert__marks_dirty(self):
+    d = Dropdown(['a'])
+    with self.assertMarksDirty(d):
+      d.insert(1, 'b')
 
   def test_tag(self):
-    self.assertHTMLLike('<select oninput="notify_server({target_id: this.getAttribute(&quot;id&quot;), type_name: event.type, value: this.value})"><option value="a" selected="true">a</option></select>', Dropdown(['a']), ignored_attrs=['id'])
-    self.assertHTMLLike('<select><option value="a">a</option><option value="b">b</option></select>', Dropdown(['a', 'b']), ignored_attrs=['id', 'oninput', 'selected'])
+    self.assertHTMLLike('<select onchange="notify_server({target_id: this.getAttribute(&quot;id&quot;), type_name: event.type, value: this.value})"><option value="a" selected="true">a</option></select>', Dropdown(['a']), ignored_attrs=['id'])
+    self.assertHTMLLike('<select><option value="a">a</option><option value="b">b</option></select>', Dropdown(['a', 'b']), ignored_attrs=['id', 'onchange', 'selected'])
+
+  def test_set_value(self):
+    d = Dropdown(['a', 'b', 'c'])
+    d.value = 'b'
+    self.assertEqual('b', d.value)
+    d.value = 'c'
+    self.assertEqual('c', d.value)
 
   def test_validation(self):
     d = Dropdown(['a', 'b', 'c'])

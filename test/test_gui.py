@@ -19,7 +19,7 @@ class GUITest(BrowserGUITestCase):
     decoy2 = Button()
 
     xs = []
-    button.set_callback(lambda: xs.append(1))
+    button.callback = (lambda: xs.append(1))
 
     gui = GUI(decoy1, button, decoy2)
 

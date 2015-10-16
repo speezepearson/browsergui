@@ -1,6 +1,7 @@
 import code
 import browsergui
-from browsergui import GUI, Paragraph, CodeBlock, Paragraph, run, call_in_background
+import threading
+from browsergui import GUI, Paragraph, CodeBlock, Paragraph, run
 
 def run_repl(gui):
   interpreter = code.InteractiveConsole(locals={'_gui': gui})
@@ -28,7 +29,9 @@ def main():
                  "gui.append(Button(callback=(lambda: gui.append(Paragraph('Clicked!')))))"):
     gui.append(CodeBlock(sample))
 
-  call_in_background(run, args=(gui,), kwargs=dict(quiet=True), daemon=True)
+  t = threading.Thread(target=run, args=[gui], kwargs={'quiet': True})
+  t.daemon = True
+  t.start()
   run_repl(gui)
   gui.destroy()
 

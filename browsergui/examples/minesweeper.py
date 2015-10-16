@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 import random
 from browsergui import *
 
@@ -61,7 +63,7 @@ class MinesweeperGUI(GUI):
     self.game = Game(w=w, h=h, mine_density=mine_density)
 
     if self.grid is not None:
-      self.body.disown(self.grid)
+      self.body.remove(self.grid)
     self.grid = Grid(n_rows=self.game.h, n_columns=self.game.w)
     self.append(self.grid)
 
@@ -72,7 +74,7 @@ class MinesweeperGUI(GUI):
   def button_for(self, ij):
     def callback():
       if ij in self.game.mine_locations:
-        self.grid[ij] = Text('YOU LOSE')
+        self.grid[ij] = Text('💣')
       else:
         for nij in self.game.expand_region(ij):
           nmn = self.game.n_mine_neighbors(nij)
