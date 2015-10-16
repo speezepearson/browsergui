@@ -75,6 +75,13 @@ class DropdownTest(BrowserGUITestCase):
     self.assertHTMLLike('<select oninput="notify_server({target_id: this.getAttribute(&quot;id&quot;), type_name: event.type, value: this.value})"><option value="a" selected="true">a</option></select>', Dropdown(['a']), ignored_attrs=['id'])
     self.assertHTMLLike('<select><option value="a">a</option><option value="b">b</option></select>', Dropdown(['a', 'b']), ignored_attrs=['id', 'oninput', 'selected'])
 
+  def test_set_value(self):
+    d = Dropdown(['a', 'b', 'c'])
+    d.value = 'b'
+    self.assertEqual('b', d.value)
+    d.value = 'c'
+    self.assertEqual('c', d.value)
+
   def test_validation(self):
     d = Dropdown(['a', 'b', 'c'])
 
