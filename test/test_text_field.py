@@ -36,6 +36,11 @@ class TextFieldTest(BrowserGUITestCase):
     e.value = 'hi'
     self.assertEqual([1], xs)
 
+    xs = []
+    e.change_callback = (lambda: xs.append(2))
+    e.value = 'bye'
+    self.assertEqual([2], xs)
+
   def test_validation(self):
     t = TextField()
 
