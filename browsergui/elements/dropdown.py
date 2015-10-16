@@ -1,5 +1,5 @@
 from . import Element
-from ..events import Input
+from ..events import Change
 from ..pythoncompatibility import collections_abc, STRING_TYPES
 
 class Dropdown(Element, collections_abc.MutableSequence):
@@ -16,7 +16,7 @@ class Dropdown(Element, collections_abc.MutableSequence):
 
     self._set_value(options[0])
 
-    self.callbacks[Input] = lambda event: self._set_value(event.value)
+    self.callbacks[Change] = lambda event: self._set_value(event.value)
     self.change_callback = change_callback
 
   @property
