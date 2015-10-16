@@ -39,6 +39,11 @@ class DropdownTest(BrowserGUITestCase):
 
     self.assertHTMLLike(dropdown_xml('b'), d, ignored_attrs=['id', 'oninput', 'selected'])
 
+  def test_delitem__marks_dirty(self):
+    d = Dropdown(['a', 'b'])
+    with self.assertMarksDirty(d):
+      del d[0]
+
   def test_setitem(self):
     d = Dropdown(['a', 'b'])
 
@@ -48,6 +53,11 @@ class DropdownTest(BrowserGUITestCase):
 
     self.assertHTMLLike(dropdown_xml('c', 'b'), d, ignored_attrs=['id', 'oninput', 'selected'])
 
+  def test_setitem__marks_dirty(self):
+    d = Dropdown(['a'])
+    with self.assertMarksDirty(d):
+      d[0] = 'b'
+
   def test_insert(self):
     d = Dropdown(['b'])
     d.insert(0, 'a')
@@ -55,6 +65,11 @@ class DropdownTest(BrowserGUITestCase):
     d.insert(-1, 'c')
     self.assertEqual(['a', 'b', 'c', 'd'], list(d))
     self.assertHTMLLike(dropdown_xml('a', 'b', 'c', 'd'), d, ignored_attrs=['id', 'oninput', 'selected'])
+
+  def test_insert__marks_dirty(self):
+    d = Dropdown(['a'])
+    with self.assertMarksDirty(d):
+      d.insert(1, 'b')
 
   def test_tag(self):
     self.assertHTMLLike('<select oninput="notify_server({target_id: this.getAttribute(&quot;id&quot;), type_name: event.type, value: this.value})"><option value="a" selected="true">a</option></select>', Dropdown(['a']), ignored_attrs=['id'])

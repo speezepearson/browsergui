@@ -43,6 +43,11 @@ class ImageTest(BrowserGUITestCase):
     image.reload_data()
     self.assertEqual(new_contents, image.data)
 
+  def test_reload_data__marks_dirty(self):
+    image = Image(self.file.name)
+    with self.assertMarksDirty(image):
+      image.reload_data()
+
   def test_construction_from_filename__file_not_found(self):
     expected_error_type = FileNotFoundError if sys.version_info > (3, 3) else IOError
     with self.assertRaises(expected_error_type):

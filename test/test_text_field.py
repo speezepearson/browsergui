@@ -14,11 +14,21 @@ class TextFieldTest(BrowserGUITestCase):
     self.assertEqual('foo', e.value)
     self.assertEqual('foo', e.tag.getAttribute('value'))
 
+  def test_set_value__marks_dirty(self):
+    e = TextField()
+    with self.assertMarksDirty(e):
+      e.value = 'foo'
+
   def test_set_placeholder(self):
     e = TextField()
     e.placeholder = 'foo'
     self.assertEqual('foo', e.placeholder)
     self.assertEqual('foo', e.tag.getAttribute('placeholder'))
+
+  def test_set_placeholder__marks_dirty(self):
+    e = TextField()
+    with self.assertMarksDirty(e):
+      e.placeholder = 'foo'
 
   def test_change_callback(self):
     xs = []

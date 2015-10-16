@@ -17,3 +17,8 @@ class TextTest(BrowserGUITestCase):
     t.set_text('foo')
     self.assertEqual(t.text, 'foo')
     self.assertHTMLLike('<span>foo</span>', t)
+
+  def test_set_text__marks_dirty(self):
+    t = Text('foo')
+    with self.assertMarksDirty(t):
+      t.text = 'bar'
