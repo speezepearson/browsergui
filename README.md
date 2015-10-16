@@ -37,17 +37,26 @@ Here are a few short demos, to give you a taste of what this GUI framework looks
 
 - A clock:
 
-        import datetime
-        from browsergui import *
+        import time
+        import threading
+        from browsergui import Text, GUI, run
 
-        now = Text("")
+        def main():
+          now = Text("")
 
-        def update_now():
-          now.text = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+          def update_now_forever():
+            while True:
+              now.text = time.strftime("%Y-%m-%d %H:%M:%S")
+              time.sleep(1)
 
-        RepeatingTimer(interval=0.1, callback=update_now, daemon=True).start()
+          t = threading.Thread(target=update_now_forever)
+          t.daemon = True
+          t.start()
 
-        run(GUI(Text("The time is: "), now))
+          run(GUI(Text("The time is: "), now))
+
+        if __name__ == '__main__':
+          main()
 
 
 Should I use this?
@@ -173,7 +182,7 @@ Every element has an HTML tag associated with it. The tag is created by `Element
 
 Each element has complete control over its tag, and may do anything it likes to the tag or any descendant of the tag, with the following exceptions:
 - do not modify the element's tag's `id` or `style` attributes, or any attributes beginning with `on` (used for event-handling)
-- do not modify other elements' tags, or their descendants
+- do not modify your children's tags, or their descendants
 
 For example, a List instance with two children would have a tag that looks like
 ```html
@@ -190,28 +199,9 @@ The List instance is free to modify the `ol` or `li` tags in any way, including 
 
 After modifying an element's tag, the element's `mark_dirty()` method should be called. If the element is in a GUI being viewed in a browser, `e.mark_dirty()` will make sure the browser's version of the tag is up to date.
 
-#### Parents and Children
-
-Elements, as I said, are nodes in a tree, and therefore they have attributes called `parent` and `children`. `my_element.children` lists the elements that `my_element` "contains" (the definition of which is up to you and is probably obvious if you have a clear picture of what you want), and `my_element.parent` is either `None` or the element that contains `my_element`.
-
-Obviously, if `e` is in `f.children`, then `e.parent` should be `f`. This means you'll often type things like
-```python
-new_child.parent = self
-self._children.append(new_child)
-```
-or
-```python
-self._children.remove(old_child)
-old_child.parent = None
-```
-
-To help keep parent/child relationships consistent, setting `e.parent` to a non-`None` value will raise an exception if `e.parent` is not `None`. This prevents you from accidentally stealing a child from another element, without explicitly making the other element disown it first.
-
-The parent/child relationships between Elements must mirror those of their tags. More specifically, iff element `e`'s parent is `f`, then its tag should be contained by `f`'s tag more closely than any other element's tag.
-
 #### Styling
 
-If you want to do CSS stuff, use the `set_styles`, `get_style`, and `delete_styles` methods on the `Element` class, which access the `style` attribute of the element.
+If you want to do CSS stuff, use the Element's `styles` attribute. `e.styles` is a dict-like object that, when modified, will modify the HTML tag and mark the tag as dirty.
 
 #### Event-Handling
 
@@ -222,7 +212,7 @@ The event-handling framework is pretty ugly right now, and needs a major redesig
 
 Using what we know so far, let's implement a List element.
 
-First, we need to figure out what the HTML should look like. An HTML dabbler will know that it should look like
+First, we need to figure out what the HTML should look like. Any HTML dabbler will know that it should look like
 ```html
 <ol>
   <li>
@@ -241,11 +231,6 @@ Now, let's define a `SimpleList` class, which supports appending and deletion of
 class SimpleList(Element):
   def __init__(self, **kwargs):
     super(SimpleList, self).__init__(tag_name="ol", **kwargs)
-    self._children = []
-
-  @property
-  def children(self):
-    return self._children[:] # return a copy to prevent modification
 
   def append(self, new_child):
     # add a new item to our HTML list tag
@@ -253,20 +238,12 @@ class SimpleList(Element):
     self.tag.appendChild(li)
     li.appendChild(new_child.tag)
 
-    # make parent/child stuff reflect the new HTML structure
-    new_child.parent = self
-    self._children.append(new_child)
-
     # make sure the tag gets redrawn
     self.mark_dirty()
 
   def delete(self, old_child):
     # remove the item containing the child from our HTML list tag
     self.tag.removeChild(old_child.tag.parentNode)
-
-    # make parent/child stuff reflect the new HTML structure
-    self._children.remove(old_child)
-    old_child.parent = None
 
     # make sure the tag gets redrawn
     self.mark_dirty()

@@ -26,13 +26,13 @@ class ContainerTest(BrowserGUITestCase):
     container.append(first)
     self.assertEqual(list(container.children), [first])
 
-    container.insert_after(second, reference_child=first)
+    container.insert(container.index(first)+1, second)
     self.assertEqual(list(container.children), [first, second])
 
-    container.disown(first)
+    container.remove(first)
     self.assertEqual(list(container.children), [second])
 
-    container.disown(second)
+    container.remove(second)
     self.assertEqual(list(container.children), [])
 
   def test_hash_static(self):
@@ -44,5 +44,5 @@ class ContainerTest(BrowserGUITestCase):
     c.append(Container())
     self.assertEqual(h, hash(c))
 
-    c.add_callback(Click, self.set_last_event)
+    c.callbacks[Click] = self.set_last_event
     self.assertEqual(h, hash(c))

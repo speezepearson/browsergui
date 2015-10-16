@@ -1,8 +1,8 @@
 import json
 import xml.dom.minidom
-from . import LeafElement
+from . import Element
 
-class Text(LeafElement):
+class Text(Element):
   """An element containing only a text string.
 
   The currently displayed string may be accessed or changed via the `text` attribute.

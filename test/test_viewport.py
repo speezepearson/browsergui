@@ -54,6 +54,13 @@ class TextTest(BrowserGUITestCase):
     self.assertEqual(200, viewport.width)
     self.assertEqual(100, viewport.height)
 
+  def test_set_dimensions__marks_dirty(self):
+    viewport = Viewport(Text('hi'), width=100, height=100)
+    with self.assertMarksDirty(viewport):
+      viewport.width = 200
+    with self.assertMarksDirty(viewport):
+      viewport.height = 200
+
   def test_tag(self):
     viewport = Viewport(Text('Hi'), width=50, height=60)
     self.assertHTMLLike('<div style="height: 60; overflow: scroll; width: 50"><span>Hi</span></div>', viewport)

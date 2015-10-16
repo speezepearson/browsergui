@@ -1,7 +1,7 @@
-from . import LeafElement
+from . import Element
 from ..events import Input
 
-class InputField(LeafElement):
+class InputField(Element):
   '''Any form of user value-input element.
 
   Access/change the value using the ``value`` attribute. Some kinds of input also support
@@ -15,7 +15,7 @@ class InputField(LeafElement):
     self.change_callback = None
     self._set_value(value)
 
-    self.add_callback(Input, self._handle_input_event)
+    self.callbacks[Input] = self._handle_input_event
 
     self.placeholder = placeholder
     self.change_callback = change_callback

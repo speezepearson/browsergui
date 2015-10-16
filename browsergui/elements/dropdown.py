@@ -1,8 +1,8 @@
-from . import LeafElement
+from . import Element
 from ..events import Input
 from ..pythoncompatibility import collections_abc, STRING_TYPES
 
-class Dropdown(LeafElement, collections_abc.MutableSequence):
+class Dropdown(Element, collections_abc.MutableSequence):
   def __init__(self, options, change_callback=None, **kwargs):
     super(Dropdown, self).__init__(tag_name='select', **kwargs)
     self.change_callback = None
@@ -16,7 +16,7 @@ class Dropdown(LeafElement, collections_abc.MutableSequence):
 
     self._set_value(options[0])
 
-    self.add_callback(Input, lambda event: self._set_value(event.value))
+    self.callbacks[Input] = lambda event: self._set_value(event.value)
     self.change_callback = change_callback
 
   @property
