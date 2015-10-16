@@ -1,7 +1,7 @@
 import unittest
 import xml.dom.minidom
 
-from browsergui.events import Event, Click, from_dict
+from browsergui.events import Event, Click
 
 class EventTest(unittest.TestCase):
   def test_enable_server_notification(self):
@@ -21,22 +21,7 @@ class EventTest(unittest.TestCase):
       Click.disable_server_notification(tag)
 
   def test_from_dict(self):
-    class MyEvent(Event):
-      def __init__(self, flub, **kwargs):
-        super(MyEvent, self).__init__(**kwargs)
-        self.flub = flub
-
-    e = MyEvent.from_dict({'flub': 'x', 'target_id': 'y'})
-    self.assertEqual('x', e.flub)
-    self.assertEqual('y', e.target_id)
-
-    with self.assertRaises(TypeError):
-      MyEvent.from_dict({'flub': 'x', 'target_id': 'y', 'extra': 'foo'})
-
-  def test_global_from_dict(self):
-    e = from_dict({'type_name': Click.javascript_type_name, 'target_id': 'x'})
+    d = dict(type_name=Click.javascript_type_name, target_id="foo")
+    e = Event.from_dict(d)
     self.assertIsInstance(e, Click)
-    self.assertEqual('x', e.target_id)
-
-    with self.assertRaises(KeyError):
-      from_dict({'type_name': 'nonexistenttype'})
+    self.assertEqual('foo', e.target_id)
