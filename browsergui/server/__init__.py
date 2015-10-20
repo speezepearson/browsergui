@@ -23,8 +23,6 @@ def read_json(request_headers, request_file):
   content_string = content_bytes.decode('ascii')
   return json.loads(content_string)
 
-CURRENT_GUI = None
-
 class GUIRequestHandler(BaseHTTPRequestHandler):
   """Handler for GUI-related requests.
 
@@ -35,6 +33,12 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
   - client asking for a lump of JavaScript to execute
   - client notifying server of some user interaction in the browser
   """
+
+  # There will be different servers for different GUIs.
+  # Each server will have its own request handler class.
+  # Those classes will override `gui` to know what to
+  # serve up.
+  gui = None
 
   def do_GET(self):
     if self.path == ROOT_PATH:
@@ -64,7 +68,7 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
 
   def get_root(self):
     """Respond to a request for a new view of the underlying GUI."""
-    CURRENT_GUI.make_new_document(destroy=True)
+    type(self).gui.make_new_document(destroy=True)
     self.get_static_file('index.html')
 
   def get_command(self):
@@ -75,7 +79,7 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
     the response thread won't linger too long.
     """
     try:
-      command = CURRENT_GUI.change_tracker.flush_changes()
+      command = type(self).gui.change_tracker.flush_changes()
       self.send_response(status_codes.OK)
       self.send_no_cache_headers()
       self.end_headers()
@@ -90,7 +94,7 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
     event = browsergui.events.Event.from_dict(data)
     self.send_response(status_codes.OK)
     self.end_headers()
-    CURRENT_GUI.dispatch_event(event)
+    type(self).gui.dispatch_event(event)
 
   def send_no_cache_headers(self):
     """Add headers to the response telling the client to not cache anything."""
@@ -110,6 +114,11 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
       x = x.encode()
     self.wfile.write(x)
 
+def make_request_handler_class_for_gui(served_gui):
+  class _AnonymousGUIRequestHandlerSubclass(GUIRequestHandler):
+    gui = served_gui
+  return _AnonymousGUIRequestHandlerSubclass
+
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
   """Server that responds to each request in a separate thread."""
   pass
@@ -120,14 +129,14 @@ def run(gui, open_browser=True, port=0, quiet=False):
   :param bool open_browser: whether to immediately display the GUI in a new browser window
   :param kwargs: passed through to :func:`serve_forever`
   """
-  global CURRENT_GUI
-  CURRENT_GUI = gui
+
+  handler_class = make_request_handler_class_for_gui(gui)
 
   if quiet:
     def noop(*args): pass
-    GUIRequestHandler.log_message = noop
+    handler_class.log_message = noop
 
-  server = ThreadedHTTPServer(('localhost', port), GUIRequestHandler)
+  server = ThreadedHTTPServer(('localhost', port), handler_class)
   if port == 0:
     port = server.socket.getsockname()[1]
 
