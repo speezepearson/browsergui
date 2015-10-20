@@ -39,6 +39,7 @@ class GUI(object):
   def __init__(self, *elements, **kwargs):
     self.title = Text(tag_name='title', text=kwargs.pop('title', 'browsergui'))
     self.body = _Body()
+    self.document = _create_gui_xml_document(title_tag=self.title.tag, body_tag=self.body.tag)
     self.make_new_document(destroy=False)
     super(GUI, self).__init__(**kwargs)
 
@@ -70,8 +71,8 @@ class GUI(object):
   def make_new_document(self, destroy=True):
     if destroy:
       self.change_tracker.destroy()
-    self.document = _create_gui_xml_document(title_tag=self.title.tag, body_tag=self.body.tag)
-    self.change_tracker = DocumentChangeTracker(self.document)
+    self.change_tracker = DocumentChangeTracker()
+    self.change_tracker.mark_dirty(self.document.documentElement)
 
   def destroy(self):
     self.change_tracker.destroy()
