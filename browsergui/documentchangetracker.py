@@ -6,6 +6,7 @@ class Destroyed(Exception):
   pass
 
 def ancestors(tag):
+  tag = tag.parentNode
   while tag is not None:
     yield tag
     tag = tag.parentNode
@@ -81,7 +82,15 @@ class DocumentChangeTracker(object):
         self._changed_condition.wait()
       if self._destroyed:
         return 'window.close(); sleep(9999)'
-      
+
+      # Not all dirty tags need rewriting.
+      # Since rewriting a tag rewrites all its children,
+      # a tag only needs rewriting if *none* of its ancestors
+      # needs rewriting.
+      self._dirty_tags = set(
+        t for t in self._dirty_tags
+        if not any(ancestor in self._dirty_tags for ancestor in ancestors(t)))
+
       result = ';\n'.join(
         'temp = document.getElementById({id}); {update}'.format(
           id=json.dumps(tag.getAttribute('id')),
@@ -95,15 +104,6 @@ class DocumentChangeTracker(object):
     with self._changed_condition:
       if self._destroyed:
         raise Destroyed(self)
-      # If one of the tag's parents is dirty, we'll rewrite the tag anyway,
-      # so we don't need to add it to the list.
-      for old_dirty_tag in self._dirty_tags:
-        if old_dirty_tag in ancestors(tag):
-          return
-      # The new tag will eclipse the dirtiness of any of its descendants.
-      for old_dirty_tag in self._dirty_tags:
-        if tag in ancestors(old_dirty_tag):
-          self._dirty_tags.remove(old_dirty_tag)
 
       self._dirty_tags.add(tag)
       self._changed_condition.notify_all()
