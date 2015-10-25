@@ -33,7 +33,9 @@ def main():
   t.daemon = True
   t.start()
   run_repl(gui)
-  gui.destroy()
+
+  if gui.running: # If the user killed the GUI in the REPL, it might not still be running.
+    gui.stop_running()
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
 import xml.dom.minidom
 from .elements import Element, Text, Container
 from .documentchangetracker import DocumentChangeTracker
+from . import server
 
 class _Page(Element):
   def __init__(self, gui, **kwargs):
@@ -47,6 +48,7 @@ class GUI(object):
     self.title = kwargs.pop('title', 'browsergui')
 
     self.create_change_tracker()
+    self.server = None
 
     # NOW that we're all initialized, we can connect the page to the GUI.
     self.page.gui = self
@@ -91,5 +93,27 @@ class GUI(object):
     self.change_tracker = DocumentChangeTracker()
     self.change_tracker.mark_dirty(self.page.tag)
 
-  def destroy(self):
+  @property
+  def running(self):
+    return (self.server is not None)
+
+  def run(self, open_browser=True, port=None, quiet=False):
+    if self.running:
+      raise RuntimeError('{} is already running'.format(self))
+
+    self.server = server.make_server_for_gui(self, port=port, quiet=quiet)
+
+    if open_browser:
+      server.point_browser_to_server(self.server, quiet=quiet)
+
+    try:
+      self.server.serve_forever()
+    except KeyboardInterrupt:
+      self.stop_running()
+
+  def stop_running(self):
+    if not self.running:
+      raise RuntimeError('{} is not running'.format(self))
+    self.server.shutdown()
     self.change_tracker.destroy()
+    self.server = None

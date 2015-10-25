@@ -124,12 +124,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
   """Server that responds to each request in a separate thread."""
   pass
 
-def run(gui, open_browser=True, port=0, quiet=False):
-  """Helper function to simply display a GUI in the browser.
-
-  :param bool open_browser: whether to immediately display the GUI in a new browser window
-  :param kwargs: passed through to :func:`serve_forever`
-  """
+def make_server_for_gui(gui, port=None, quiet=False):
 
   handler_class = make_request_handler_class_for_gui(gui)
 
@@ -137,18 +132,17 @@ def run(gui, open_browser=True, port=0, quiet=False):
     def noop(*args): pass
     handler_class.log_message = noop
 
-  server = ThreadedHTTPServer(('localhost', port), handler_class)
-  if port == 0:
-    port = server.socket.getsockname()[1]
+  if port is None:
+    port = 0
 
-  if open_browser:
-    url = "http://localhost:{}".format(port)
+  return ThreadedHTTPServer(('localhost', port), handler_class)
+
+def point_browser_to_server(server, quiet=False):
+  port = server.socket.getsockname()[1]
+  url = "http://localhost:{}".format(port)
+  if not quiet:
     print('Directing browser to {}'.format(url))
-    webbrowser.open(url)
+  webbrowser.open(url)
 
-  print('Starting server. Use <Ctrl-C> to stop.')
-  try:
-    server.serve_forever()
-  except KeyboardInterrupt:
-    print("Keyboard interrupt received. Quitting.")
-    gui.destroy()
+def run(gui, open_browser=True, port=None, quiet=False):
+  gui.run(open_browser=open_browser, port=port, quiet=quiet)
