@@ -115,9 +115,12 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
       x = x.encode()
     self.wfile.write(x)
 
-def make_request_handler_class_for_gui(served_gui):
-  class _AnonymousGUIRequestHandlerSubclass(GUIRequestHandler):
+def make_request_handler_class_for_gui(served_gui, quiet=False):
+  class _AnonymousGUIRequestHandlerSubclass(GUIRequestHandler, object):
     gui = served_gui
+  if quiet:
+    def noop(*args): pass
+    _AnonymousGUIRequestHandlerSubclass.log_message = noop
   return _AnonymousGUIRequestHandlerSubclass
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -131,11 +134,7 @@ def run(gui, open_browser=True, port=0, quiet=False):
   :param kwargs: passed through to :func:`serve_forever`
   """
 
-  handler_class = make_request_handler_class_for_gui(gui)
-
-  if quiet:
-    def noop(*args): pass
-    handler_class.log_message = noop
+  handler_class = make_request_handler_class_for_gui(gui, quiet=quiet)
 
   server = ThreadedHTTPServer(('localhost', port), handler_class)
   if port == 0:
