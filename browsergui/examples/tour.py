@@ -128,7 +128,7 @@ def main():
       date_field = DateField(change_callback=date_changed)'''))
 
 
-  run(GUI(
+  GUI(
     Paragraph('''
       Here is a list of all the kinds of Element available to you.
       See the classes' documentation for more detailed information on them.'''),
@@ -145,7 +145,7 @@ def main():
       Container(
         Paragraph('Other:'),
         example_grid_for_types(Image))]),
-    title='browsergui tour'))
+    title='browsergui tour').run()
 
 if __name__ == '__main__':
   main()

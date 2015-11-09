@@ -1,6 +1,6 @@
 import time
 import threading
-from browsergui import Text, GUI, run
+from browsergui import Text, GUI
 
 def main():
   now = Text("")
@@ -14,7 +14,7 @@ def main():
   t.daemon = True
   t.start()
 
-  run(GUI(Text("The time is: "), now))
+  GUI(Text("The time is: "), now).run()
 
 if __name__ == '__main__':
   main()

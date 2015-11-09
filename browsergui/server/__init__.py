@@ -143,6 +143,3 @@ def point_browser_to_server(server, quiet=False):
   if not quiet:
     print('Directing browser to {}'.format(url))
   webbrowser.open(url)
-
-def run(gui, open_browser=True, port=None, quiet=False):
-  gui.run(open_browser=open_browser, port=port, quiet=quiet)
