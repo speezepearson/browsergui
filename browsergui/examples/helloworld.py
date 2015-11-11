@@ -1,7 +1,7 @@
-from browsergui import run, GUI, Text
+from browsergui import GUI, Text
 
 def main():
-  run(GUI(Text("Hello world!")))
+  GUI(Text("Hello world!")).run()
 
 if __name__ == '__main__':
   main()

@@ -83,7 +83,7 @@ class MinesweeperGUI(GUI):
     return Button('?', callback=callback)
 
 def main():
-  run(MinesweeperGUI())
+  MinesweeperGUI().run()
 
 if __name__ == '__main__':
   main()

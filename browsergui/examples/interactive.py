@@ -1,7 +1,7 @@
 import code
 import browsergui
 import threading
-from browsergui import GUI, Paragraph, CodeBlock, Paragraph, run
+from browsergui import GUI, Paragraph, CodeBlock, Paragraph
 
 def run_repl(gui):
   interpreter = code.InteractiveConsole(locals={'_gui': gui})
@@ -29,11 +29,13 @@ def main():
                  "gui.append(Button(callback=(lambda: gui.append(Paragraph('Clicked!')))))"):
     gui.append(CodeBlock(sample))
 
-  t = threading.Thread(target=run, args=[gui], kwargs={'quiet': True})
+  t = threading.Thread(target=gui.run, kwargs={'quiet': True})
   t.daemon = True
   t.start()
   run_repl(gui)
-  gui.destroy()
+
+  if gui.running: # If the user killed the GUI in the REPL, it might not still be running.
+    gui.stop_running()
 
 
 if __name__ == '__main__':

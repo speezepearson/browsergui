@@ -36,7 +36,7 @@ class ExtensionTallierGUI(GUI):
       self.extension_counts_text.text = "\n".join("{}: {}".format(k, v) for k, v in sorted(self.extension_counts.items(), key=(lambda kv: kv[1]), reverse=True))
 
 def main():
-  run(ExtensionTallierGUI(), quiet=True)
+  ExtensionTallierGUI().run(quiet=True)
 
 if __name__ == '__main__':
   main()
