@@ -106,7 +106,10 @@ class GUI(object):
     if open_browser:
       server.point_browser_to_server(self.server, quiet=quiet)
 
-    self.server.serve_forever()
+    try:
+      self.server.serve_forever()
+    except KeyboardInterrupt:
+      self.stop_running()
 
   def stop_running(self):
     if not self.running:
