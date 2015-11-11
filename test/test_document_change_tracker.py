@@ -8,7 +8,7 @@ class DocumentChangeTrackerTest(unittest.TestCase):
   def setUp(self):
     self.document = xml.dom.minidom.parseString('<root id="root" />')
     self.root = self.document.documentElement
-    self.tracker = DocumentChangeTracker(self.document)
+    self.tracker = DocumentChangeTracker()
 
   def test_mark_dirty_awakens_waiting_threads(self):
     t = threading.Thread(target=self.tracker.flush_changes)

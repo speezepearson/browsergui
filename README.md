@@ -26,20 +26,20 @@ Here are a few short demos, to give you a taste of what this GUI framework looks
 
 - Hello world:
 
-        from browsergui import run, GUI, Text
-        run(GUI(Text("Hello world!")))
+        from browsergui import GUI, Text
+        GUI(Text("Hello world!")).run()
 
 - A number that increments every time you press a button:
 
-        from browsergui import run, GUI, Text, Button
+        from browsergui import GUI, Text, Button
         button = Button('0', callback=lambda: button.set_text(int(button.text) + 1))
-        run(GUI(button))
+        GUI(button).run()
 
 - A clock:
 
         import time
         import threading
-        from browsergui import Text, GUI, run
+        from browsergui import Text, GUI
 
         def main():
           now = Text("")
@@ -53,7 +53,7 @@ Here are a few short demos, to give you a taste of what this GUI framework looks
           t.daemon = True
           t.start()
 
-          run(GUI(Text("The time is: "), now))
+          GUI(Text("The time is: "), now).run()
 
         if __name__ == '__main__':
           main()
@@ -163,9 +163,9 @@ when an element changes. Pretty much all you need to know about the GUI class is
 
 - `gui.body` is an Element that you can index/modify/iterate over like a `list`
 
-- you can pass a GUI into `run()` to start it running, like
+- you can call a GUI's `run()` method to start it running, like
 
-        run(GUI(Text('Hello, world!')))
+        GUI(Text('Hello, world!')).run()
 
 
 ### Defining Elements

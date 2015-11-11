@@ -6,6 +6,7 @@ class Destroyed(Exception):
   pass
 
 def ancestors(tag):
+  tag = tag.parentNode
   while tag is not None:
     yield tag
     tag = tag.parentNode
@@ -42,27 +43,26 @@ class DocumentChangeTracker(object):
   The server should wait until a change is made to the local document (if necessary),
   then respond with the appropriate JS to apply the change to the remote document.
 
-  How it works: the DocumentChangeTracker is instantiated, being given an XML document.
-  It keeps track of whether the document is "clean" or "dirty" (i.e. whether there have been
-  changes since the last time the browser was brought up to date).
+  How it works: the DocumentChangeTracker is instantiated. It keeps track of which tags
+  are "dirty" (i.e. which tags need to be brought up to date in the browser).
 
-  The :func:`flush_changes` method waits until the document is dirty (if necessary),
-  marks the document as clean, and returns a JavaScript string that will bring the browser's
-  DOM up to date.
-
-  The :func:`mark_dirty` method marks the document as dirty, possibly waking up threads
+  The :func:`mark_dirty` method marks a tag as dirty, possibly waking up threads
   waiting on :func:`flush_changes`.
 
+  The :func:`flush_changes` method waits until a tag is dirty (if necessary),
+  returns a JavaScript string that will bring the browser's DOM up to date,
+  and unmarks all tags as dirty.
+
   The :func:`destroy` method wakes up all waiting threads, but causes them to return
-  JavaScript that will close the browser window.
+  JavaScript that will close the browser window (if possible) or make it obviously
+  obsolete.
   '''
-  def __init__(self, document, **kwargs):
-    self.document = document
+  def __init__(self, **kwargs):
     super(DocumentChangeTracker, self).__init__(**kwargs)
 
     self._mutex = threading.RLock()
     self._changed_condition = threading.Condition(self._mutex)
-    self._dirty_tags = set([document.documentElement])
+    self._dirty_tags = set()
     self._destroyed = False
 
   def destroy(self):
@@ -81,7 +81,15 @@ class DocumentChangeTracker(object):
         self._changed_condition.wait()
       if self._destroyed:
         return 'window.close(); sleep(9999)'
-      
+
+      # Not all dirty tags need rewriting.
+      # Since rewriting a tag rewrites all its children,
+      # a tag only needs rewriting if *none* of its ancestors
+      # needs rewriting.
+      self._dirty_tags = set(
+        t for t in self._dirty_tags
+        if not any(ancestor in self._dirty_tags for ancestor in ancestors(t)))
+
       result = ';\n'.join(
         'temp = document.getElementById({id}); {update}'.format(
           id=json.dumps(tag.getAttribute('id')),
@@ -95,15 +103,6 @@ class DocumentChangeTracker(object):
     with self._changed_condition:
       if self._destroyed:
         raise Destroyed(self)
-      # If one of the tag's parents is dirty, we'll rewrite the tag anyway,
-      # so we don't need to add it to the list.
-      for old_dirty_tag in self._dirty_tags:
-        if old_dirty_tag in ancestors(tag):
-          return
-      # The new tag will eclipse the dirtiness of any of its descendants.
-      for old_dirty_tag in self._dirty_tags:
-        if tag in ancestors(old_dirty_tag):
-          self._dirty_tags.remove(old_dirty_tag)
 
       self._dirty_tags.add(tag)
       self._changed_condition.notify_all()
