@@ -116,4 +116,5 @@ class GUI(object):
       raise RuntimeError('{} is not running'.format(self))
     self.server.shutdown()
     self.change_tracker.destroy()
+    self.create_change_tracker()
     self.server = None
