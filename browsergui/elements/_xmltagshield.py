@@ -12,7 +12,7 @@ class TreeTraversalMixin(object):
 
   Subclasses must define ``parent`` and ``children``.
 
-  This would be more appropriate as a metaclass, but metaclass syntax is
+  This would be more appropriate as an abstract class, but metaclass syntax is
   incompatible between Python 2 and 3, and this isn't really user-facing,
   so I can afford to be a little lazy.
   '''

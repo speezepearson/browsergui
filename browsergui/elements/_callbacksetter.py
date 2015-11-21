@@ -1,6 +1,6 @@
-import collections
+from ..pythoncompatibility import collections_abc
 
-class CallbackSetter(collections.MutableMapping):
+class CallbackSetter(collections_abc.MutableMapping):
   def __init__(self, element, **kwargs):
     self.callbacks = {}
     self.element = element

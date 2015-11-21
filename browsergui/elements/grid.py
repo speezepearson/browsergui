@@ -140,3 +140,11 @@ class Grid(Element):
     self._cells[i][j] = None
     old_child.tag.parentNode.removeChild(old_child.tag)
     self.mark_dirty()
+
+  @classmethod
+  def make_column(cls, *elements, **kwargs):
+    return cls(cells=[[e] for e in elements], **kwargs)
+
+  @classmethod
+  def make_row(cls, *elements, **kwargs):
+    return cls(cells=[elements], **kwargs)

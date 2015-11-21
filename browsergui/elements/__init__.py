@@ -12,7 +12,13 @@ from ._styler import Styler
 class Element(XMLTagShield):
   """A conceptual GUI element, like a button or a table.
 
-  Elements are arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
+  Useful attributes/methods:
+
+  - ``element.styles`` is a dict-like object mapping strings (CSS properties) to strings (CSS values). e.g. ``my_text.styles['color'] = 'red'``
+  - ``element.callbacks`` is a dict-like object mapping :class:`Event` subclasses to functions that should be called when the corresponding event occurs. e.g. ``my_element.callbacks[Click] = (lambda event: print('Click:', event))``
+  - ``element.parent`` is the element which contains ``element`` (if any; else None). Elements are (like HTML tags) arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
+  - ``element.children`` is a list of all elements which have ``element`` as their parent.
+  - ``element.gui`` is the GUI containing the element (if any; else None).
   """
 
   def __init__(self, styling={}, **kwargs):
@@ -45,48 +51,21 @@ class Element(XMLTagShield):
     if self.gui is not None:
       self.gui.change_tracker.mark_dirty(self.tag)
 
-import collections
-class Container(Element, collections.MutableSequence):
-  """Contains and groups other elements."""
-  def __init__(self, *children, **kwargs):
-    kwargs.setdefault('tag_name', 'div')
-    super(Container, self).__init__(**kwargs)
-    for child in children:
-      self.append(child)
-
-  def __getitem__(self, index):
-    return self.children[index]
-
-  def __setitem__(self, index, child):
-    if not isinstance(child, Element):
-      raise TypeError('expected Element, got {}'.format(type(child).__name__))
-    del self[index]
-    self.insert(index, child)
-  
-  def __delitem__(self, index):
-    self.tag.removeChild(self.tag.childNodes[index])
-    self.mark_dirty()
-  
-  def __len__(self):
-    return len(self.children)
-  
-  def insert(self, index, child):
-    if not isinstance(child, Element):
-      raise TypeError('expected Element, got {}'.format(type(child).__name__))
-    try:
-      next_child = self.tag.childNodes[index]
-    except IndexError:
-      next_child = None
-    self.tag.insertBefore(child.tag, next_child)
-    self.mark_dirty()
-
 class NotUniversallySupportedElement(Element):
+  '''Mixin for elements that aren't supported in all major browsers.
+
+  Prints a warning upon instantiation, i.e. if MyElement subclasses NotUniversallySupportedElement, then ``MyElement()`` will log a warning.
+
+  To avoid the warning, either set ``MyElement.warn_about_potential_browser_incompatibility = False`` or pass the keyword argument ``warn_about_potential_browser_incompatibility=False`` into the constructor. (Yes, it's intentionally verbose. This package is meant to be super-portable and work the same way for everyone.)
+  '''
   warn_about_potential_browser_incompatibility = True
   def __init__(self, **kwargs):
+    warn = kwargs.pop('warn_about_potential_browser_incompatibility', self.warn_about_potential_browser_incompatibility)
     super(NotUniversallySupportedElement, self).__init__(**kwargs)
-    if self.warn_about_potential_browser_incompatibility:
+    if warn:
       logging.warning('{} not supported in all major browsers'.format(type(self).__name__))
 
+from .container import Container
 from .text import Text, Paragraph, CodeSnippet, CodeBlock, EmphasizedText
 from .button import Button
 from .link import Link
