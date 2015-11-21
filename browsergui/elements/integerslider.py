@@ -32,6 +32,7 @@ class IntegerSlider(InputField):
       raise ValueError("can't set min to above current value")
     self._min = new_min
     self.tag.setAttribute('min', repr(new_min))
+    self.mark_dirty()
 
   @property
   def max(self):
@@ -44,6 +45,7 @@ class IntegerSlider(InputField):
       raise ValueError("can't set max to below current value")
     self._max = new_max
     self.tag.setAttribute('max', repr(new_max))
+    self.mark_dirty()
 
   def value_from_xml_string(self, s):
     return int(s) if s else None

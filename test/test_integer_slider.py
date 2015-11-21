@@ -28,18 +28,35 @@ class IntegerSliderTest(BrowserGUITestCase):
     self.assertEqual(s.min, 0)
     self.assertEqual(s.max, 5)
 
+  def test_set_bounds__marks_dirty(self):
+    s = IntegerSlider(min=0, max=5)
+    with self.assertMarksDirty(s):
+      s.min = 1
+    with self.assertMarksDirty(s):
+      s.max = 4
+
   def test_set_bounds(self):
     s = IntegerSlider(min=0, max=5)
     s.value = 3
     s.min = 1
+    self.assertEqual(s.min, 1)
     self.assertEqual(s.value, 3)
     s.min = 3
+    self.assertEqual(s.min, 3)
     self.assertEqual(s.value, 3)
 
     with self.assertRaises(ValueError):
       s.min = 4
 
     s.min = 0
+    self.assertEqual(s.min, 0)
+
+    s.max = 4
+    self.assertEqual(s.max, 4)
+    self.assertEqual(s.value, 3)
+    s.max = 3
+    self.assertEqual(s.max, 3)
+    self.assertEqual(s.value, 3)
 
     with self.assertRaises(ValueError):
       s.max = 1

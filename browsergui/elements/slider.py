@@ -25,6 +25,7 @@ class Slider(InputField):
       raise ValueError("can't set min to above current value")
     self._min = new_min
     self.tag.setAttribute('min', repr(float(new_min)))
+    self.mark_dirty()
 
   @property
   def max(self):
@@ -35,6 +36,7 @@ class Slider(InputField):
       raise ValueError("can't set max to below current value")
     self._max = new_max
     self.tag.setAttribute('max', repr(float(new_max)))
+    self.mark_dirty()
 
   def value_from_xml_string(self, s):
     return float(s) if s else None
