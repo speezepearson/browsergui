@@ -61,6 +61,20 @@ class TextTest(BrowserGUITestCase):
     with self.assertMarksDirty(viewport):
       viewport.height = 200
 
+  def test_set_target(self):
+    old_target = Text('hi')
+    viewport = Viewport(old_target, width=100, height=100)
+    new_target = Text('bye')
+    viewport.target = new_target
+    self.assertIs(new_target, viewport.target)
+    self.assertIs(viewport, new_target.parent)
+    self.assertIsNone(old_target.parent)
+
+  def test_set_target__marks_dirty(self):
+    viewport = Viewport(Text('hi'), width=100, height=100)
+    with self.assertMarksDirty(viewport):
+      viewport.target = Text('bye')
+
   def test_tag(self):
     viewport = Viewport(Text('Hi'), width=50, height=60)
     self.assertHTMLLike('<div style="height: 60; overflow: scroll; width: 50"><span>Hi</span></div>', viewport)

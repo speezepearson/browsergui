@@ -20,8 +20,19 @@ class Viewport(Element):
     self.width = width
     self.height = height
 
+    self._target = None
     self.target = target
-    self.tag.appendChild(target.tag)
+
+  @property
+  def target(self):
+    return self._target
+  @target.setter
+  def target(self, new_target):
+    if self._target is not None:
+      self.tag.removeChild(self._target.tag)
+    self._target = new_target
+    self.tag.appendChild(new_target.tag)
+    self.mark_dirty()
 
   @property
   def width(self):
