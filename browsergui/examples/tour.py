@@ -139,6 +139,18 @@ def main():
       slider = Slider(min=0, max=10, change_callback=slider_changed)
       slider.value = 3'''))
 
+  examples[IntegerSlider] = Example(
+    'Container(slider, slider_value_squared)',
+    strip_whitespace('''
+      slider_value_squared = Text('')
+      def slider_changed():
+        if slider.value is None:
+          slider_value_squared.text = ''
+        else:
+          slider_value_squared.text = str(slider.value ** 2)
+      slider = IntegerSlider(min=0, max=5, change_callback=slider_changed)
+      slider.value = 3'''))
+
 
   GUI(
     Paragraph('''
@@ -150,7 +162,7 @@ def main():
         example_grid_for_types(Text, Paragraph, EmphasizedText, CodeSnippet, CodeBlock, Link)),
       Container(
         Paragraph('Input of many flavors:'),
-        example_grid_for_types(Button, Slider, TextField, Dropdown, NumberField, ColorField, DateField)),
+        example_grid_for_types(Button, Slider, IntegerSlider, TextField, Dropdown, NumberField, ColorField, DateField)),
       Container(
         Paragraph('Structural elements of many flavors:'),
         example_grid_for_types(Container, Viewport, List, Grid)),

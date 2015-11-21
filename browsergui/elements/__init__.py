@@ -79,3 +79,4 @@ from .number_field import NumberField
 from .color_field import ColorField
 from .date_field import DateField
 from .slider import Slider
+from .integerslider import IntegerSlider
