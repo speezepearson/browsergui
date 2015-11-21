@@ -13,39 +13,29 @@ class IntegerSlider(InputField):
     if value is None:
       value = (min+max)//2
 
+    self._min = min
+    self._max = max
     super(IntegerSlider, self).__init__(value=value, **kwargs)
     self.tag.setAttribute('type', 'range')
     self.tag.setAttribute('step', '1')
-    self.min = min
     self.max = max
-    self.ensure_is_valid_value(value)
+    self.min = min
 
   @property
   def min(self):
-    if not (hasattr(self, 'tag') and 'min' in self.tag.attributes.keys()):
-      # Kludge. we need to call super().__init__ before we can set
-      # the 'min' tag-attribute, but super().__init__ accesses
-      # self.min when it's validating the value. So... just accept
-      # everything for now.
-      return float('-inf')
-    return int(self.tag.getAttribute('min'))
+    return self._min
   @min.setter
   def min(self, new_min):
     if not isinstance(new_min, int):
       raise TypeError('min must be int, not {}'.format(type(new_min).__name__))
     if new_min > self.value:
       raise ValueError("can't set min to above current value")
+    self._min = new_min
     self.tag.setAttribute('min', repr(new_min))
 
   @property
   def max(self):
-    if not (hasattr(self, 'tag') and 'max' in self.tag.attributes.keys()):
-      # Kludge. we need to call super().__init__ before we can set
-      # the 'max' tag-attribute, but super().__init__ accesses
-      # self.max when it's validating the value. So... just accept
-      # everything for now.
-      return float('inf')
-    return int(self.tag.getAttribute('max'))
+    return self._max
   @max.setter
   def max(self, new_max):
     if not isinstance(new_max, int):

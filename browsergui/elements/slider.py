@@ -12,9 +12,9 @@ class Slider(InputField):
     self._max = max
     super(Slider, self).__init__(value=value, **kwargs)
     self.tag.setAttribute('type', 'range')
-    self.tag.setAttribute('min', repr(float(min)))
-    self.tag.setAttribute('max', repr(float(max)))
     self.tag.setAttribute('step', str((self.max-self.min)/1000.))
+    self.max = max
+    self.min = min
 
   @property
   def min(self):
