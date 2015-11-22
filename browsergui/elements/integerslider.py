@@ -3,8 +3,20 @@ import math
 from .input_field import InputField
 
 class IntegerSlider(InputField):
+  '''A draggable slider that only accepts integer values.
 
-  def __init__(self, value=None, min=0, max=100, **kwargs):
+  Useful attributes:
+
+  - ``slider.min`` is the smallest number the slider can be set to. Writable.
+  - ``slider.max`` is the largest number the slider can be set to. Writable.
+
+  ``min``, ``max``, or ``value`` can only be set to ``int``s, and any attempted assignment that would violate ``min <= value <= max`` will fail and instead raise a ``ValueError``.
+
+  :param min: the smallest value the slider can accept
+  :param max: the largest value the slider can accept
+  '''
+
+  def __init__(self, min, max, value=None, **kwargs):
     if not isinstance(min, int):
       raise TypeError('min must be int, not {}'.format(type(min).__name__))
     if not isinstance(max, int):
