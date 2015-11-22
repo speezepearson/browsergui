@@ -1,30 +1,46 @@
 import numbers
-import math
+import datetime
 from .input_field import InputField
+from ..pythoncompatibility import is_real_float
 
 class Slider(InputField):
+  '''A draggable slider.
 
-  def __init__(self, value=None, min=0, max=100, **kwargs):
+  Any attempted assignment to ``min``, ``max``, or ``value`` that would violate ``min <= value <= max`` will fail and instead raise a ``ValueError``.
+
+  Don't instantiate; you probably want :class:`FloatSlider` or :class:`IntegerSlider`. You can also define your own subclasses for other data types: see `this tutorial`_.
+
+  .. _this tutorial: https://github.com/speezepearson/browsergui/wiki/Make-Your-Own-Sliders
+
+  :param min: the smallest value the slider can accept. Writable.
+  :param max: the largest value the slider can accept. Writable.
+  '''
+
+  DISCRETE = False
+
+  def __init__(self, min, max, value=None, **kwargs):
     if value is None:
-      value = (min+max)/2
+      value = type(self).value_from_number((type(self).value_to_number(min)+type(self).value_to_number(max)) / 2.0)
 
     self._min = min
     self._max = max
     super(Slider, self).__init__(value=value, **kwargs)
-    self.tag.setAttribute('type', 'range')
-    self.tag.setAttribute('step', str((self.max-self.min)/1000.))
     self.max = max
     self.min = min
+
+    self.tag.setAttribute('type', 'range')
+    self.tag.setAttribute('step', str(1 if type(self).DISCRETE else (self.value_to_number(max)-self.value_to_number(min))/1000.))
 
   @property
   def min(self):
     return self._min
   @min.setter
   def min(self, new_min):
+    new_min_number = self.value_to_number(new_min)
     if new_min > self.value:
       raise ValueError("can't set min to above current value")
     self._min = new_min
-    self.tag.setAttribute('min', repr(float(new_min)))
+    self.tag.setAttribute('min', str(new_min_number))
     self.mark_dirty()
 
   @property
@@ -32,26 +48,66 @@ class Slider(InputField):
     return self._max
   @max.setter
   def max(self, new_max):
+    new_max_number = self.value_to_number(new_max)
     if new_max < self.value:
       raise ValueError("can't set max to below current value")
     self._max = new_max
-    self.tag.setAttribute('max', repr(float(new_max)))
+    self.tag.setAttribute('max', str(new_max_number))
     self.mark_dirty()
 
-  def value_from_xml_string(self, s):
-    return float(s) if s else None
+  @classmethod
+  def value_to_xml_string(cls, x):
+    return repr(cls.value_to_number(x))
 
-  def value_to_xml_string(self, x):
-    return '' if x is None else repr(float(x))
+  @classmethod
+  def value_from_xml_string(cls, x):
+    return cls.value_from_number(float(x))
 
   def ensure_is_valid_value(self, value):
-    if not isinstance(value, numbers.Real):
-      raise TypeError('expected real-number value, got {}'.format(type(value).__name__))
-
-    if math.isnan(value):
-      raise TypeError('expected real-number value, got NaN')
-
+    self.value_to_number(value)
     if (value < self.min) or (value > self.max):
       raise ValueError('{} not between {} and {}'.format(value, self.min, self.max))
 
     super(Slider, self).ensure_is_valid_value(value)
+
+  @classmethod
+  def value_to_number(cls, x):
+    raise NotImplementedError('{} has not implemented value_to_number'.format(cls.__name__))
+
+  @classmethod
+  def value_from_number(cls, x):
+    raise NotImplementedError('{} has not implemented value_from_number'.format(cls.__name__))
+
+class FloatSlider(Slider):
+  '''A type of :class:`Slider` that accepts real-valued values/bounds (e.g. float, int, ``fractions.Fraction``).
+
+  When the user drags the slider, the value is set to a float.
+  '''
+
+  @staticmethod
+  def value_to_number(x):
+    if not isinstance(x, numbers.Real):
+      raise TypeError('expected real number, got {}'.format(type(x).__name__))
+    result = float(x)
+    if not is_real_float(result):
+      raise TypeError('expected finite value, got {}'.format(result))
+    return result
+
+  @staticmethod
+  def value_from_number(x):
+    return x
+
+class IntegerSlider(Slider):
+  '''A type of :class:`Slider` that accepts only integer values/bounds.'''
+
+  DISCRETE = True
+
+  @staticmethod
+  def value_to_number(x):
+    if not isinstance(x, int):
+      raise TypeError('expected int, got {}'.format(type(x).__name__))
+    return x
+
+  @staticmethod
+  def value_from_number(x):
+    return int(x)

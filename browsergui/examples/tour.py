@@ -127,7 +127,7 @@ def main():
           weekday_text.text = DAYS[date_field.value.weekday()]
       date_field = DateField(change_callback=date_changed)'''))
 
-  examples[Slider] = Example(
+  examples[FloatSlider] = Example(
     'Container(slider, slider_value_squared)',
     strip_whitespace('''
       slider_value_squared = Text('')
@@ -136,7 +136,7 @@ def main():
           slider_value_squared.text = ''
         else:
           slider_value_squared.text = '{:.3g}'.format(slider.value ** 2)
-      slider = Slider(min=0, max=10, change_callback=slider_changed)
+      slider = FloatSlider(min=0, max=10, change_callback=slider_changed)
       slider.value = 3'''))
 
   examples[IntegerSlider] = Example(
@@ -162,7 +162,7 @@ def main():
         example_grid_for_types(Text, Paragraph, EmphasizedText, CodeSnippet, CodeBlock, Link)),
       Container(
         Paragraph('Input of many flavors:'),
-        example_grid_for_types(Button, Slider, IntegerSlider, TextField, Dropdown, NumberField, ColorField, DateField)),
+        example_grid_for_types(Button, FloatSlider, IntegerSlider, TextField, Dropdown, NumberField, ColorField, DateField)),
       Container(
         Paragraph('Structural elements of many flavors:'),
         example_grid_for_types(Container, Viewport, List, Grid)),
