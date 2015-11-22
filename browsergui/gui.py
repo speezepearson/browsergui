@@ -68,8 +68,7 @@ class GUI(object):
 
     super(GUI, self).__init__(**kwargs)
 
-    for element in elements:
-      self.append(element)
+    self.body.extend(elements)
 
   @property
   def body(self):
@@ -90,14 +89,6 @@ class GUI(object):
         break
     else:
       raise KeyError('no element with id {!r}'.format(event.target_id))
-
-  def append(self, child):
-    """To be cleaned up, per issue #23."""
-    self.body.append(child)
-
-  def disown(self, child):
-    """To be cleaned up, per issue #23."""
-    self.body.disown(child)
 
   def create_change_tracker(self):
     self.change_tracker = DocumentChangeTracker()

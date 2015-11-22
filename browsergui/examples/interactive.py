@@ -25,9 +25,9 @@ def main():
     Some commands you might run are:
   """))
 
-  for sample in ("gui.append(Text('Hiiii!'))",
-                 "gui.append(Button(callback=(lambda: gui.append(Paragraph('Clicked!')))))"):
-    gui.append(CodeBlock(sample))
+  for sample in ("gui.body.append(Text('Hiiii!'))",
+                 "gui.body.append(Button(callback=(lambda: gui.body.append(Paragraph('Clicked!')))))"):
+    gui.body.append(CodeBlock(sample))
 
   t = threading.Thread(target=gui.run, kwargs={'quiet': True})
   t.daemon = True

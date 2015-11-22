@@ -50,12 +50,12 @@ class GUITest(BrowserGUITestCase):
     gui = GUI(Text('before first run'))
 
     with self.running_in_background(gui):
-      gui.append(Text('during first run'))
+      gui.body.append(Text('during first run'))
 
-    gui.append(Text('before second fun'))
+    gui.body.append(Text('before second fun'))
 
     with self.running_in_background(gui):
-      gui.append(Text('during second run'))
+      gui.body.append(Text('during second run'))
 
   def test_run__raises_if_running(self):
     gui = GUI()
