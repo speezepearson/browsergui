@@ -95,3 +95,13 @@ class DropdownTest(BrowserGUITestCase):
     for bad_object in ('not in it'):
       with self.assertRaises(ValueError):
         d.value = bad_object
+
+  def test_def_change_callback(self):
+    xs = []
+    d = Dropdown(['a', 'b'])
+    @d.def_change_callback
+    def _():
+      xs.append(1)
+
+    d.value  = 'b'
+    self.assertEqual([1], xs)

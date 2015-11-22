@@ -93,3 +93,8 @@ class Dropdown(Element, collections_abc.MutableSequence):
     next_option_tag = self.tag.childNodes[index] if index < len(self.tag.childNodes) else None
     self.tag.insertBefore(option_tag, next_option_tag)
     self.mark_dirty()
+
+  def def_change_callback(self, f):
+    '''Decorator to set the Dropdown's ``change_callback``'''
+    self.change_callback = f
+    return f

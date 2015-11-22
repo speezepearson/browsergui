@@ -33,7 +33,12 @@ Here are a few short demos, to give you a taste of what this GUI framework looks
 - A number that increments every time you press a button:
 
         from browsergui import GUI, Text, Button
-        button = Button('0', callback=lambda: button.set_text(int(button.text) + 1))
+
+        button = Button('0')
+        @button.def_callback
+        def increment():
+          button.text = str(int(button.text)+1)
+
         GUI(button).run()
 
 - A clock:

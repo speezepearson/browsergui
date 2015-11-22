@@ -86,9 +86,10 @@ def main():
     'Container(dropdown, selected_dropdown_item)',
     strip_whitespace('''
       selected_dropdown_item = Text('')
-      dropdown = Dropdown(
-        ['Dr', 'op', 'do', 'wn'],
-        change_callback=lambda: selected_dropdown_item.set_text(dropdown.value))
+      dropdown = Dropdown(['Dr', 'op', 'do', 'wn'])
+      @dropdown.def_change_callback
+      def _():
+        selected_dropdown_item.text = dropdown.value
       dropdown.value = "wn"'''))
 
   examples[NumberField] = Example(

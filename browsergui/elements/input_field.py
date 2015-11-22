@@ -69,3 +69,8 @@ class InputField(Element):
 
   def ensure_is_valid_value(self, value):
     pass
+
+  def def_change_callback(self, f):
+    '''Decorator to set the InputField's ``change_callback``'''
+    self.change_callback = f
+    return f

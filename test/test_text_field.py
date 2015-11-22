@@ -50,3 +50,13 @@ class TextFieldTest(BrowserGUITestCase):
     for bad_object in (None, 0, [], ()):
       with self.assertRaises(TypeError):
         t.value = bad_object
+
+  def test_def_change_callback(self):
+    xs = []
+    t = TextField()
+    @t.def_change_callback
+    def _():
+      xs.append(1)
+
+    t.value  = 'flub'
+    self.assertEqual([1], xs)

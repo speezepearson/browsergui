@@ -20,3 +20,8 @@ class Button(Text):
   def _handle_click(self, event):
     if self.callback is not None:
       self.callback()
+
+  def def_callback(self, f):
+    '''Decorator to set the Button's ``callback``'''
+    self.callback = f
+    return f
