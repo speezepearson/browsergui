@@ -78,4 +78,4 @@ from .dropdown import Dropdown
 from .number_field import NumberField
 from .color_field import ColorField
 from .date_field import DateField
-from .slider import ContinuousSlider, IntegerSlider
+from .slider import Slider, FloatSlider, IntegerSlider

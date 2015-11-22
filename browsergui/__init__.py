@@ -8,5 +8,5 @@ The central concepts here are:
 
 from . import server, gui, elements, events
 from .gui import GUI
-from .elements import Element, Container, Button, Text, Paragraph, CodeSnippet, CodeBlock, EmphasizedText, Link, Viewport, Image, List, Grid, TextField, Dropdown, NumberField, ColorField, DateField, ContinuousSlider, IntegerSlider
+from .elements import Element, Container, Button, Text, Paragraph, CodeSnippet, CodeBlock, EmphasizedText, Link, Viewport, Image, List, Grid, TextField, Dropdown, NumberField, ColorField, DateField, Slider, FloatSlider, IntegerSlider
 from .events import *

@@ -1,27 +1,26 @@
 import numbers
-import math
+import datetime
 from .input_field import InputField
+from ..pythoncompatibility import is_real_float
 
 class Slider(InputField):
   '''A draggable slider.
 
   Any attempted assignment to ``min``, ``max``, or ``value`` that would violate ``min <= value <= max`` will fail and instead raise a ``ValueError``.
 
+  Don't instantiate; you probably want :class:`FloatSlider` or :class:`IntegerSlider`. You can also define your own subclasses for other data types: see `this tutorial`_.
+
+  .. _this tutorial: https://github.com/speezepearson/browsergui/wiki/Make-Your-Own-Sliders
+
   :param min: the smallest value the slider can accept. Writable.
   :param max: the largest value the slider can accept. Writable.
-
-  I think :class:`ContinuousSlider` and :class:`IntegerSlider` are probably the only subclasses you'll ever need, but in case you write your own subclass, it must define:
-
-  - ``value_to_xml_string(x)``: convert a value to a string (string should be a number)
-  - ``value_from_xml_string(s)``: inverse of ``value_to_xml_string``
-  - ``_step(min, max)``: step the value should take in the browser
-  - ``_default_value(min, max)``: value to take during initialization if none specified
-  - ``typecheck_value_or_bound(x)``: raise ``TypeError`` if a value isn't suitable for a value or bound
   '''
+
+  DISCRETE = False
 
   def __init__(self, min, max, value=None, **kwargs):
     if value is None:
-      value = self._default_value(min, max)
+      value = type(self).value_from_number((type(self).value_to_number(min)+type(self).value_to_number(max)) / 2.0)
 
     self._min = min
     self._max = max
@@ -30,18 +29,18 @@ class Slider(InputField):
     self.min = min
 
     self.tag.setAttribute('type', 'range')
-    self.tag.setAttribute('step', str(self._step(min, max)))
+    self.tag.setAttribute('step', str(1 if type(self).DISCRETE else (self.value_to_number(max)-self.value_to_number(min))/1000.))
 
   @property
   def min(self):
     return self._min
   @min.setter
   def min(self, new_min):
-    self.typecheck_value_or_bound(new_min)
+    new_min_number = self.value_to_number(new_min)
     if new_min > self.value:
       raise ValueError("can't set min to above current value")
     self._min = new_min
-    self.tag.setAttribute('min', self.value_to_xml_string(new_min))
+    self.tag.setAttribute('min', str(new_min_number))
     self.mark_dirty()
 
   @property
@@ -49,80 +48,66 @@ class Slider(InputField):
     return self._max
   @max.setter
   def max(self, new_max):
-    self.typecheck_value_or_bound(new_max)
+    new_max_number = self.value_to_number(new_max)
     if new_max < self.value:
       raise ValueError("can't set max to below current value")
     self._max = new_max
-    self.tag.setAttribute('max', self.value_to_xml_string(new_max))
+    self.tag.setAttribute('max', str(new_max_number))
     self.mark_dirty()
 
-  def ensure_is_valid_value(self, value):
-    self.typecheck_value_or_bound(value)
+  @classmethod
+  def value_to_xml_string(cls, x):
+    return repr(cls.value_to_number(x))
 
+  @classmethod
+  def value_from_xml_string(cls, x):
+    return cls.value_from_number(float(x))
+
+  def ensure_is_valid_value(self, value):
+    self.value_to_number(value)
     if (value < self.min) or (value > self.max):
       raise ValueError('{} not between {} and {}'.format(value, self.min, self.max))
 
     super(Slider, self).ensure_is_valid_value(value)
 
   @classmethod
-  def _step(cls, min, max):
-    raise NotImplementedError('{} does not implement _step'.format(cls.__name__))
-  @classmethod
-  def _default_value(cls, min, max):
-    raise NotImplementedError('{} does not implement _default_value'.format(cls.__name__))
-  @classmethod
-  def typecheck_value_or_bound(cls, x):
-    raise NotImplementedError('{} does not implement typecheck_value_or_bound'.format(cls.__name__))
+  def value_to_number(cls, x):
+    raise NotImplementedError('{} has not implemented value_to_number'.format(cls.__name__))
 
-class ContinuousSlider(Slider):
+  @classmethod
+  def value_from_number(cls, x):
+    raise NotImplementedError('{} has not implemented value_from_number'.format(cls.__name__))
+
+class FloatSlider(Slider):
   '''A type of :class:`Slider` that accepts real-valued values/bounds (e.g. float, int, ``fractions.Fraction``).
 
   When the user drags the slider, the value is set to a float.
   '''
 
   @staticmethod
-  def value_from_xml_string(s):
-    return float(s)
-
-  @staticmethod
-  def value_to_xml_string(x):
-    return repr(float(x))
-
-  @staticmethod
-  def _step(min, max):
-    return (max-min) / 1000.
-
-  @staticmethod
-  def _default_value(min, max):
-    return (min+max) / 2.
-
-  @staticmethod
-  def typecheck_value_or_bound(x):
+  def value_to_number(x):
     if not isinstance(x, numbers.Real):
-      raise TypeError('expected real-number value, got {}'.format(type(x).__name__))
-    if math.isnan(x):
-      raise TypeError('expected real-number value, got NaN')
+      raise TypeError('expected real number, got {}'.format(type(x).__name__))
+    result = float(x)
+    if not is_real_float(result):
+      raise TypeError('expected finite value, got {}'.format(result))
+    return result
+
+  @staticmethod
+  def value_from_number(x):
+    return x
 
 class IntegerSlider(Slider):
   '''A type of :class:`Slider` that accepts only integer values/bounds.'''
 
-  @staticmethod
-  def value_from_xml_string(s):
-    return int(s)
+  DISCRETE = True
 
   @staticmethod
-  def value_to_xml_string(x):
-    return '{:d}'.format(x)
-
-  @staticmethod
-  def _step(min, max):
-    return 1
-
-  @staticmethod
-  def _default_value(min, max):
-    return (min+max) // 2
-
-  @staticmethod
-  def typecheck_value_or_bound(x):
+  def value_to_number(x):
     if not isinstance(x, int):
-      raise TypeError('expected int value, got {}'.format(type(x).__name__))
+      raise TypeError('expected int, got {}'.format(type(x).__name__))
+    return x
+
+  @staticmethod
+  def value_from_number(x):
+    return int(x)
