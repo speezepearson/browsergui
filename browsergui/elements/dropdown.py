@@ -3,6 +3,13 @@ from ..events import Change
 from ..pythoncompatibility import collections_abc, STRING_TYPES
 
 class Dropdown(Element, collections_abc.MutableSequence):
+  '''A dropdown-selector for a set of options (strings).
+
+  Like :class:`InputField` elements, a Dropdown has a ``value``, a ``placeholder``, and a ``change_callback``. Also, a Dropdown is a `mutable sequence`_, meaning most things you can do to lists (append, get/set/delitem), you can do to Dropdowns too.
+
+  .. _mutable sequence: https://docs.python.org/2/library/collections.html#collections-abstract-base-classes
+  '''
+
   def __init__(self, options, change_callback=None, **kwargs):
     super(Dropdown, self).__init__(tag_name='select', **kwargs)
     self.change_callback = None

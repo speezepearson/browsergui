@@ -19,6 +19,7 @@ class Text(Element):
 
   @property
   def text(self):
+    '''The string to be displayed.'''
     return self._text.data
   @text.setter
   def text(self, value):

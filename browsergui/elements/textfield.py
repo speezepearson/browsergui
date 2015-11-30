@@ -2,6 +2,10 @@ from .input_field import InputField
 from ..pythoncompatibility import STRING_TYPES
 
 class TextField(InputField):
+  '''A single-line text input field.
+
+  For multi-line text input, see :class:`BigTextField`, which has a very similar interface.
+  '''
   def __init__(self, value='', **kwargs):
     super(TextField, self).__init__(value=value, **kwargs)
     self.tag.setAttribute('type', 'text')

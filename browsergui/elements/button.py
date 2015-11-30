@@ -22,6 +22,12 @@ class Button(Text):
       self.callback()
 
   def def_callback(self, f):
-    '''Decorator to set the Button's ``callback``'''
+    '''Decorator to set the Button's ``callback``.
+
+        >>> button = Button()
+        >>> @button.def_callback
+        ... def _():
+        ...   print("Button was clicked!")
+    '''
     self.callback = f
     return f

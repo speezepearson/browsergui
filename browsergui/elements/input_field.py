@@ -71,6 +71,12 @@ class InputField(Element):
     pass
 
   def def_change_callback(self, f):
-    '''Decorator to set the InputField's ``change_callback``'''
+    '''Decorator to set the InputField's ``change_callback``.
+
+        >>> text_field = TextField()
+        >>> @text_field.def_change_callback
+        ... def _():
+        ...   print("Current value: " + text_field.value)
+    '''
     self.change_callback = f
     return f

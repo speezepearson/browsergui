@@ -46,8 +46,12 @@ class GUI(object):
 
   - ``gui.body``: a :class:`Container` containing all the Elements to be shown. Read-only.
   - ``gui.title``: a string containing the GUI's title (the browser-tab title). Writable.
-  - ``gui.run()``: starts a server and opens a browser tab to display the GUI. Blocks until Ctrl-C is received or ``gui.stop_running()` is called.
+  - ``gui.run()``: starts a server and opens a browser tab to display the GUI. Blocks until Ctrl-C is received or ``gui.stop_running()`` is called.
   - ``gui.stop_running()``: stops displaying the GUI and unblocks ``gui.run()``.
+
+  See `this wiki page`_ for a guide to the basics.
+
+  .. _this wiki page: https://github.com/speezepearson/browsergui/wiki/How-Do-I...
 
   :param Element elements: elements to immediately include in the GUI
   :param str title: title of the GUI (i.e. title of browser tab)

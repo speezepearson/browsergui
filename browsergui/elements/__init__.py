@@ -1,3 +1,28 @@
+'''Defines many useful types of GUI elements:
+
+- Simple, atomic, static elements:
+
+  - :class:`.Text` for plain text, and a few subclasses (:class:`.Link`, :class:`.CodeSnippet`, :class:`.Paragraph`, :class:`.CodeBlock`)
+  - :class:`.Image`
+
+- Input elements:
+
+  - :class:`.Button`
+  - :class:`.Slider` (abstract) for draggable sliders, and a few subclasses (:class:`.FloatSlider` for floats, :class:`.IntegerSlider` for integers)
+  - :class:`.TextField` (single-line) and :class:`.BigTextField` (multi-line)
+  - :class:`.NumberField`
+  - :class:`.Dropdown`
+  - :class:`.ColorField`
+  - :class:`.DateField`
+
+- Layout elements:
+
+  - :class:`.Container`, a very simple element with no fancy layout stuff, meant to group other elements together (e.g. to put multiple Paragraph elements as a single List item)
+  - :class:`.List`, a bulleted/numbered list of elements
+  - :class:`.Grid`
+  - :class:`.Viewport`, a small scrollable window viewing a large element
+'''
+
 import collections
 import json
 import xml.dom.minidom
@@ -15,7 +40,7 @@ class Element(XMLTagShield):
   Useful attributes/methods:
 
   - ``element.styles`` is a dict-like object mapping strings (CSS properties) to strings (CSS values). e.g. ``my_text.styles['color'] = 'red'``
-  - ``element.callbacks`` is a dict-like object mapping :class:`Event` subclasses to functions that should be called when the corresponding event occurs. e.g. ``my_element.callbacks[Click] = (lambda event: print('Click:', event))``
+  - ``element.callbacks`` is a dict-like object mapping :class:`.Event` subclasses to functions that should be called when the corresponding event occurs. e.g. ``my_element.callbacks[Click] = (lambda event: print('Click:', event))``
   - ``element.parent`` is the element which contains ``element`` (if any; else None). Elements are (like HTML tags) arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
   - ``element.children`` is a list of all elements which have ``element`` as their parent.
   - ``element.gui`` is the GUI containing the element (if any; else None).
