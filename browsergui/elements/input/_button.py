@@ -1,5 +1,5 @@
-from .text import Text
-from ..events import Click
+from ..basic import Text
+from ...events import Click
 
 class Button(Text):
   """A simple button that does something when clicked.

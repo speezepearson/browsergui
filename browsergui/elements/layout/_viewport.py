@@ -1,6 +1,6 @@
 import re
 import numbers
-from . import Element
+from .. import Element
 
 class Viewport(Element):
   """A scrollable window into some other (probably big) element.

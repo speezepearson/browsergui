@@ -90,18 +90,6 @@ class NotUniversallySupportedElement(Element):
     if warn:
       logging.warning('{} not supported in all major browsers'.format(type(self).__name__))
 
-from .container import Container
-from .text import Text, Paragraph, CodeSnippet, CodeBlock, EmphasizedText
-from .button import Button
-from .link import Link
-from .viewport import Viewport
-from .image import Image
-from .list import List
-from .grid import Grid
-from .textfield import TextField
-from .bigtextfield import BigTextField
-from .dropdown import Dropdown
-from .number_field import NumberField
-from .color_field import ColorField
-from .date_field import DateField
-from .slider import Slider, FloatSlider, IntegerSlider
+from .basic import *
+from .input import *
+from .layout import *

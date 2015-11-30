@@ -1,5 +1,5 @@
-from . import Element
-from ..pythoncompatibility import collections_abc
+from .. import Element
+from ...pythoncompatibility import collections_abc
 
 class List(Element, collections_abc.MutableSequence):
   """A list of elements.

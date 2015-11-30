@@ -1,5 +1,5 @@
 import numbers
-from . import Element
+from .. import Element
 
 def empty_grid(n_rows, n_columns):
   if n_rows < 0 or not isinstance(n_rows, numbers.Integral):

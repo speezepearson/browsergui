@@ -1,5 +1,5 @@
-from . import Element
-from ..events import Input
+from .. import Element
+from ...events import Input
 
 class InputField(Element):
   '''Any form of user value-input element.

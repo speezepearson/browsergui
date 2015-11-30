@@ -1,6 +1,6 @@
 import json
 import xml.dom.minidom
-from . import Element
+from .. import Element
 
 class Text(Element):
   """An element containing only a text string.
@@ -45,3 +45,18 @@ class EmphasizedText(Text):
   """Text that should have emphasis on it."""
   def __init__(self, text, **kwargs):
     super(EmphasizedText, self).__init__(text, tag_name="strong", **kwargs)
+
+class Link(Text):
+  """A hyperlink to some URL."""
+  def __init__(self, text, url, **kwargs):
+    super(Link, self).__init__(text, tag_name="a", **kwargs)
+    self.tag.setAttribute('target', '_blank')
+    self.url = url
+
+  @property
+  def url(self):
+    return self.tag.getAttribute('href')
+  @url.setter
+  def url(self, value):
+    self.tag.setAttribute('href', value)
+    self.mark_dirty()
