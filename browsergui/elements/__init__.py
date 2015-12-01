@@ -24,20 +24,22 @@ class Element(XMLTagShield):
 
   Useful attributes/methods:
 
-  - ``element.styles`` is a dict-like object mapping strings (CSS properties) to strings (CSS values). e.g. ``my_text.styles['color'] = 'red'``
+  - ``element.css`` is a dict-like object mapping strings (CSS properties) to strings (CSS values). e.g. ``my_text.css['color'] = 'red'``
   - ``element.callbacks`` is a dict-like object mapping :class:`.Event` subclasses to functions that should be called when the corresponding event occurs. e.g. ``my_element.callbacks[Click] = (lambda event: print('Click:', event))``
   - ``element.parent`` is the element which contains ``element`` (if any; else None). Elements are (like HTML tags) arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
   - ``element.children`` is a list of all elements which have ``element`` as their parent.
   - ``element.gui`` is the GUI containing the element (if any; else None).
   """
 
-  def __init__(self, styling={}, **kwargs):
+  def __init__(self, css={}, callbacks={}, **kwargs):
     self.callbacks = CallbackSetter(element=self)
-    self.styles = Styler(element=self)
+    self.css = Styler(element=self)
     super(Element, self).__init__(**kwargs)
 
-    for key, value in styling.items():
-      self.styles[key] = value
+    for key, value in css.items():
+      self.css[key] = value
+    for key, value in callbacks.items():
+      self.callbacks[key] = value
 
   def __str__(self):
     return "(#{})".format(self.id)

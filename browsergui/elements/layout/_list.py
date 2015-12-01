@@ -23,7 +23,7 @@ class List(Element, collections_abc.MutableSequence):
 
   @property
   def numbered(self):
-    return (self.styles['list-style-type'] == 'decimal')
+    return (self.css['list-style-type'] == 'decimal')
   @numbered.setter
   def numbered(self, value):
     # The "right" way to do this would be to change the tagName between "ol" and "ul",
@@ -32,7 +32,7 @@ class List(Element, collections_abc.MutableSequence):
     #
     # According to https://developer.mozilla.org/en-US/docs/Web/CSS/list-style-type#Browser_compatibility
     # the values "disc" and "decimal" are supported in all major browsers.
-    self.styles['list-style-type'] = ('decimal' if value else 'disc')
+    self.css['list-style-type'] = ('decimal' if value else 'disc')
 
   def __getitem__(self, index):
     return self.children[index]

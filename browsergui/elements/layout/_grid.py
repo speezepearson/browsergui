@@ -26,8 +26,8 @@ class Grid(Element):
   """
   def __init__(self, cells=(), n_rows=None, n_columns=None, **kwargs):
     super(Grid, self).__init__(tag_name='table', **kwargs)
-    self.styles['border-spacing'] = '0'
-    self.styles['border-collapse'] = 'collapse'
+    self.css['border-spacing'] = '0'
+    self.css['border-collapse'] = 'collapse'
 
     if not all(all(isinstance(x, Element) or x is None for x in row) for row in cells):
       raise TypeError('cell contents must be Elements')
