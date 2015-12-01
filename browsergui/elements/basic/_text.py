@@ -3,9 +3,11 @@ import xml.dom.minidom
 from .. import Element
 
 class Text(Element):
-  """An element containing only a text string.
+  """A piece of text.
 
   The currently displayed string may be accessed or changed via the `text` attribute.
+
+  If you want to be fancy, a Text instance can represent any HTML tag that contains only plain text. For instance, :class:`Button` subclasses Text, even though it's not just a plain piece of text.
 
   :param str text: the text to display
   """
@@ -30,7 +32,7 @@ class Text(Element):
     self.mark_dirty()
 
 class CodeSnippet(Text):
-  """Inline text representing computer code."""
+  """Inline text representing ``computer code``."""
   def __init__(self, text, **kwargs):
     super(CodeSnippet, self).__init__(text, tag_name="code", css={'white-space': 'pre'}, **kwargs)
 class Paragraph(Text):
@@ -38,16 +40,16 @@ class Paragraph(Text):
   def __init__(self, text, **kwargs):
     super(Paragraph, self).__init__(text, tag_name="p", **kwargs)
 class CodeBlock(Text):
-  """A block of computer code."""
+  """A block of ``computer code``."""
   def __init__(self, text, **kwargs):
     super(CodeBlock, self).__init__(text, tag_name="pre", **kwargs)
 class EmphasizedText(Text):
-  """Text that should have emphasis on it."""
+  """Text that should have **emphasis** on it."""
   def __init__(self, text, **kwargs):
     super(EmphasizedText, self).__init__(text, tag_name="strong", **kwargs)
 
 class Link(Text):
-  """A hyperlink to some URL."""
+  """A `hyperlink <http://github.com/speezepearson/browsergui>`_."""
   def __init__(self, text, url, **kwargs):
     super(Link, self).__init__(text, tag_name="a", **kwargs)
     self.tag.setAttribute('target', '_blank')
