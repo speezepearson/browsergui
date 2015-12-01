@@ -1,12 +1,16 @@
-'''Defines GUI elements that gather input from the user:
+'''Elements that gather input from the user.
 
-- :class:`.Button`
-- :class:`.Slider` (abstract) for draggable sliders, and a few subclasses (:class:`.FloatSlider` for floats, :class:`.IntegerSlider` for integers)
-- :class:`.TextField` (single-line) and :class:`.BigTextField` (multi-line)
-- :class:`.NumberField`
-- :class:`.Dropdown`
-- :class:`.ColorField`
-- :class:`.DateField`
+.. autosummary::
+
+   Button
+   TextField
+   NumberField
+   Dropdown
+   ColorField
+   DateField
+   Slider
+   FloatSlider
+   IntegerSlider
 '''
 
 from ._button import Button

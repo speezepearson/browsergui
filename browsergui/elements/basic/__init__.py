@@ -1,8 +1,14 @@
-'''Defines simple, static, atomic GUI elements:
+'''Simple, static, atomic GUI elements.
 
-- :class:`.Text` for plain text, and a few subclasses (:class:`.Link`, :class:`.CodeSnippet`, :class:`.Paragraph`, :class:`.CodeBlock`)
-- :class:`.Image`
+.. autosummary::
 
+   Text
+   Link
+   Paragraph
+   CodeSnippet
+   CodeBlock
+   EmphasizedText
+   Image
 '''
 
 from ._text import *

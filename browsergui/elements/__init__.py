@@ -1,26 +1,11 @@
-'''Defines many useful types of GUI elements:
+'''Defines many types of GUI elements:
 
-- Simple, atomic, static elements:
+.. autosummary::
 
-  - :class:`.Text` for plain text, and a few subclasses (:class:`.Link`, :class:`.CodeSnippet`, :class:`.Paragraph`, :class:`.CodeBlock`)
-  - :class:`.Image`
+   basic
+   input
+   layout
 
-- Input elements:
-
-  - :class:`.Button`
-  - :class:`.Slider` (abstract) for draggable sliders, and a few subclasses (:class:`.FloatSlider` for floats, :class:`.IntegerSlider` for integers)
-  - :class:`.TextField` (single-line) and :class:`.BigTextField` (multi-line)
-  - :class:`.NumberField`
-  - :class:`.Dropdown`
-  - :class:`.ColorField`
-  - :class:`.DateField`
-
-- Layout elements:
-
-  - :class:`.Container`, a very simple element with no fancy layout stuff, meant to group other elements together (e.g. to put multiple Paragraph elements as a single List item)
-  - :class:`.List`, a bulleted/numbered list of elements
-  - :class:`.Grid`
-  - :class:`.Viewport`, a small scrollable window viewing a large element
 '''
 
 import collections
@@ -90,6 +75,7 @@ class NotUniversallySupportedElement(Element):
     if warn:
       logging.warning('{} not supported in all major browsers'.format(type(self).__name__))
 
+from . import basic, input, layout
 from .basic import *
 from .input import *
 from .layout import *

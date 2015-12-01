@@ -1,4 +1,4 @@
-"""Tools for using a browser as a GUI.
+"""Tools for building GUIs that use a browser as the front-end.
 
 The central concepts here are:
 

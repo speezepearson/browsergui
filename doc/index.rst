@@ -3,16 +3,26 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to browsergui's documentation!
-======================================
+.. currentmodule:: browsergui
 
-Contents:
+browsergui documentation
+========================
 
-.. automodule:: browsergui.elements
+Welcome! Here lives the documentation for ``browsergui``.
+
+Useful resources:
+
+- `Learning resources`_, if you're new and you want to learn how to use this
+- :ref:`element-index`, listing all the predefined kinds of Element
+- The documentation for the :class:`GUI <gui.GUI>` class
+
+.. _learning resources: https://github.com/speezepearson/browsergui/wiki
+
 
 Indices and tables
 ==================
 
+* :ref:`element-index`
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
