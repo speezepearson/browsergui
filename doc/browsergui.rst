@@ -9,7 +9,6 @@ Subpackages
     browsergui.elements
     browsergui.events
     browsergui.examples
-    browsergui.server
 
 Submodules
 ----------

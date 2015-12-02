@@ -1,7 +1,7 @@
 import xml.dom.minidom
 from .elements import Element, Text, Container
 from ._documentchangetracker import DocumentChangeTracker
-from . import server
+from . import _server as server
 
 class _Page(Element):
   '''Root Element, corresponding to the <html> tag.

@@ -6,7 +6,7 @@ The central concepts here are:
 - The "element," which ...
 """
 
-from . import server, gui, elements, events
+from . import gui, elements, events
 from .gui import GUI
 from .elements import Element, Container, Button, Text, Paragraph, CodeSnippet, CodeBlock, EmphasizedText, Link, Viewport, Image, List, Grid, TextField, BigTextField, Dropdown, NumberField, ColorField, DateField, Slider, FloatSlider, IntegerSlider
 from .events import *
