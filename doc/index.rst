@@ -10,13 +10,17 @@ browsergui documentation
 
 Welcome! Here lives the documentation for ``browsergui``.
 
+This site is meant as a refresher/lookup table for people who already know how to use the package. If you're new and you want to learn how, try the `wiki`_ instead.
+
+.. _wiki: https://github.com/speezepearson/browsergui/wiki
+
+
+
 Useful resources:
 
-- `Learning resources`_, if you're new and you want to learn how to use this
-- Documentation for the :mod:`elements <browsergui.elements>` module, listing all the predefined kinds of Element
-- Documentation for the :class:`GUI <gui.GUI>` class
-
-.. _learning resources: https://github.com/speezepearson/browsergui/wiki
+- The :mod:`elements <browsergui.elements>` module docs, listing all the predefined kinds of Element
+- The :class:`GUI <gui.GUI>` class docs
+- The :mod:`events <browsergui.events>` module docs, listing all the predefined kinds of Event
 
 
 Indices and tables
