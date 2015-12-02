@@ -1,5 +1,12 @@
 '''Defines many types of GUI elements.
 
+Element Index
+=============
+
+Basic
+-----
+
+Simple, static, atomic GUI elements.
 
 .. autosummary::
 
@@ -12,6 +19,13 @@
 
    Image
 
+Input
+-----
+
+Elements that gather input from the user.
+
+.. autosummary::
+
    Button
    TextField
    BigTextField
@@ -22,10 +36,82 @@
    FloatSlider
    IntegerSlider
 
+Layout
+------
+
+Elements that arrange their children in certain ways.
+
+.. autosummary::
+
    Container
    Viewport
    List
    Grid
+
+Element Class
+=============
+
+The most important thing defined here, from which all other things inherit, is :class:`Element`.
+
+.. autoclass:: Element
+   :members:
+   :inherited-members:
+
+
+Full Subclass Documentation
+===========================
+
+
+.. autoclass:: Text
+   :members:
+.. autoclass:: Paragraph
+   :members:
+.. autoclass:: CodeSnippet
+   :members:
+.. autoclass:: CodeBlock
+   :members:
+.. autoclass:: EmphasizedText
+   :members:
+.. autoclass:: Link
+   :members:
+
+.. autoclass:: Image
+   :members:
+
+
+.. autoclass:: InputField
+   :members:
+
+.. autoclass:: Button
+   :members:
+.. autoclass:: TextField
+   :members:
+.. autoclass:: BigTextField
+   :members:
+.. autoclass:: Dropdown
+   :members:
+.. autoclass:: NumberField
+   :members:
+.. autoclass:: ColorField
+   :members:
+.. autoclass:: DateField
+   :members:
+.. autoclass:: Slider
+   :members:
+.. autoclass:: FloatSlider
+   :members:
+.. autoclass:: IntegerSlider
+   :members:
+
+
+.. autoclass:: Container
+   :members:
+.. autoclass:: Viewport
+   :members:
+.. autoclass:: List
+   :members:
+.. autoclass:: Grid
+   :members:
 
 '''
 
@@ -41,20 +127,19 @@ from ._styler import Styler
 
 
 class Element(XMLTagShield):
-  """A conceptual GUI element, like a button or a table.
-
-  Useful attributes/methods:
-
-  - ``element.css`` is a dict-like object mapping strings (CSS properties) to strings (CSS values). e.g. ``my_text.css['color'] = 'red'``
-  - ``element.callbacks`` is a dict-like object mapping :class:`.Event` subclasses to functions that should be called when the corresponding event occurs. e.g. ``my_element.callbacks[Click] = (lambda event: print('Click:', event))``
-  - ``element.parent`` is the element which contains ``element`` (if any; else None). Elements are (like HTML tags) arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
-  - ``element.children`` is a list of all elements which have ``element`` as their parent.
-  - ``element.gui`` is the GUI containing the element (if any; else None).
-  """
+  """A conceptual GUI element, like a button or a table."""
 
   def __init__(self, css={}, callbacks={}, **kwargs):
+    #: a dict-like object mapping :class:`Event` subclasses to functions that should be called when the corresponding event occurs.
+    #:
+    #:     >>> my_element.callbacks[Click] = (lambda event: print('Click:', event))
     self.callbacks = CallbackSetter(element=self)
+
+    #: a dict-like object mapping strings (CSS properties) to strings (CSS values).
+    #:
+    #:     >>> my_text.css['color'] = 'red'
     self.css = Styler(element=self)
+
     super(Element, self).__init__(**kwargs)
 
     for key, value in css.items():
@@ -82,7 +167,7 @@ class Element(XMLTagShield):
   def mark_dirty(self):
     '''Marks the element as needing redrawing.'''
     if self.gui is not None:
-      self.gui.change_tracker.mark_dirty(self.tag)
+      self.gui._change_tracker.mark_dirty(self.tag)
 
 class NotUniversallySupportedElement(Element):
   '''Mixin for elements that aren't supported in all major browsers.
@@ -98,7 +183,6 @@ class NotUniversallySupportedElement(Element):
     if warn:
       logging.warning('{} not supported in all major browsers'.format(type(self).__name__))
 
-from . import basic, input, layout
-from .basic import *
-from .input import *
-from .layout import *
+from ._basic import *
+from ._input import *
+from ._layout import *

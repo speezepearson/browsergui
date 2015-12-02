@@ -19,7 +19,7 @@ This site is meant as a refresher/lookup table for people who already know how t
 Useful resources:
 
 - The :mod:`elements <browsergui.elements>` module docs, listing all the predefined kinds of Element
-- The :class:`GUI <gui.GUI>` class docs
+- The :class:`GUI` class docs
 - The :mod:`events <browsergui.events>` module docs, listing all the predefined kinds of Event
 
 

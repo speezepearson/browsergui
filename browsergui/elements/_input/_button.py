@@ -1,4 +1,4 @@
-from ..basic import Text
+from .._basic import Text
 from ...events import Click
 
 class Button(Text):

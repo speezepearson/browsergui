@@ -1,15 +1,6 @@
 browsergui.elements package
 ===========================
 
-Subpackages
------------
-
-.. toctree::
-
-    browsergui.elements.basic
-    browsergui.elements.input
-    browsergui.elements.layout
-
 Module contents
 ---------------
 

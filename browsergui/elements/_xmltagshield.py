@@ -19,10 +19,7 @@ class TreeTraversalMixin(object):
 
   @property
   def orphaned(self):
-    """Whether the node has no parent.
-
-    :rtype: bool
-    """
+    """Whether the element has no parent."""
     return (self.parent is None)
 
   @property
@@ -34,11 +31,11 @@ class TreeTraversalMixin(object):
 
   @property
   def root(self):
-    '''The uppermost ancestor of the object (i.e. the one with no parent).'''
+    '''The uppermost ancestor of the element (i.e. the one with no parent).'''
     return self if self.parent is None else self.parent.root
 
   def walk(self):
-    """Iterates over the node and all the nodes below it in the tree."""
+    """Iterates over the element and all the elements below it in the tree."""
     yield self
     for child in self.children:
       for descendant in child.walk():
@@ -48,16 +45,20 @@ class TreeTraversalMixin(object):
 class XMLTagShield(TreeTraversalMixin):
   def __init__(self, tag_name, **kwargs):
     super(XMLTagShield, self).__init__(**kwargs)
+
+    #: The HTML tag associated with the element.
     self.tag = xml.dom.minidom.Document().createElement(tag_name)
     self.tag.setAttribute('id', unique_id())
     self.tag.__owner = self
 
   @property
   def id(self):
+    '''A unique identifying string.'''
     return self.tag.getAttribute('id')
 
   @property
   def parent(self):
+    '''The element whose tag contains this element's tag (or None)'''
     tag = self.tag.parentNode
     while tag is not None:
       try:
@@ -68,7 +69,7 @@ class XMLTagShield(TreeTraversalMixin):
 
   @property
   def children(self):
-    '''List the object's immediate children, in depth-first order.'''
+    '''A list of the element's immediate children, in depth-first order.'''
     result = []
     frontier = list(reversed(self.tag.childNodes))
     while frontier:

@@ -3,7 +3,7 @@ import xml.dom.minidom
 from .. import Element
 
 class Text(Element):
-  """A piece of text.
+  """A piece of text with no structure inside it.
 
   The currently displayed string may be accessed or changed via the `text` attribute.
 
@@ -57,6 +57,7 @@ class Link(Text):
 
   @property
   def url(self):
+    '''The URL to which the link points.'''
     return self.tag.getAttribute('href')
   @url.setter
   def url(self, value):

@@ -44,11 +44,6 @@ class GUI(object):
 
   Useful attributes/methods:
 
-  - ``gui.body``: a :class:`Container` containing all the Elements to be shown. Read-only.
-  - ``gui.title``: a string containing the GUI's title (the browser-tab title). Writable.
-  - ``gui.run()``: starts a server and opens a browser tab to display the GUI. Blocks until Ctrl-C is received or ``gui.stop_running()`` is called.
-  - ``gui.stop_running()``: stops displaying the GUI and unblocks ``gui.run()``.
-
   See `this wiki page`_ for a guide to the basics.
 
   .. _this wiki page: https://github.com/speezepearson/browsergui/wiki/How-Do-I...
@@ -64,7 +59,7 @@ class GUI(object):
     self.page = _Page(gui=None)
     self.title = kwargs.pop('title', 'browsergui')
 
-    self.create_change_tracker()
+    self._create_change_tracker()
     self.server = None
 
     # NOW that we're all initialized, we can connect the page to the GUI.
@@ -76,17 +71,27 @@ class GUI(object):
 
   @property
   def body(self):
+    '''A :class:`Container` that contains all the Elements you put into the GUI.
+
+    Since Containers are mutable sequences, the following all do what you'd expect:
+
+        >>> gui.body.append(e)
+        >>> gui.body.extend([e1, e2, e3, e4])
+        >>> gui.body[3] = e5
+        >>> del gui.body[0]
+    '''
     return self.page.body
 
   @property
   def title(self):
+    '''The title for the browser page.'''
     return self.page.head.title.text
   @title.setter
   def title(self, new_title):
     self.page.head.title.text = new_title
 
   def dispatch_event(self, event):
-    """Dispatch the event to whatever element is responsible for handling it."""
+    """Dispatch an event to whatever element is responsible for handling it."""
     for element in self.body.walk():
       if element.id == event.target_id:
         element.handle_event(event)
@@ -94,9 +99,9 @@ class GUI(object):
     else:
       raise KeyError('no element with id {!r}'.format(event.target_id))
 
-  def create_change_tracker(self):
-    self.change_tracker = DocumentChangeTracker()
-    self.change_tracker.mark_dirty(self.page.tag)
+  def _create_change_tracker(self):
+    self._change_tracker = DocumentChangeTracker()
+    self._change_tracker.mark_dirty(self.page.tag)
 
   @property
   def running(self):
@@ -133,6 +138,6 @@ class GUI(object):
       raise RuntimeError('{} is not running'.format(self))
     self.server.shutdown()
     self.server.socket.close()
-    self.change_tracker.destroy()
-    self.create_change_tracker()
+    self._change_tracker.destroy()
+    self._create_change_tracker()
     self.server = None
