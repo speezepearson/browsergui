@@ -1,4 +1,4 @@
-from ..pythoncompatibility import collections_abc
+from .._pythoncompatibility import collections_abc
 
 class CallbackSetter(collections_abc.MutableMapping):
   def __init__(self, element, **kwargs):

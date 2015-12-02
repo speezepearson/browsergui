@@ -1,6 +1,6 @@
 from .. import Element
 from ...events import Change
-from ...pythoncompatibility import collections_abc, STRING_TYPES
+from ..._pythoncompatibility import collections_abc, STRING_TYPES
 
 class Dropdown(Element, collections_abc.MutableSequence):
   '''A dropdown-selector for a set of options (strings).

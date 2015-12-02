@@ -1,6 +1,6 @@
 import xml.dom.minidom
 from .elements import Element, Text, Container
-from .documentchangetracker import DocumentChangeTracker
+from ._documentchangetracker import DocumentChangeTracker
 from . import server
 
 class _Page(Element):

@@ -1,7 +1,7 @@
 import numbers
 import datetime
 from ._inputfield import InputField
-from ...pythoncompatibility import is_real_float
+from ..._pythoncompatibility import is_real_float
 
 class Slider(InputField):
   '''A draggable slider.

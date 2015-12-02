@@ -5,7 +5,7 @@ import cgi
 import webbrowser
 import json
 
-from ..pythoncompatibility import (
+from .._pythoncompatibility import (
   http_status_codes as status_codes,
   HTTPServer, BaseHTTPRequestHandler,
   HTTPServerThreadingMixin as ThreadingMixIn)

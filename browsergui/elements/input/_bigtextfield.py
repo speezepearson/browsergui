@@ -1,6 +1,6 @@
 from .. import Element
 from ...events import Input
-from ...pythoncompatibility import STRING_TYPES
+from ..._pythoncompatibility import STRING_TYPES
 
 class BigTextField(Element):
   '''A multi-line text field.

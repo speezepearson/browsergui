@@ -1,5 +1,5 @@
 from .. import Element
-from ...pythoncompatibility import collections_abc
+from ..._pythoncompatibility import collections_abc
 
 class Container(Element, collections_abc.MutableSequence):
   """Contains other elements without any fancy layout stuff.

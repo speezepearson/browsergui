@@ -1,5 +1,5 @@
 from ._inputfield import InputField
-from ...pythoncompatibility import STRING_TYPES
+from ..._pythoncompatibility import STRING_TYPES
 
 class TextField(InputField):
   '''A single-line text input field.
