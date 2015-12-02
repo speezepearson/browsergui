@@ -55,28 +55,20 @@ class Slider(InputField):
     self.tag.setAttribute('max', str(new_max_number))
     self.mark_dirty()
 
-  @classmethod
-  def value_to_xml_string(cls, x):
-    return repr(cls.value_to_number(x))
-
-  @classmethod
-  def value_from_xml_string(cls, x):
-    return cls.value_from_number(float(x))
-
-  def ensure_is_valid_value(self, value):
+  def _value_to_xml_string(self, value):
     self.value_to_number(value)
     if (value < self.min) or (value > self.max):
       raise ValueError('{} not between {} and {}'.format(value, self.min, self.max))
+    return repr(self.value_to_number(value))
 
-    super(Slider, self).ensure_is_valid_value(value)
+  def _value_from_xml_string(self, value):
+    return self.value_from_number(float(value))
 
-  @classmethod
-  def value_to_number(cls, x):
-    raise NotImplementedError('{} has not implemented value_to_number'.format(cls.__name__))
+  def value_to_number(self, x):
+    raise NotImplementedError('{} has not implemented value_to_number'.format(type(self).__name__))
 
-  @classmethod
-  def value_from_number(cls, x):
-    raise NotImplementedError('{} has not implemented value_from_number'.format(cls.__name__))
+  def value_from_number(self, x):
+    raise NotImplementedError('{} has not implemented value_from_number'.format(type(self).__name__))
 
 class FloatSlider(Slider):
   '''A type of :class:`Slider` that accepts real-valued values/bounds (e.g. float, int, ``fractions.Fraction``).

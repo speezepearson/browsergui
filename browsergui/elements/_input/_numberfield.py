@@ -2,6 +2,10 @@ import numbers
 from ._inputfield import InputField
 
 class NumberField(InputField):
+  '''A field where the user can input a real number.
+
+  Inherits from :class:`ValuedElement`, meaning it has a ``value``, ``placeholder``, and ``change_callback``.
+  '''
 
   def __init__(self, value=None, **kwargs):
     if value is not None:
@@ -9,13 +13,12 @@ class NumberField(InputField):
     super(NumberField, self).__init__(value=value, **kwargs)
     self.tag.setAttribute('type', 'number')
 
-  def value_from_xml_string(self, s):
-    return float(s) if s else None
+  def _value_to_xml_string(self, value):
+    if value is None:
+      return ''
+    elif isinstance(value, numbers.Real):
+      return repr(value)
+    raise TypeError('expected real-number value (or None), got {}'.format(type(value).__name__))
 
-  def value_to_xml_string(self, x):
-    return '' if x is None else repr(float(x))
-
-  def ensure_is_valid_value(self, value):
-    if not (value is None or isinstance(value, numbers.Real)):
-      raise TypeError('expected real-number value (or None), got {}'.format(type(value).__name__))
-    super(NumberField, self).ensure_is_valid_value(value)
+  def _value_from_xml_string(self, string):
+    return float(string)

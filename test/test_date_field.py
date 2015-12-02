@@ -15,7 +15,3 @@ class DateFieldTest(BrowserGUITestCase):
     for bad_object in ('2015-05-05', 0):
       with self.assertRaises(TypeError):
         d.value = bad_object
-
-    for bad_object in (datetime.datetime(2015, 3, 2, 0, 0, 0),):
-      with self.assertRaises(ValueError):
-        d.value = bad_object
