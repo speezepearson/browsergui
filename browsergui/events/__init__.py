@@ -1,3 +1,18 @@
+'''Defines ``Events`` that represent actions taken by the user.
+
+You can attach :class:`Events <Event>` to :class:`Elements <Element>` to make sure certain functions get called when the user takes the corresponding kind of action:
+
+    >>> e = Element(tag_name='input')
+    >>> e.callbacks[Input] = (lambda event: print(event.value))
+
+The predefined types of Event are:
+
+.. autosummary::
+
+   Click
+   Input
+   Change
+'''
 
 def _dict_to_javascript_object(dict):
   return ''.join((
@@ -76,10 +91,12 @@ class Event(object):
 
 @Event.register_subclass
 class Click(Event):
+  '''Fired when the user clicks on an element.'''
   javascript_type_name = 'click'
 
 @Event.register_subclass
 class Input(Event):
+  '''Fired when the user changes the value of an input-type element, in some sense.'''
   javascript_type_name = 'input'
 
   def __init__(self, value, **kwargs):
@@ -94,6 +111,10 @@ class Input(Event):
 
 @Event.register_subclass
 class Change(Event):
+  '''Fired when the user changes the value of an input-type element, in some sense.
+
+  To be honest, I don't really know the difference between the "input" and "change" JavaScript events.
+  '''
   javascript_type_name = 'change'
 
   def __init__(self, value, **kwargs):

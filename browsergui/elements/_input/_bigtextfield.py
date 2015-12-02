@@ -1,8 +1,12 @@
-from . import Element
-from ..events import Input
-from ..pythoncompatibility import STRING_TYPES
+from .. import Element
+from ...events import Input
+from ..._pythoncompatibility import STRING_TYPES
 
 class BigTextField(Element):
+  '''A multi-line text field.
+
+  Like :class:`InputField` elements, has a ``value``, a ``placeholder``, and a ``change_callback``.
+  '''
   def __init__(self, value='', placeholder='', change_callback=None, **kwargs):
     super(BigTextField, self).__init__(tag_name='textarea', **kwargs)
     self._text_node = self.tag.ownerDocument.createTextNode('')

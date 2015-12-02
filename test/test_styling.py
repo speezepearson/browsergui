@@ -5,15 +5,15 @@ class StylingTest(BrowserGUITestCase):
   def setUp(self):
     self.text = Text('Hi!')
 
-  def test_initial_styling(self):
-    self.assertNotIn('color', self.text.styles)
-    self.assertEqual('red', Text('hi', styling={'color': 'red'}).styles['color'])
+  def test_initial_css(self):
+    self.assertNotIn('color', self.text.css)
+    self.assertEqual('red', Text('hi', css={'color': 'red'}).css['color'])
 
   def test_set_styles(self):
-    self.text.styles['color'] = 'red'
-    self.assertEqual('red', self.text.styles['color'])
+    self.text.css['color'] = 'red'
+    self.assertEqual('red', self.text.css['color'])
 
   def test_delete_styles(self):
-    self.text.styles['color'] = 'red'
-    del self.text.styles['color']
-    self.assertNotIn('color', self.text.styles)
+    self.text.css['color'] = 'red'
+    del self.text.css['color']
+    self.assertNotIn('color', self.text.css)

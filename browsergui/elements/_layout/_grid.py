@@ -1,5 +1,5 @@
 import numbers
-from . import Element
+from .. import Element
 
 def empty_grid(n_rows, n_columns):
   if n_rows < 0 or not isinstance(n_rows, numbers.Integral):
@@ -19,15 +19,15 @@ class Grid(Element):
 
   Grids are indexable by pairs of non-negative integers, e.g.
 
-          my_grid[0, 0]
-          my_grid[3, 2] = Text('hi')
-          my_grid[1, 2] = None
-          del my_grid[3, 3]
+      >>> my_grid[0, 0]
+      >>> my_grid[3, 2] = Text('hi')
+      >>> my_grid[1, 2] = None
+      >>> del my_grid[3, 3]
   """
   def __init__(self, cells=(), n_rows=None, n_columns=None, **kwargs):
     super(Grid, self).__init__(tag_name='table', **kwargs)
-    self.styles['border-spacing'] = '0'
-    self.styles['border-collapse'] = 'collapse'
+    self.css['border-spacing'] = '0'
+    self.css['border-collapse'] = 'collapse'
 
     if not all(all(isinstance(x, Element) or x is None for x in row) for row in cells):
       raise TypeError('cell contents must be Elements')

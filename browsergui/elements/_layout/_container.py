@@ -1,12 +1,14 @@
-from . import Element
-from ..pythoncompatibility import collections_abc
+from .. import Element
+from ..._pythoncompatibility import collections_abc
 
 class Container(Element, collections_abc.MutableSequence):
   """Contains other elements without any fancy layout stuff.
 
   Useful when you want to put several elements in a place that can only hold one element (e.g. if you want a :class:`List` item consisting of multiple elements, or if you want to put multiple elements in a :class:`Grid` cell).
 
-  Subclasses :class:`collections.MutableSequence`, which means that most operations you'd do to a `list` (e.g. insert, remove, get/set/delitem), you can do to a Container as well.
+  Subclasses `MutableSequence`_, which means that most operations you'd do to a `list` (e.g. insert, remove, get/set/delitem), you can do to a Container as well.
+
+  .. _MutableSequence: https://docs.python.org/2/library/collections.html#collections-abstract-base-classes
 
   :param children: Elements the Container should contain
   """

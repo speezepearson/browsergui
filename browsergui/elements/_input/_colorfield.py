@@ -1,8 +1,8 @@
 import types
 import numbers
 import re
-from . import NotUniversallySupportedElement
-from .input_field import InputField
+from .. import NotUniversallySupportedElement
+from ._inputfield import InputField
 
 class ColorField(InputField, NotUniversallySupportedElement):
   def __init__(self, value=(0, 0, 0), placeholder='#xxxxxx', **kwargs):

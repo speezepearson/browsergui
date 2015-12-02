@@ -121,7 +121,7 @@ def main():
       def color_changed():
         color = color_field.value
         color_hex = '#{:02x}{:02x}{:02x}'.format(*color)
-        colored_text.styles['color'] = color_hex
+        colored_text.css['color'] = color_hex
       color_field = ColorField(change_callback=color_changed)
       color_field.value = (0, 0, 255)'''))
 
