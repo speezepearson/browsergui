@@ -1,5 +1,5 @@
 import numbers
-from .input_field import InputField
+from ._inputfield import InputField
 
 class NumberField(InputField):
 

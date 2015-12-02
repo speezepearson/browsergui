@@ -1,3 +1,6 @@
+'''Normalizes Python 2/3 changes, e.g. module-renamings.
+'''
+
 import sys
 
 if sys.version_info >= (3, 0):
@@ -15,3 +18,9 @@ else:
   import collections as collections_abc
 
 STRING_TYPES = (str,) if sys.version_info >= (3, 0) else (str, unicode)
+
+import math
+if sys.version_info >= (3, 2):
+  is_real_float = math.isfinite
+else:
+  is_real_float = (lambda x: not (math.isnan(x) or math.isinf(x)))

@@ -1,6 +1,6 @@
-import collections
+from .._pythoncompatibility import collections_abc
 
-class Styler(collections.MutableMapping):
+class Styler(collections_abc.MutableMapping):
   def __init__(self, element, **kwargs):
     self.element = element
     self.rules = {}

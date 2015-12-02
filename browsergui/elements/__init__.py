@@ -1,3 +1,120 @@
+'''Defines many types of GUI elements.
+
+Element Index
+=============
+
+Basic
+-----
+
+Simple, static, atomic GUI elements.
+
+.. autosummary::
+
+   Text
+   Paragraph
+   CodeSnippet
+   CodeBlock
+   EmphasizedText
+   Link
+
+   Image
+
+Input
+-----
+
+Elements that gather input from the user.
+
+.. autosummary::
+
+   Button
+   TextField
+   BigTextField
+   Dropdown
+   NumberField
+   ColorField
+   DateField
+   FloatSlider
+   IntegerSlider
+
+Layout
+------
+
+Elements that arrange their children in certain ways.
+
+.. autosummary::
+
+   Container
+   Viewport
+   List
+   Grid
+
+Element Class
+=============
+
+The most important thing defined here, from which all other things inherit, is :class:`Element`.
+
+.. autoclass:: Element
+   :members:
+   :inherited-members:
+
+
+Full Subclass Documentation
+===========================
+
+
+.. autoclass:: Text
+   :members:
+.. autoclass:: Paragraph
+   :members:
+.. autoclass:: CodeSnippet
+   :members:
+.. autoclass:: CodeBlock
+   :members:
+.. autoclass:: EmphasizedText
+   :members:
+.. autoclass:: Link
+   :members:
+
+.. autoclass:: Image
+   :members:
+
+
+.. autoclass:: InputField
+   :members:
+
+.. autoclass:: Button
+   :members:
+.. autoclass:: TextField
+   :members:
+.. autoclass:: BigTextField
+   :members:
+.. autoclass:: Dropdown
+   :members:
+.. autoclass:: NumberField
+   :members:
+.. autoclass:: ColorField
+   :members:
+.. autoclass:: DateField
+   :members:
+.. autoclass:: Slider
+   :members:
+.. autoclass:: FloatSlider
+   :members:
+.. autoclass:: IntegerSlider
+   :members:
+
+
+.. autoclass:: Container
+   :members:
+.. autoclass:: Viewport
+   :members:
+.. autoclass:: List
+   :members:
+.. autoclass:: Grid
+   :members:
+
+'''
+
 import collections
 import json
 import xml.dom.minidom
@@ -10,18 +127,25 @@ from ._styler import Styler
 
 
 class Element(XMLTagShield):
-  """A conceptual GUI element, like a button or a table.
+  """A conceptual GUI element, like a button or a table."""
 
-  Elements are arranged in trees: an Element may have children (other Elements) or not, and it may have a parent or not.
-  """
-
-  def __init__(self, styling={}, **kwargs):
+  def __init__(self, css={}, callbacks={}, **kwargs):
+    #: a dict-like object mapping :class:`Event` subclasses to functions that should be called when the corresponding event occurs.
+    #:
+    #:     >>> my_element.callbacks[Click] = (lambda event: print('Click:', event))
     self.callbacks = CallbackSetter(element=self)
-    self.styles = Styler(element=self)
+
+    #: a dict-like object mapping strings (CSS properties) to strings (CSS values).
+    #:
+    #:     >>> my_text.css['color'] = 'red'
+    self.css = Styler(element=self)
+
     super(Element, self).__init__(**kwargs)
 
-    for key, value in styling.items():
-      self.styles[key] = value
+    for key, value in css.items():
+      self.css[key] = value
+    for key, value in callbacks.items():
+      self.callbacks[key] = value
 
   def __str__(self):
     return "(#{})".format(self.id)
@@ -43,59 +167,22 @@ class Element(XMLTagShield):
   def mark_dirty(self):
     '''Marks the element as needing redrawing.'''
     if self.gui is not None:
-      self.gui.change_tracker.mark_dirty(self.tag)
-
-import collections
-class Container(Element, collections.MutableSequence):
-  """Contains and groups other elements."""
-  def __init__(self, *children, **kwargs):
-    kwargs.setdefault('tag_name', 'div')
-    super(Container, self).__init__(**kwargs)
-    for child in children:
-      self.append(child)
-
-  def __getitem__(self, index):
-    return self.children[index]
-
-  def __setitem__(self, index, child):
-    if not isinstance(child, Element):
-      raise TypeError('expected Element, got {}'.format(type(child).__name__))
-    del self[index]
-    self.insert(index, child)
-  
-  def __delitem__(self, index):
-    self.tag.removeChild(self.tag.childNodes[index])
-    self.mark_dirty()
-  
-  def __len__(self):
-    return len(self.children)
-  
-  def insert(self, index, child):
-    if not isinstance(child, Element):
-      raise TypeError('expected Element, got {}'.format(type(child).__name__))
-    try:
-      next_child = self.tag.childNodes[index]
-    except IndexError:
-      next_child = None
-    self.tag.insertBefore(child.tag, next_child)
-    self.mark_dirty()
+      self.gui._change_tracker.mark_dirty(self.tag)
 
 class NotUniversallySupportedElement(Element):
+  '''Mixin for elements that aren't supported in all major browsers.
+
+  Prints a warning upon instantiation, i.e. if MyElement subclasses NotUniversallySupportedElement, then ``MyElement()`` will log a warning.
+
+  To avoid the warning, either set ``MyElement.warn_about_potential_browser_incompatibility = False`` or pass the keyword argument ``warn_about_potential_browser_incompatibility=False`` into the constructor. (Yes, it's intentionally verbose. This package is meant to be super-portable and work the same way for everyone.)
+  '''
   warn_about_potential_browser_incompatibility = True
   def __init__(self, **kwargs):
+    warn = kwargs.pop('warn_about_potential_browser_incompatibility', self.warn_about_potential_browser_incompatibility)
     super(NotUniversallySupportedElement, self).__init__(**kwargs)
-    if self.warn_about_potential_browser_incompatibility:
+    if warn:
       logging.warning('{} not supported in all major browsers'.format(type(self).__name__))
 
-from .text import Text, Paragraph, CodeSnippet, CodeBlock, EmphasizedText
-from .button import Button
-from .link import Link
-from .viewport import Viewport
-from .image import Image
-from .list import List
-from .grid import Grid
-from .textfield import TextField
-from .dropdown import Dropdown
-from .number_field import NumberField
-from .color_field import ColorField
-from .date_field import DateField
+from ._basic import *
+from ._input import *
+from ._layout import *

@@ -1,7 +1,7 @@
 import base64
 import re
 import os.path
-from . import Element
+from .. import Element
 
 class Image(Element):
   def __init__(self, filename, format=None, **kwargs):

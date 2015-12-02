@@ -82,13 +82,24 @@ def main():
       text_field = TextField(change_callback=text_field_changed)
       text_field.value = "Reversed"'''))
 
+  examples[BigTextField] = Example(
+    'Container(text_field, reversed_text_field_contents)',
+    strip_whitespace('''
+      reversed_text_field_contents = Text('')
+      def text_field_changed():
+        reversed_contents = ''.join(reversed(text_field.value))
+        reversed_text_field_contents.text = reversed_contents
+      text_field = BigTextField(change_callback=text_field_changed)
+      text_field.value = "Reversed"'''))
+
   examples[Dropdown] = Example(
     'Container(dropdown, selected_dropdown_item)',
     strip_whitespace('''
       selected_dropdown_item = Text('')
-      dropdown = Dropdown(
-        ['Dr', 'op', 'do', 'wn'],
-        change_callback=lambda: selected_dropdown_item.set_text(dropdown.value))
+      dropdown = Dropdown(['Dr', 'op', 'do', 'wn'])
+      @dropdown.def_change_callback
+      def _():
+        selected_dropdown_item.text = dropdown.value
       dropdown.value = "wn"'''))
 
   examples[NumberField] = Example(
@@ -110,7 +121,7 @@ def main():
       def color_changed():
         color = color_field.value
         color_hex = '#{:02x}{:02x}{:02x}'.format(*color)
-        colored_text.styles['color'] = color_hex
+        colored_text.css['color'] = color_hex
       color_field = ColorField(change_callback=color_changed)
       color_field.value = (0, 0, 255)'''))
 
@@ -127,6 +138,30 @@ def main():
           weekday_text.text = DAYS[date_field.value.weekday()]
       date_field = DateField(change_callback=date_changed)'''))
 
+  examples[FloatSlider] = Example(
+    'Container(slider, slider_value_squared)',
+    strip_whitespace('''
+      slider_value_squared = Text('')
+      def slider_changed():
+        if slider.value is None:
+          slider_value_squared.text = ''
+        else:
+          slider_value_squared.text = '{:.3g}'.format(slider.value ** 2)
+      slider = FloatSlider(min=0, max=10, change_callback=slider_changed)
+      slider.value = 3'''))
+
+  examples[IntegerSlider] = Example(
+    'Container(slider, slider_value_squared)',
+    strip_whitespace('''
+      slider_value_squared = Text('')
+      def slider_changed():
+        if slider.value is None:
+          slider_value_squared.text = ''
+        else:
+          slider_value_squared.text = str(slider.value ** 2)
+      slider = IntegerSlider(min=0, max=5, change_callback=slider_changed)
+      slider.value = 3'''))
+
 
   GUI(
     Paragraph('''
@@ -138,7 +173,7 @@ def main():
         example_grid_for_types(Text, Paragraph, EmphasizedText, CodeSnippet, CodeBlock, Link)),
       Container(
         Paragraph('Input of many flavors:'),
-        example_grid_for_types(Button, TextField, Dropdown, NumberField, ColorField, DateField)),
+        example_grid_for_types(Button, FloatSlider, TextField, BigTextField, Dropdown, NumberField, ColorField, DateField)),
       Container(
         Paragraph('Structural elements of many flavors:'),
         example_grid_for_types(Container, Viewport, List, Grid)),

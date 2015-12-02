@@ -1,38 +1,36 @@
-from browsergui import TextField
+from browsergui import BigTextField
 from browsergui.events import Input
 from . import BrowserGUITestCase
 
 
-class TextFieldTest(BrowserGUITestCase):
+class BigTextFieldTest(BrowserGUITestCase):
   def test_constructor(self):
-    self.assertEqual('foo', TextField(value='foo').value)
-    self.assertEqual('foo', TextField(placeholder='foo').placeholder)
+    self.assertEqual('foo', BigTextField(value='foo').value)
 
   def test_set_value(self):
-    e = TextField()
+    e = BigTextField()
     e.value = 'foo'
     self.assertEqual('foo', e.value)
-    self.assertEqual('foo', e.tag.getAttribute('value'))
 
   def test_set_value__marks_dirty(self):
-    e = TextField()
+    e = BigTextField()
     with self.assertMarksDirty(e):
       e.value = 'foo'
 
   def test_set_placeholder(self):
-    e = TextField()
+    e = BigTextField()
     e.placeholder = 'foo'
     self.assertEqual('foo', e.placeholder)
     self.assertEqual('foo', e.tag.getAttribute('placeholder'))
 
   def test_set_placeholder__marks_dirty(self):
-    e = TextField()
+    e = BigTextField()
     with self.assertMarksDirty(e):
       e.placeholder = 'foo'
 
   def test_change_callback(self):
     xs = []
-    e = TextField(change_callback=(lambda: xs.append(1)))
+    e = BigTextField(change_callback=(lambda: xs.append(1)))
     e.value = 'hi'
     self.assertEqual([1], xs)
 
@@ -42,7 +40,7 @@ class TextFieldTest(BrowserGUITestCase):
     self.assertEqual([2], xs)
 
   def test_validation(self):
-    t = TextField()
+    t = BigTextField()
 
     for good_object in ('', 'abc', u'abc', 'a b c'):
       t.value = good_object
@@ -52,11 +50,8 @@ class TextFieldTest(BrowserGUITestCase):
         t.value = bad_object
 
   def test_def_change_callback(self):
-    xs = []
-    t = TextField()
+    t = BigTextField()
     @t.def_change_callback
-    def _():
-      xs.append(1)
-
-    t.value  = 'flub'
-    self.assertEqual([1], xs)
+    def callback():
+      pass
+    self.assertEqual(callback, t.change_callback)

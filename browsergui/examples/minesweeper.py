@@ -48,7 +48,7 @@ class MinesweeperGUI(GUI):
     self.mine_density_field = TextField(value=str(self.game.mine_density), placeholder='mine density')
     self.reset_button = Button('Reset and Apply', callback=self.reset)
 
-    self.append(Grid([
+    self.body.append(Grid([
       [Text('width'), Text('height'), Text('mine density')],
       [self.w_field, self.h_field, self.mine_density_field, self.reset_button]]))
     self.grid = None
@@ -65,7 +65,7 @@ class MinesweeperGUI(GUI):
     if self.grid is not None:
       self.body.remove(self.grid)
     self.grid = Grid(n_rows=self.game.h, n_columns=self.game.w)
-    self.append(self.grid)
+    self.body.append(self.grid)
 
     for i in range(self.game.h):
       for j in range(self.game.w):
@@ -74,7 +74,7 @@ class MinesweeperGUI(GUI):
   def button_for(self, ij):
     def callback():
       if ij in self.game.mine_locations:
-        self.grid[ij] = Text('💣')
+        self.grid[ij] = Text('MINE')
       else:
         for nij in self.game.expand_region(ij):
           nmn = self.game.n_mine_neighbors(nij)

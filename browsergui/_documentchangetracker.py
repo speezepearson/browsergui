@@ -55,7 +55,8 @@ class DocumentChangeTracker(object):
 
   The :func:`destroy` method wakes up all waiting threads, but causes them to return
   JavaScript that will close the browser window (if possible) or make it obviously
-  obsolete.
+  obsolete (otherwise). (Some browsers don't let scripts close windows they didn't open;
+  security concerns, I believe.)
   '''
   def __init__(self, **kwargs):
     super(DocumentChangeTracker, self).__init__(**kwargs)
@@ -99,7 +100,7 @@ class DocumentChangeTracker(object):
       return result
 
   def mark_dirty(self, tag):
-    '''Mark the given tag as dirty, waking up calls to :func:`flush_changes`'''
+    '''Mark the given tag as dirty, waking up calls to :func:`flush_changes`.'''
     with self._changed_condition:
       if self._destroyed:
         raise Destroyed(self)

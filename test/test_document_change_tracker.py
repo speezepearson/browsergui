@@ -2,7 +2,7 @@ import unittest
 import xml.dom.minidom
 import threading
 import time
-from browsergui.documentchangetracker import *
+from browsergui._documentchangetracker import *
 
 class DocumentChangeTrackerTest(unittest.TestCase):
   def setUp(self):

@@ -1,11 +1,10 @@
-from . import Element
-from ..events import Input
+from .. import Element
+from ...events import Input
 
 class InputField(Element):
-  '''Any form of user value-input element.
+  '''An abstract class for elements that conceptually contain a value (string, number, color...)
 
-  Access/change the value using the ``value`` attribute. Some kinds of input also support
-  a ``placeholder`` attribute, displayed to the user when no value is entered.
+  Many kinds of input (e.g. :class:`TextField`, :class:`Slider`, :class:`DateField`) inherit from this, or at least pretend to.
 
   :param change_callback: function to be called whenever the input's value changes
   :type change_callback: function of zero arguments
@@ -22,6 +21,10 @@ class InputField(Element):
 
   @property
   def value(self):
+    '''The value currently entered into the field.
+
+    Setting the value fires the field's ``change_callback``.
+    '''
     return self.value_from_xml_string(self.tag.getAttribute('value'))
   @value.setter
   def value(self, value):
@@ -30,6 +33,9 @@ class InputField(Element):
 
   @property
   def placeholder(self):
+    '''The placeholder text that should be shown when the field is empty.
+
+    Applicable to many, but not all, kinds of InputField.'''
     return self.tag.getAttribute('placeholder')
   @placeholder.setter
   def placeholder(self, placeholder):
@@ -69,3 +75,14 @@ class InputField(Element):
 
   def ensure_is_valid_value(self, value):
     pass
+
+  def def_change_callback(self, f):
+    '''Decorator to set the InputField's ``change_callback``.
+
+        >>> text_field = TextField()
+        >>> @text_field.def_change_callback
+        ... def _():
+        ...   print("Current value: " + text_field.value)
+    '''
+    self.change_callback = f
+    return f

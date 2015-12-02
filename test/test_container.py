@@ -11,6 +11,10 @@ class ContainerTest(BrowserGUITestCase):
   def test_children_must_be_elements(self):
     with self.assertRaises(TypeError):
       Container(0)
+    with self.assertRaises(TypeError):
+      Container().append(0)
+    with self.assertRaises(TypeError):
+      Container(Container())[0] = 0
 
   def test_tag(self):
     self.assertHTMLLike('<div />', Container())

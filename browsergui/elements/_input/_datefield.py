@@ -1,7 +1,7 @@
 import re
 import datetime
-from . import NotUniversallySupportedElement
-from .input_field import InputField
+from .. import NotUniversallySupportedElement
+from ._inputfield import InputField
 
 CLIENT_DATE_FORMAT = '%Y-%m-%d'
 

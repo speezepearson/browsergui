@@ -5,7 +5,7 @@ import cgi
 import webbrowser
 import json
 
-from ..pythoncompatibility import (
+from .._pythoncompatibility import (
   http_status_codes as status_codes,
   HTTPServer, BaseHTTPRequestHandler,
   HTTPServerThreadingMixin as ThreadingMixIn)
@@ -68,8 +68,8 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
 
   def get_root(self):
     """Respond to a request for a new view of the underlying GUI."""
-    type(self).gui.change_tracker.destroy()
-    type(self).gui.create_change_tracker()
+    type(self).gui._change_tracker.destroy()
+    type(self).gui._create_change_tracker()
     self.get_static_file('index.html')
 
   def get_command(self):
@@ -80,7 +80,7 @@ class GUIRequestHandler(BaseHTTPRequestHandler):
     the response thread won't linger too long.
     """
     try:
-      command = type(self).gui.change_tracker.flush_changes()
+      command = type(self).gui._change_tracker.flush_changes()
       self.send_response(status_codes.OK)
       self.send_no_cache_headers()
       self.end_headers()

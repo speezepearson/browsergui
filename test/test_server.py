@@ -7,7 +7,7 @@ if sys.version_info >= (3, 0):
 else:
   from httplib import HTTPConnection
 
-from browsergui.server import make_request_handler_class_for_gui, ThreadedHTTPServer
+from browsergui._server import make_request_handler_class_for_gui, ThreadedHTTPServer
 
 class ServerTest(unittest.TestCase):
   def setUp(self):
