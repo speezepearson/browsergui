@@ -16,7 +16,9 @@ Ways to install:
   - `python setup.py install`, or
   - plop the `browsergui` subfolder anywhere on your Python path
 
-Once it's installed, I recommend running `python -m browsergui.examples` to see a catalog of all the kinds of building blocks available to you, then running `python -m browsergui.examples interactive` to experiment on your own. See [the wiki][wiki] for help learning about this package.
+Once it's installed, I recommend running `python -m browsergui.examples` to see a catalog of all the kinds of building blocks available to you, then running `python -m browsergui.examples interactive` to experiment on your own.
+
+To learn how to use this package effectively, see [the wiki][wiki].
 
 [wiki]: https://github.com/speezepearson/browsergui/wiki
 
@@ -47,22 +49,18 @@ Here are a few short demos, to give you a taste of what this GUI framework looks
         import threading
         from browsergui import Text, GUI
 
-        def main():
-          now = Text("")
+        now = Text("")
 
-          def update_now_forever():
-            while True:
-              now.text = time.strftime("%Y-%m-%d %H:%M:%S")
-              time.sleep(1)
+        def update_now_forever():
+          while True:
+            now.text = time.strftime("%Y-%m-%d %H:%M:%S")
+            time.sleep(1)
 
-          t = threading.Thread(target=update_now_forever)
-          t.daemon = True
-          t.start()
+        t = threading.Thread(target=update_now_forever)
+        t.daemon = True
+        t.start()
 
-          GUI(Text("The time is: "), now).run()
-
-        if __name__ == '__main__':
-          main()
+        GUI(Text("The time is: "), now).run()
 
 
 Should I use this?
