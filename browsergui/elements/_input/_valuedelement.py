@@ -54,7 +54,9 @@ class ValuedElement(Element):
       value = self._get_value_from_event(event)
     except ValueError:
       # We got some garbage value from the browser for some reason. Abort!
-      print("{} was unable to read a valid value from {} as a value".format(self, event))
+      # (This might happen if, say, the browser doesn't support <input type="color">
+      #  and so presents it as a text field where the user can type whatever they want.)
+      print("{} was unable to read a valid value from {}".format(self, event))
       return
     self._set_value_in_tag(value)
     if self.change_callback is not None:
