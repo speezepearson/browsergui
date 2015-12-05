@@ -1,29 +1,50 @@
-Browser GUI
-===========
+What is this?
+-------------
+It's a GUI framework prioritizing portability, simplicity, and a Pythonic feel.
 
-Tools to design GUIs viewable in a browser.
+If you want to build a simple GUI for a simple task, I recommend this package whole-heartedly. I don't think this is just pride in my own work -- I'm pretty sure that this package *actually is* very easy to learn, and very good for simple things.
 
-Everybody has a browser, and a lot of very smart people have designed browsers so that it's easy to make pretty, interactive pages. Wouldn't it be great if we could take advantage of this in Python? Well, now we can!
+If you want to build a video game, or a nice, fluid 3D visualization, this is easily the worst GUI framework I have ever seen.
 
-Ways to install:
-- `pip install browsergui`
-- `easy_install browsergui`
-- download this directory, through either
-  - unzipping [this](https://github.com/speezepearson/browsergui/archive/master.zip), or
-  - `git clone git@github.com:speezepearson/browsergui.git`
+- [Why is it good?](#why-is-it-good)
+- [Why is it bad?](#why-is-it-bad)
+- [What are the alternatives?](#what-are-the-alternatives)
+- [How do I install it?](#how-do-i-install-it)
+- [How do I learn to use it?](#how-do-i-learn-to-use-it)
 
-  and then install it with either
-  - `python setup.py install`, or
-  - plop the `browsergui` subfolder anywhere on your Python path
 
-Once it's installed, I recommend running `python -m browsergui.examples` to see a catalog of all the kinds of building blocks available to you, then running `python -m browsergui.examples interactive` to experiment on your own. See [the wiki][wiki] for help learning about this package.
+Why is it good?
+---------------
 
-[wiki]: https://github.com/speezepearson/browsergui/wiki
+This package prioritizes ease of use, portability, and good documentation above all else. The following statements will remain true as long as I have breath left in my body:
 
-Examples
---------
+- **It feels like Python.** It uses HTML/CSS/JS under the hood, but that fact is carefully hidden under nice object-oriented abstractions. Contrast with [Tkinter][tkinter], which feels like Tk, because it is.
+- **It has a shallow learning curve.** "Hello World" is `GUI(Text("Hello world!")).run()`. Minesweeper, including the game logic, is [less than 100 lines of code][minesweeper-code] and [looks like this][minesweeper-screenshot].
+- **It's super-portable.** `pip install browsergui && python -m browsergui.examples` has worked, with no snags, on every system I've tried (OS X, Debian, and Ubuntu, with both Python 2.7 and a few Python 3.Xs). Seriously, you could run that right now and it would work, without a single abstruse error messages about your Qt/wx/PyObjC installation. At the risk of tooting my own horn, I've never seen another GUI library so easy to install.
+- **It's well-documented.** There's a [wiki][wiki] to teach you how to use it. There are [examples](#how-do-I-learn-to-use-it). There's a [reference manual][docs]. There's a [runnable demo for every predefined kind of element][tour-screenshot]. I've spent more time documenting than I've spent writing actual code.
 
-Here are a few short demos, to give you a taste of what this GUI framework looks like. (You can close/reopen the browser window at any time; Ctrl-C will stop the server.)
+Why is it bad?
+--------------
+
+- **It's slow.** It does not even try to be high-performance. There's an HTTP request every time the user interacts with the GUI, and again every time the view is updated. Performance is off the table. (It's not *frustratingly* slow -- you can drag a slider and see the value update with no perceptible delay -- but it's not good for fancy stuff.)
+- **It's not super-easy to make super-pretty things.** I just haven't prioritized styling: any styling you want to do, you have to do through CSS. I'm not sure `element.css['color'] = 'red'` is so much worse than `widget.config(foreground="#f00")`, but it *does* feel like a thin wrapper over CSS (because it is), which is gross.
+
+How do I install it?
+--------------------
+
+If you use pip, `pip install browsergui`.
+
+If you use easy_install, `easy_install browsergui`.
+
+If you don't like package managers, just unzip [this][download-zip] and put the `browsergui` folder anywhere on your Python path.
+
+Once it's installed, I recommend running `python -m browsergui.examples` to see a catalog of all the kinds of building blocks available to you, or checking out [the wiki][wiki] for tutorial-type stuff.
+
+
+How do I learn to use it?
+-------------------------
+
+[The wiki][wiki] has several tutorial-type pages. Or you could just extrapolate from these examples:
 
 - Hello world:
 
@@ -47,66 +68,50 @@ Here are a few short demos, to give you a taste of what this GUI framework looks
         import threading
         from browsergui import Text, GUI
 
-        def main():
-          now = Text("")
+        now = Text("")
 
-          def update_now_forever():
-            while True:
-              now.text = time.strftime("%Y-%m-%d %H:%M:%S")
-              time.sleep(1)
+        def update_now_forever():
+          while True:
+            now.text = time.strftime("%Y-%m-%d %H:%M:%S")
+            time.sleep(1)
 
-          t = threading.Thread(target=update_now_forever)
-          t.daemon = True
-          t.start()
+        t = threading.Thread(target=update_now_forever)
+        t.daemon = True
+        t.start()
 
-          GUI(Text("The time is: "), now).run()
+        GUI(Text("The time is: "), now).run()
 
-        if __name__ == '__main__':
-          main()
+(You can close/reopen the browser window at any time; Ctrl-C will stop the server.)
 
+Each kind of element (`Text`, `Button`, `ColorField`, `Grid`...) also has a simple example showing you how to use it: `python -m browsergui.examples` will display all those examples to you.
 
-Should I use this?
-------------------
-
-### Summary
-
-Things that are prioritized in this package: easy installation, simplicity, and the feeling that you're writing Python.
-
-Things that are not prioritized in this package: performance and fine styling/layout control.
-
-I think this is a great way to make simple little GUIs that don't have any fancy stuff. If you want to build a very basic UI that (a) installs without trouble and (b) has a very shallow learning curve, I recommend this. If you want your UI to be pretty or extra-responsive, I do not recommend this.
-
-### Details
-
-There are good things and bad things about this package.
-
-The good:
-
-- **Easy installation.** This package is pure Python that relies on only the standard library. This will not change while I have breath in my body.
-
-  Consequently, it should be usable out of the box for every single person with Python 2.7 or later, without installing Tk or Qt or wxWidgets or PyObjC or any of that stuff.
-
-- **Easy to learn.** Making simple GUIs for simple tasks is simple. Check out the `examples` directory (particularly `examples/longrunning.py` for a vaguely realistic use case).
-
-- **Code style.** It tries very hard to be Pythonic and object-oriented. It's not just a thin wrapper over HTML/JS.
-
-
-The bad:
-
-- **Performance.** It does not even try to be high-performance. There's an HTTP request every time the user interacts with the GUI, and an HTTP request every time the view needs updating. Performance is off the table. (Each request only takes several milliseconds' round trip for me, running on `localhost`, so it's not *awful*, but it's not awesome.)
-
-### Alternatives
+What are the alternatives?
+--------------------------
 
 I am aware of some GUI toolkits for Python that fill a similar niche. You should consider using these instead:
 
-- [tkinter](https://docs.python.org/3/library/tkinter.html#module-tkinter) (standard library)
+- [tkinter][tkinter] (standard library)
 
   Advantages: it's in the standard library. It has always worked out of the box for me. If you want maximal portability, this is probably your best bet.
 
   Disadvantages: it feels like a wrapper around Tk, because it is. This gives good performance and detailed control, but writing it feels unintuitive (to me).
 
-- [pyJS](http://pyjs.org), another Python package for making GUIs targeting browsers. It works by compiling your Python code into a slug of JavaScript which runs in the browser.
+- [pyJS][pyjs], another Python package for making GUIs targeting browsers. It works by compiling your Python code into a slug of JavaScript which runs in the browser.
 
   Advantages: pyJS applications are much faster and much easier to deploy (since it doesn't require the user to run Python).
 
   Disadvantages: I had trouble installing it. And like `tkinter`, it's a wrapper, with the same dis/advantages.
+
+There are, of course, many other GUI toolkits. [Here][official-alternatives] is a list of those popular enough to earn the notice of Official Python People. [Here][unofficial-alternatives] is a paralytically long listing of less-notable ones.
+
+[minesweeper-code]: https://github.com/speezepearson/browsergui/blob/master/browsergui/examples/minesweeper.py
+[minesweeper-screenshot]: http://i.imgur.com/8Ax04sZ.png
+[tour-screenshot]: http://i.imgur.com/AvVVVFd.png
+[download-zip]: https://github.com/speezepearson/browsergui/archive/master.zip
+[wiki]: https://github.com/speezepearson/browsergui/wiki
+[docs]: http://pythonhosted.org/browsergui
+[download-zip]: https://github.com/speezepearson/browsergui/archive/master.zip
+[tkinter]: https://docs.python.org/3/library/tkinter.html#module-tkinter
+[pyjs]: http://pyjs.org
+[official-alternatives]: http://docs.python.org/2/library/othergui.html
+[unofficial-alternatives]: http://wiki.python.org/moin/GuiProgramming

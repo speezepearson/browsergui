@@ -1,18 +1,17 @@
-from .. import Element
+from ._valuedelement import ValuedElement
 from ...events import Change
 from ..._pythoncompatibility import collections_abc, STRING_TYPES
 
-class Dropdown(Element, collections_abc.MutableSequence):
+class Dropdown(ValuedElement, collections_abc.MutableSequence):
   '''A dropdown-selector for a set of options (strings).
 
-  Like :class:`InputField` elements, a Dropdown has a ``value``, a ``placeholder``, and a ``change_callback``. Also, a Dropdown is a `mutable sequence`_, meaning most things you can do to lists (append, get/set/delitem), you can do to Dropdowns too.
+  A Dropdown is a :class:`ValuedElement`, meaning it has a ``value``, ``placeholder``, and ``change_callback``. It's also a `mutable sequence`_, meaning most things you can do to lists (append, get/set/delitem), you can do to Dropdowns too.
 
   .. _mutable sequence: https://docs.python.org/2/library/collections.html#collections-abstract-base-classes
   '''
 
-  def __init__(self, options, change_callback=None, **kwargs):
-    super(Dropdown, self).__init__(tag_name='select', **kwargs)
-    self.change_callback = None
+  def __init__(self, options, **kwargs):
+    super(Dropdown, self).__init__(tag_name='select', input_event_type=Change, **kwargs)
 
     options = list(options)
     if not options:
@@ -21,40 +20,35 @@ class Dropdown(Element, collections_abc.MutableSequence):
     for option in options:
       self.append(option)
 
-    self._set_value(options[0])
+    self._set_value_in_tag(options[0])
 
-    self.callbacks[Change] = lambda event: self._set_value(event.value)
-    self.change_callback = change_callback
-
-  @property
-  def value(self):
+  def _get_value_from_tag(self):
     for option_tag in self.tag.childNodes:
       if option_tag.getAttribute('selected') == 'true':
         return option_tag.childNodes[0].data
     assert False, 'No option in the dropdown seems to be selected. How did this happen?'
-  @value.setter
-  def value(self, value):
-    self._set_value(value)
-    self.mark_dirty()
 
-  def _set_value(self, value):
-    self.ensure_is_valid_value(value)
+  def _set_value_in_tag(self, value):
+    if not self.tag.childNodes:
+      # Kludge here. The value gets set during super().__init__(), but at that point
+      # we haven't initialized the tag's children yet. Just accept it, because we're
+      # going to set the value later in the initializer anyway.
+      return
+
+    if not isinstance(value, STRING_TYPES):
+      raise TypeError('expected str, got {}'.format(type(value).__name__))
+
+    if value not in self:
+      raise ValueError('value not in options: {!r}'.format(value))
+
     for child in self.tag.childNodes:
       if 'selected' in child.attributes.keys():
         child.removeAttribute('selected')
       if child.childNodes[0].data == value:
         child.setAttribute('selected', 'true')
 
-    if self.change_callback is not None:
-      self.change_callback()
-
-  def ensure_is_valid_value(self, value):
-    if not (value is None or isinstance(value, STRING_TYPES)):
-      raise TypeError('expected value of type str (or None), got {}'.format(type(value).__name__))
-    if hasattr(self, 'tag') and value not in self:
-      # the `hasattr` check is a kludge because the value might get set during __init__,
-      # before the tag is initialized. Really gotta disentangle this all at some point.
-      raise ValueError('value not in options: {!r}'.format(value))
+  def _get_value_from_event(self, event):
+    return event.value
 
   # MutableSequence implementation
 

@@ -79,7 +79,7 @@ Full Subclass Documentation
    :members:
 
 
-.. autoclass:: InputField
+.. autoclass:: ValuedElement
    :members:
 
 .. autoclass:: Button

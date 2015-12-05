@@ -16,7 +16,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.3.2',
+    version='0.4',
 
     description='A GUI toolkit targeting browsers',
     long_description=long_description,
@@ -37,7 +37,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
@@ -60,7 +60,7 @@ setup(
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    packages=find_packages(exclude=['test']),
+    packages=find_packages(exclude=['test', 'doc', 'wiki']),
 
     # List run-time dependencies here.  These will be installed by pip when
     # your project is installed. For an analysis of "install_requires" vs pip's
@@ -81,7 +81,7 @@ setup(
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     package_data={
-        'browsergui': ['server/*.html', 'server/*.js', 'examples/*.png'],
+        'browsergui': ['_server/*.html', '_server/*.js', 'examples/*.png'],
     },
 
     # Although 'package_data' is the preferred approach, in some case you may

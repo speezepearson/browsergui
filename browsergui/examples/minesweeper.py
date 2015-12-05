@@ -45,12 +45,14 @@ class MinesweeperGUI(GUI):
 
     self.w_field = TextField(value=str(self.game.w), placeholder='width')
     self.h_field = TextField(value=str(self.game.h), placeholder='height')
-    self.mine_density_field = TextField(value=str(self.game.mine_density), placeholder='mine density')
+    self.mine_density_slider = FloatSlider(value=self.game.mine_density, min=0, max=1)
     self.reset_button = Button('Reset and Apply', callback=self.reset)
 
     self.body.append(Grid([
       [Text('width'), Text('height'), Text('mine density')],
-      [self.w_field, self.h_field, self.mine_density_field, self.reset_button]]))
+      [self.w_field, self.h_field,
+       Container(Text('0'), self.mine_density_slider, Text('1')),
+       self.reset_button]]))
     self.grid = None
 
     self.reset()
@@ -58,7 +60,7 @@ class MinesweeperGUI(GUI):
   def reset(self):
     w = int(self.w_field.value)
     h = int(self.h_field.value)
-    mine_density = float(self.mine_density_field.value)
+    mine_density = float(self.mine_density_slider.value)
 
     self.game = Game(w=w, h=h, mine_density=mine_density)
 
@@ -74,13 +76,14 @@ class MinesweeperGUI(GUI):
   def button_for(self, ij):
     def callback():
       if ij in self.game.mine_locations:
-        self.grid[ij] = Text('MINE')
+        self.grid[ij] = Text('X', css={'color': 'red'})
+        self.grid.css['background-color'] = '#fcc'
       else:
         for nij in self.game.expand_region(ij):
           nmn = self.game.n_mine_neighbors(nij)
-          self.grid[nij] = Text('-' if nmn == 0 else str(nmn))
+          self.grid[nij] = Text('' if nmn == 0 else str(nmn))
 
-    return Button('?', callback=callback)
+    return Button('', callback=callback, css={'width': '2em', 'height': '2em'})
 
 def main():
   MinesweeperGUI().run()
