@@ -16,9 +16,9 @@ If you want to build a video game, or a nice, fluid 3D visualization, this is ea
 Why is it good?
 ---------------
 
-This package prioritizes simplicity, portability, and documentation above all else. The following statements will remain true as long as I have breath left in my body:
+This package prioritizes ease of use, portability, and good documentation above all else. The following statements will remain true as long as I have breath left in my body:
 
-- **It feels like Python.** It uses HTML and CSS under the hood, but that fact is carefully hidden under nice object-oriented abstractions. Contrast with [Tkinter][tkinter], which feels like Tk, because it is.
+- **It feels like Python.** It uses HTML/CSS/JS under the hood, but that fact is carefully hidden under nice object-oriented abstractions. Contrast with [Tkinter][tkinter], which feels like Tk, because it is.
 - **It has a shallow learning curve.** "Hello World" is `GUI(Text("Hello world!")).run()`. Minesweeper, including the game logic, is [less than 100 lines of code][minesweeper-code] and [looks like this][minesweeper-screenshot].
 - **It's super-portable.** `pip install browsergui && python -m browsergui.examples` has worked, with no snags, on every system I've tried (OS X, Debian, and Ubuntu, with both Python 2.7 and a few Python 3.Xs). Seriously, you could run that right now and it would work, without a single abstruse error messages about your Qt/wx/PyObjC installation. At the risk of tooting my own horn, I've never seen another GUI library so easy to install.
 - **It's well-documented.** There's a [wiki][wiki] to teach you how to use it. There are [examples](#how-do-I-learn-to-use-it). There's a [reference manual][docs]. There's a [runnable demo for every predefined kind of element][tour-screenshot]. I've spent more time documenting than I've spent writing actual code.
@@ -105,7 +105,7 @@ I am aware of some GUI toolkits for Python that fill a similar niche. You should
 There are, of course, many other GUI toolkits. [Here][official-alternatives] is a list of those popular enough to earn the notice of Official Python People. [Here][unofficial-alternatives] is a paralytically long listing of less-notable ones.
 
 [minesweeper-code]: https://github.com/speezepearson/browsergui/blob/master/browsergui/examples/minesweeper.py
-[minesweeper-screenshot]: http://i.imgur.com/ce29Bxs.png
+[minesweeper-screenshot]: http://i.imgur.com/8Ax04sZ.png
 [tour-screenshot]: http://i.imgur.com/AvVVVFd.png
 [download-zip]: https://github.com/speezepearson/browsergui/archive/master.zip
 [wiki]: https://github.com/speezepearson/browsergui/wiki

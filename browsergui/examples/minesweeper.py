@@ -76,13 +76,14 @@ class MinesweeperGUI(GUI):
   def button_for(self, ij):
     def callback():
       if ij in self.game.mine_locations:
-        self.grid[ij] = Text('MINE')
+        self.grid[ij] = Text('X', css={'color': 'red'})
+        self.grid.css['background-color'] = '#fcc'
       else:
         for nij in self.game.expand_region(ij):
           nmn = self.game.n_mine_neighbors(nij)
-          self.grid[nij] = Text('-' if nmn == 0 else str(nmn))
+          self.grid[nij] = Text('' if nmn == 0 else str(nmn))
 
-    return Button('.', callback=callback)
+    return Button('', callback=callback, css={'width': '2em', 'height': '2em'})
 
 def main():
   MinesweeperGUI().run()
