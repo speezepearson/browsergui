@@ -29,6 +29,25 @@ Why is it bad?
 - **It's slow.** It does not even try to be high-performance. There's an HTTP request every time the user interacts with the GUI, and again every time the view is updated. Performance is off the table. (It's not *frustratingly* slow -- you can drag a slider and see the value update with no perceptible delay -- but it's not good for fancy stuff.)
 - **It's not super-easy to make super-pretty things.** I just haven't prioritized styling: any styling you want to do, you have to do through CSS. I'm not sure `element.css['color'] = 'red'` is so much worse than `widget.config(foreground="#f00")`, but it *does* feel like a thin wrapper over CSS (because it is), which is gross.
 
+What are the alternatives?
+--------------------------
+
+I am aware of some GUI toolkits for Python that fill a similar niche. You should consider using these instead:
+
+- [tkinter][tkinter] (standard library)
+
+  Advantages: it's in the standard library. It has always worked out of the box for me. If you want maximal portability, this is probably your best bet.
+
+  Disadvantages: it feels like a wrapper around Tk, because it is. This gives good performance and detailed control, but writing it feels unintuitive (to me).
+
+- [pyJS][pyjs], another Python package for making GUIs targeting browsers. It works by compiling your Python code into a slug of JavaScript which runs in the browser.
+
+  Advantages: pyJS applications are much faster and much easier to deploy (since it doesn't require the user to run Python).
+
+  Disadvantages: I had trouble installing it. And like `tkinter`, it's a wrapper, with the same dis/advantages.
+
+There are, of course, many other GUI toolkits. [Here][official-alternatives] is a list of those popular enough to earn the notice of Official Python People. [Here][unofficial-alternatives] is a paralytically long listing of less-notable ones.
+
 How do I install it?
 --------------------
 
@@ -84,25 +103,6 @@ How do I learn to use it?
 (You can close/reopen the browser window at any time; Ctrl-C will stop the server.)
 
 Each kind of element (`Text`, `Button`, `ColorField`, `Grid`...) also has a simple example showing you how to use it: `python -m browsergui.examples` will display all those examples to you.
-
-What are the alternatives?
---------------------------
-
-I am aware of some GUI toolkits for Python that fill a similar niche. You should consider using these instead:
-
-- [tkinter][tkinter] (standard library)
-
-  Advantages: it's in the standard library. It has always worked out of the box for me. If you want maximal portability, this is probably your best bet.
-
-  Disadvantages: it feels like a wrapper around Tk, because it is. This gives good performance and detailed control, but writing it feels unintuitive (to me).
-
-- [pyJS][pyjs], another Python package for making GUIs targeting browsers. It works by compiling your Python code into a slug of JavaScript which runs in the browser.
-
-  Advantages: pyJS applications are much faster and much easier to deploy (since it doesn't require the user to run Python).
-
-  Disadvantages: I had trouble installing it. And like `tkinter`, it's a wrapper, with the same dis/advantages.
-
-There are, of course, many other GUI toolkits. [Here][official-alternatives] is a list of those popular enough to earn the notice of Official Python People. [Here][unofficial-alternatives] is a paralytically long listing of less-notable ones.
 
 [minesweeper-code]: https://github.com/speezepearson/browsergui/blob/master/browsergui/examples/minesweeper.py
 [minesweeper-screenshot]: http://i.imgur.com/8Ax04sZ.png
