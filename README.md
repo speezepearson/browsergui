@@ -1,6 +1,10 @@
 What is this?
 -------------
-It's a GUI framework prioritizing portability, simplicity, and a Pythonic feel.
+It's a GUI framework prioritizing portability, simplicity, and a Pythonic feel. The two facts I think will best hook you:
+- Simple GUIs are simple to make: `GUI(Text("Hello world!")).run()`.
+- You could type `easy_install browsergui && python -m browsergui.examples` *this instant*, and it would work. (Well, maybe you need to `sudo`.) There's no complex application framework you need to install first.
+
+  (Corollary: if you build a GUI using this package, your co-developers/users also won't need to install anything complicated.)
 
 If you want to build a simple GUI for a simple task, I recommend this package whole-heartedly. I don't think this is just pride in my own work -- I'm pretty sure that this package *actually is* very easy to learn, and very good for simple things.
 
@@ -20,7 +24,7 @@ This package prioritizes ease of use, portability, and good documentation above 
 
 - **It feels like Python.** It uses HTML/CSS/JS under the hood, but that fact is carefully hidden under nice object-oriented abstractions. Contrast with [Tkinter][tkinter], which feels like Tk, because it is.
 - **It has a shallow learning curve.** "Hello World" is `GUI(Text("Hello world!")).run()`. Minesweeper, including the game logic, is [less than 100 lines of code][minesweeper-code] and [looks like this][minesweeper-screenshot].
-- **It's super-portable.** `pip install browsergui && python -m browsergui.examples` has worked, with no snags, on every system I've tried (OS X, Debian, and Ubuntu, with both Python 2.7 and a few Python 3.Xs). Seriously, you could run that right now and it would work, without a single abstruse error messages about your Qt/wx/PyObjC installation. At the risk of tooting my own horn, I've never seen another GUI library so easy to install.
+- **It's super-portable.** `pip install browsergui && python -m browsergui.examples` has worked, with no snags, on every system I've tried (OS X, Debian, and Ubuntu, with both Python 2.7 and a few Python 3.Xs). Seriously, you could run that right now and it would work, without a single abstruse error messages about your Qt/wxWidgets/PyObjC installation. At the risk of tooting my own horn, I've never seen another GUI library so easy to install.
 - **It's well-documented.** There's a [wiki][wiki] to teach you how to use it. There are [examples](#how-do-I-learn-to-use-it). There's a [reference manual][docs]. There's a [runnable demo for every predefined kind of element][tour-screenshot]. I've spent more time documenting than I've spent writing actual code.
 
 Why is it bad?
@@ -28,6 +32,7 @@ Why is it bad?
 
 - **It's slow.** It does not even try to be high-performance. There's an HTTP request every time the user interacts with the GUI, and again every time the view is updated. Performance is off the table. (It's not *frustratingly* slow -- you can drag a slider and see the value update with no perceptible delay -- but it's not good for fancy stuff.)
 - **It's not super-easy to make super-pretty things.** I just haven't prioritized styling: any styling you want to do, you have to do through CSS. I'm not sure `element.css['color'] = 'red'` is so much worse than `widget.config(foreground="#f00")`, but it *does* feel like a thin wrapper over CSS (because it is), which is gross.
+- **It doesn't provide utility functions.** Every other GUI framework I can recall seeing provides things like timers: things that are *nice* to have when you're making a GUI, but aren't directly related to user-interaction. This package doesn't offer those and probably never will. If you want timers, get them from a different package.
 
 What are the alternatives?
 --------------------------
