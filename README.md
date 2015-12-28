@@ -28,6 +28,7 @@ Why is it bad?
 
 - **It's slow.** It does not even try to be high-performance. There's an HTTP request every time the user interacts with the GUI, and again every time the view is updated. Performance is off the table. (It's not *frustratingly* slow -- you can drag a slider and see the value update with no perceptible delay -- but it's not good for fancy stuff.)
 - **It's not super-easy to make super-pretty things.** I just haven't prioritized styling: any styling you want to do, you have to do through CSS. I'm not sure `element.css['color'] = 'red'` is so much worse than `widget.config(foreground="#f00")`, but it *does* feel like a thin wrapper over CSS (because it is), which is gross.
+- **Its input-handling is limited.** Full-powered GUI libraries let you capture every mouse movement, every keypress, anything you can dream. That might come to Browsergui eventually, but for now, you're pretty much limited to predefined input fields.
 
 What are the alternatives?
 --------------------------
