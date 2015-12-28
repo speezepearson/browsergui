@@ -7,10 +7,7 @@ class Styler(collections_abc.MutableMapping):
     super(Styler, self).__init__(**kwargs)
 
   def _update_tag_style_attribute(self):
-    if self:
-      self.element.tag.setAttribute('style', self._css())
-    elif 'style' in self.element.tag.attributes.keys():
-      self.element.tag.removeAttribute('style')
+    self.element.tag.setAttribute('style', self._css())
     self.element.mark_dirty()
 
   def _css(self):

@@ -51,7 +51,7 @@ class Event(object):
     '''Remove server-notification JS for this event from the given tag.'''
     if 'on'+cls.javascript_type_name not in tag.attributes.keys():
       raise KeyError("tag is not set up to notify server for {} events".format(cls.__name__))
-    tag.removeAttribute('on'+cls.javascript_type_name)
+    tag.setAttribute('on'+cls.javascript_type_name, '')
 
   @classmethod
   def dict_to_notify_server(cls):
