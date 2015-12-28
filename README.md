@@ -2,7 +2,7 @@ What is this?
 -------------
 It's a GUI framework prioritizing portability, simplicity, and a Pythonic feel.
 
-If you want to build a simple GUI for a simple task, I recommend this package whole-heartedly. I don't think this is just pride in my own work -- I'm pretty sure that this package *actually is* very easy to learn, and very good for simple things. [Here's a mock-up][demo] that shows all the stuff you can do with it. [Here's a very similar package][remi] you should consider using instead.
+If you want to build a simple GUI for a simple task, I recommend this package whole-heartedly. I don't think this is just pride in my own work -- I'm pretty sure that this package *actually is* very easy to learn, and very good for simple things. [Here's a mock-up][demo] that shows all the stuff you can do with it. (A very-similar package is [REMI][remi].)
 
 If you want to build a video game, or a nice, fluid 3D visualization, this is easily the worst GUI framework I have ever seen.
 
@@ -35,7 +35,7 @@ What are the alternatives?
 
 I am aware of some GUI toolkits for Python that fill a similar niche. You should consider using these instead:
 
-- [REMI][remi], which fills exactly the same niche and has more features. I'm hard-pressed to come up with a reason why you'd use this instead of that. I think really-simple apps are simpler with Browsergui, but... dang, REMI is nice.
+- [REMI][remi], which fills exactly the same niche and, at the time of writing, has more features. I think really-simple apps are simpler with Browsergui, but REMI is definitely worth a look.
 
 - [tkinter][tkinter] (standard library)
 
@@ -48,6 +48,8 @@ I am aware of some GUI toolkits for Python that fill a similar niche. You should
   Advantages: pyJS applications are much faster and much easier to deploy (since it doesn't require the user to run Python).
 
   Disadvantages: I had trouble installing it. And like `tkinter`, it's a wrapper, with the same dis/advantages.
+
+- [flexx][flexx], which (if I understand correctly) compiles a Python app to JavaScript. I haven't investigated it very much.
 
 There are, of course, many other GUI toolkits. [Here][official-alternatives] is a list of those popular enough to earn the notice of Official Python People. [Here][unofficial-alternatives] is a paralytically long listing of less-notable ones.
 
@@ -108,6 +110,7 @@ How do I learn to use it?
 Each kind of element (`Text`, `Button`, `ColorField`, `Grid`...) also has a simple example showing you how to use it: `python -m browsergui.examples` will display all those examples to you.
 
 [remi]: https://github.com/dddomodossola/remi
+[flexx]: https://github.com/zoofIO/flexx
 [demo]: http://speezepearson.github.io/misc/fake-browsergui-demo.html
 [minesweeper-code]: https://github.com/speezepearson/browsergui/blob/master/browsergui/examples/minesweeper.py
 [minesweeper-screenshot]: http://i.imgur.com/8Ax04sZ.png
