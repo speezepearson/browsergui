@@ -2,7 +2,7 @@ What is this?
 -------------
 It's a GUI framework prioritizing portability, simplicity, and a Pythonic feel.
 
-If you want to build a simple GUI for a simple task, I recommend this package whole-heartedly. I don't think this is just pride in my own work -- I'm pretty sure that this package *actually is* very easy to learn, and very good for simple things.
+If you want to build a simple GUI for a simple task, I recommend this package whole-heartedly. I don't think this is just pride in my own work -- I'm pretty sure that this package *actually is* very easy to learn, and very good for simple things. [Here's a mock-up][demo] that shows all the stuff you can do with it.
 
 If you want to build a video game, or a nice, fluid 3D visualization, this is easily the worst GUI framework I have ever seen.
 
@@ -21,7 +21,7 @@ This package prioritizes ease of use, portability, and good documentation above 
 - **It feels like Python.** It uses HTML/CSS/JS under the hood, but that fact is carefully hidden under nice object-oriented abstractions. Contrast with [Tkinter][tkinter], which feels like Tk, because it is.
 - **It has a shallow learning curve.** "Hello World" is `GUI(Text("Hello world!")).run()`. Minesweeper, including the game logic, is [less than 100 lines of code][minesweeper-code] and [looks like this][minesweeper-screenshot].
 - **It's super-portable.** `pip install browsergui && python -m browsergui.examples` has worked, with no snags, on every system I've tried (OS X, Debian, and Ubuntu, with both Python 2.7 and a few Python 3.Xs). Seriously, you could run that right now and it would work, without a single abstruse error messages about your Qt/wx/PyObjC installation. At the risk of tooting my own horn, I've never seen another GUI library so easy to install.
-- **It's well-documented.** There's a [wiki][wiki] to teach you how to use it. There are [examples](#how-do-I-learn-to-use-it). There's a [reference manual][docs]. There's a [runnable demo for every predefined kind of element][tour-screenshot]. I've spent more time documenting than I've spent writing actual code.
+- **It's well-documented.** There's a [wiki][wiki] to teach you how to use it. There are [examples](#how-do-I-learn-to-use-it). There's a [reference manual][docs]. There's a [runnable demo for every predefined kind of element][demo]. I've spent more time documenting than I've spent writing actual code.
 
 Why is it bad?
 --------------
@@ -105,9 +105,9 @@ How do I learn to use it?
 
 Each kind of element (`Text`, `Button`, `ColorField`, `Grid`...) also has a simple example showing you how to use it: `python -m browsergui.examples` will display all those examples to you.
 
+[demo]: http://speezepearson.github.io/misc/fake-browsergui-demo.html
 [minesweeper-code]: https://github.com/speezepearson/browsergui/blob/master/browsergui/examples/minesweeper.py
 [minesweeper-screenshot]: http://i.imgur.com/8Ax04sZ.png
-[tour-screenshot]: http://i.imgur.com/AvVVVFd.png
 [download-zip]: https://github.com/speezepearson/browsergui/archive/master.zip
 [wiki]: https://github.com/speezepearson/browsergui/wiki
 [docs]: http://pythonhosted.org/browsergui
