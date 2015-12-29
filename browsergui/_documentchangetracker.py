@@ -26,6 +26,7 @@ def javascript_to_update_tag(tag, variable_name):
     lines.append('{var}.value = {value}'.format(var=variable_name, value=json.dumps(tag.getAttribute('value'))))
 
   # Update tag attributes
+  lines.append('while ({var}.attributes.length > 0) {var}.removeAttribute({var}.attributes[0].name);'.format(var=variable_name))
   lines.extend(
     '{var}.setAttribute({key}, {value})'.format(var=variable_name, key=json.dumps(attr), value=json.dumps(value))
     for attr, value in tag.attributes.items())
