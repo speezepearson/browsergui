@@ -2,7 +2,7 @@ What is this?
 -------------
 It's a GUI framework prioritizing portability, simplicity, and a Pythonic feel.
 
-If you want to build a simple GUI for a simple task, I recommend this package whole-heartedly. I don't think this is just pride in my own work -- I'm pretty sure that this package *actually is* very easy to learn, and very good for simple things. [Here's a mock-up][demo] that shows all the stuff you can do with it. (A very-similar package is [REMI][remi].)
+If you want to build a simple GUI for a simple task, I recommend this package whole-heartedly. I don't think this is just pride in my own work -- I'm pretty sure that this package *actually is* very easy to learn, and very good for simple things. [Here's a mock-up][demo] that shows all the stuff you can do with it. (A very-similar package is [RemI][remi].)
 
 If you want to build a video game, or a nice, fluid 3D visualization, this is easily the worst GUI framework I have ever seen.
 
@@ -35,7 +35,11 @@ What are the alternatives?
 
 I am aware of some GUI toolkits for Python that fill a similar niche. You should consider using these instead:
 
-- [REMI][remi], which fills exactly the same niche and, at the time of writing, has more features. I think really-simple apps are simpler with Browsergui, but REMI is definitely worth a look.
+- [RemI][remi], which has exactly the same idea (build a GUI in Python, run it in a browser). Definitely worth a look.
+
+  Advantages: (at the time of writing) has more features, e.g. file-input dialogs. Looks significantly prettier.
+
+  Disadvantages: (at the time of writing) less thorough tutorials/documentation. Simple apps are more verbose.
 
 - [tkinter][tkinter] (standard library)
 
