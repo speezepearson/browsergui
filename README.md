@@ -43,9 +43,9 @@ I am aware of some GUI toolkits for Python that fill a similar niche. You should
 
 - [tkinter][tkinter] (standard library)
 
-  Advantages: it's in the standard library. It has always worked out of the box for me. If you want maximal portability, this is probably your best bet.
+  Advantages: it's well-known. Lots of people have written tutorials and documentation for it.
 
-  Disadvantages: it feels like a wrapper around Tk, because it is. This gives good performance and detailed control, but writing it feels unintuitive (to me).
+  Disadvantages: it feels like a wrapper around Tk, because it is. This gives good performance and detailed control, but writing it feels unintuitive (to me). Also, I've had trouble getting it to work with multiple Python installations.
 
 - [pyJS][pyjs], another Python package for making GUIs targeting browsers. It works by compiling your Python code into a slug of JavaScript which runs in the browser.
 
