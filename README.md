@@ -2,7 +2,7 @@ What is this?
 -------------
 It's a GUI framework prioritizing portability, simplicity, and a Pythonic feel.
 
-If you want to build a simple GUI for a simple task, I recommend this package whole-heartedly. I don't think this is just pride in my own work -- I'm pretty sure that this package *actually is* very easy to learn, and very good for simple things. [Here's a mock-up][demo] that shows all the stuff you can do with it. (A very-similar package is [RemI][remi].)
+If you want to build a simple GUI for a simple task, this is a great library. [Here's a mock-up][demo] that shows all the stuff you can do with it.
 
 If you want to build a video game, or a nice, fluid 3D visualization, this is easily the worst GUI framework I have ever seen.
 
