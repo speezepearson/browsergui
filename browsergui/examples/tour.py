@@ -67,29 +67,32 @@ def main():
     'Container(click_count, button)',
     strip_whitespace('''
       click_count = Text('0')
+      button = Button('Click me!')
+      @button.def_callback
       def button_clicked():
         n = int(click_count.text)
-        click_count.text = str(n+1)
-      button = Button('Click me!', callback=button_clicked)'''))
+        click_count.text = str(n+1)'''))
 
   examples[TextField] = Example(
     'Container(text_field, reversed_text_field_contents)',
     strip_whitespace('''
       reversed_text_field_contents = Text('')
+      text_field = TextField()
+      @text_field.def_change_callback
       def text_field_changed():
         reversed_contents = ''.join(reversed(text_field.value))
         reversed_text_field_contents.text = reversed_contents
-      text_field = TextField(change_callback=text_field_changed)
       text_field.value = "Reversed"'''))
 
   examples[BigTextField] = Example(
     'Container(text_field, reversed_text_field_contents)',
     strip_whitespace('''
       reversed_text_field_contents = Text('')
+      text_field = BigTextField()
+      @text_field.def_change_callback
       def text_field_changed():
         reversed_contents = ''.join(reversed(text_field.value))
         reversed_text_field_contents.text = reversed_contents
-      text_field = BigTextField(change_callback=text_field_changed)
       text_field.value = "Reversed"'''))
 
   examples[Dropdown] = Example(
@@ -106,23 +109,25 @@ def main():
     'Container(number_field, number_field_squared)',
     strip_whitespace('''
       number_field_squared = Text('')
+      number_field = NumberField()
+      @number_field.def_change_callback
       def number_changed():
         if number_field.value is None:
           number_field_squared.text = ''
         else:
           number_field_squared.text = str(number_field.value ** 2)
-      number_field = NumberField(change_callback=number_changed)
       number_field.value = 12'''))
 
   examples[ColorField] = Example(
     'Container(color_field, colored_text)',
     strip_whitespace('''
       colored_text = Text('colored')
+      color_field = ColorField()
+      @color_field.def_change_callback
       def color_changed():
         color = color_field.value
         color_hex = '#{:02x}{:02x}{:02x}'.format(*color)
         colored_text.css['color'] = color_hex
-      color_field = ColorField(change_callback=color_changed)
       color_field.value = (0, 0, 255)'''))
 
   examples[DateField] = Example(
@@ -131,35 +136,38 @@ def main():
       weekday_text = Text('...')
       DAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday',
               'Friday', 'Saturday', 'Sunday')
+      date_field = DateField()
+      @date_field.def_change_callback
       def date_changed():
         if date_field.value is None:
           weekday_text.text = ''
         else:
-          weekday_text.text = DAYS[date_field.value.weekday()]
-      date_field = DateField(change_callback=date_changed)'''))
+          weekday_text.text = DAYS[date_field.value.weekday()]'''))
 
   examples[FloatSlider] = Example(
     'Container(slider, slider_value_squared)',
     strip_whitespace('''
       slider_value_squared = Text('')
+      slider = FloatSlider(min=0, max=10)
+      @slider.def_change_callback
       def slider_changed():
         if slider.value is None:
           slider_value_squared.text = ''
         else:
           slider_value_squared.text = '{:.3g}'.format(slider.value ** 2)
-      slider = FloatSlider(min=0, max=10, change_callback=slider_changed)
       slider.value = 3'''))
 
   examples[IntegerSlider] = Example(
     'Container(slider, slider_value_squared)',
     strip_whitespace('''
       slider_value_squared = Text('')
+      slider = IntegerSlider(min=0, max=5)
+      @slider.def_change_callback
       def slider_changed():
         if slider.value is None:
           slider_value_squared.text = ''
         else:
           slider_value_squared.text = str(slider.value ** 2)
-      slider = IntegerSlider(min=0, max=5, change_callback=slider_changed)
       slider.value = 3'''))
 
 
