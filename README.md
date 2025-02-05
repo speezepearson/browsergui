@@ -20,7 +20,7 @@ If you want to build a video game, or a nice, fluid 3D visualization, this is ea
 Why is it good?
 ---------------
 
-This package prioritizes ease of use, portability, and good documentation above all else. The following statements will remain true as long as I have breath left in my body:
+This package prioritizes ease of use, portability, and good documentation above all else. The following statements will remain true:
 
 - **It feels like Python.** It uses HTML/CSS/JS under the hood, but that fact is carefully hidden under nice object-oriented abstractions. Contrast with [Tkinter][tkinter], which feels like Tk, because it is.
 - **It has a shallow learning curve.** "Hello World" is `GUI(Text("Hello world!")).run()`. Minesweeper, including the game logic, is [less than 100 lines of code][minesweeper-code] and [looks like this][minesweeper-screenshot].
